@@ -28,12 +28,7 @@ class MergeHouseholdAppliancesEfficiency < ActiveRecord::Migration[7.0]
         next
       end
 
-      # Skip if the share series can't be loaded
-      parent_shares = begin
-        dataset.shares("energy/residences_final_demand_for_appliances_electricity_parent_share")
-      rescue Atlas::ResourceNotFound, Atlas::DatasetError
-        next
-      end
+      parent_shares = dataset.shares("energy/residences_final_demand_for_appliances_electricity_parent_share")
 
       # Calculate weighted avg. Start value for the old sliders was 0.0. If input is not set, it's treated as 0.0.
       weighted_avg = SHARE_MAP.sum(0.0) do |parent_share_key, input_key|
