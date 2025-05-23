@@ -130,8 +130,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_14_114442) do
     t.text "active_couplings_old", size: :medium
     t.binary "user_values", size: :long
     t.binary "balanced_values", size: :medium
-    t.binary "metadata", size: :medium
     t.binary "active_couplings", size: :medium
+    t.binary "metadata", size: :medium
     t.index ["created_at"], name: "index_scenarios_on_created_at"
   end
 
