@@ -9,47 +9,35 @@ module Qernel
       def self.factory(node, context)
         case context.node_config(node).subtype.to_sym
         when :storage
-          # revenue & fuel costs (per_mwh)
           StorageAdapter
         when :export
-          # NIKS
           ExportAdapter
         when :power_to_gas
-          # fuel costs (per_mwh)
           PowerToGasAdapter
         when :power_to_heat_industry
-          # fuel costs (per_mwh)
           PowerToHeatAdapter
         when :power_to_heat
-          # UNUSED
           HouseholdPowerToHeatAdapter
         when :curtailment
-          # NIKS
           CurtailmentAdapter
         when :heat_storage
-          # UNUSED in elec (only in heat network?)
           HeatStorageAdapter
         when :optimizing_storage, :optimizing_storage_households
-          # revenue & fuel costs (per_mwh)
           OptimizingStorageAdapter
         when :load_shifting
-          # NIKS
           LoadShiftingAdapter
         when :satisfied_demand
-          # NIKS
           SatisfiedDemandAdapter
         when :transformation
-          # NIKS
           TransformationAdapter
         else
-          # fuel costs (per_mwh)
           self
         end
       end
 
       def inject!
         inject_demand!
-        inject_fuel_costs!
+        inject_costs!
 
         inject_curve!(:input) do
           @participant.load_curve.map { |v| v.negative? ? v.abs : 0.0 }
@@ -142,8 +130,8 @@ module Qernel
           participant.number_of_units
       end
 
-      def inject_fuel_costs!
-        target_api.dataset_lazy_set(:fuel_costs_per_mwh) do
+      def inject_costs!
+        target_api.dataset_lazy_set(:fuel_costs_per_mwh_electricit) do
           participant.fuel_costs_per_mwh.to_f
         end
       end
