@@ -39,8 +39,8 @@ module Qernel
         @context.plugin.adapters[@config.relations[:input].to_sym]
       end
 
-      # Do not overwrite fuel costs
-      def inject_fuel_costs!;end
+      # Do not overwrite costs
+      def inject_costs!;end
     end
   end
 end
