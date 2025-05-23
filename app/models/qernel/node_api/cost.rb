@@ -225,7 +225,7 @@ module Qernel
       # Uses #typical_electricity_output (MJ/yr) → MWh/yr = MJ/yr / 3 600.
       #
       # Returns a float (€/MWh) or nil if output is zero or capex is nil.
-      # TODO: should also work for other carriers!
+      # TODO: should also work for other carriers! (like p2g, p2h, hydrogen etc)
       def capital_expenditures_per_mwh
         fetch(:capital_expenditures_per_mwh) do
           capex = capital_expenditures
@@ -255,7 +255,6 @@ module Qernel
           if typical_input.zero?
             0.0
           else
-            # typical_input is in MJ, but we need per_mwh
             (operating_expenses * SECS_PER_HOUR / typical_input) + fuel_costs_per_mwh
           end
         end
@@ -446,16 +445,43 @@ module Qernel
       end
 
       # Internal: Calculates fuel costs per mwh for a typical plant
-      # This can be overwritten by Merit partipants based on electricity price.
       #
       # Returns the fuel costs (€/MWh) per mwh
       def fuel_costs_per_mwh
         fetch(:fuel_costs_per_mwh) do
           if typical_input.zero?
             0.0
+          elsif input_of_electricity.positive?
+            fuel_costs_per_mwh_excluding_electricity + fuel_costs_per_mwh_electricity
           else
-            fuel_costs * SECS_PER_HOUR / typical_input
+            fuel_costs_per(:mwh_input)
           end
+        end
+      end
+
+      # Internal: Calculates the fuel costs for carriers excluding electricity.
+      # Only applies to carriers with costs_per_mj set
+      #
+      # Returns the fuel costs (€/MWh) per mwh excluding electricity costs
+      def fuel_costs_per_mwh_excluding_electricity
+        fetch(:fuel_costs_per_mwh_excluding_electricity) do
+          node.inputs.sum(0.0) do |input|
+            next if input.carrier.key == :electricity
+
+            # DO THEY HAVE TO BALANCE BASED ON INPUT CONVERSION?
+            # Or (input_of_carrier)
+            carrier.cost_per_mj * SECS_PER_HOUR
+          end
+        end
+      end
+
+      # Internal: fuel costs for electricity should be calculated by Merit and injected
+      # here. If costs have not been injected, raises an error.
+      #
+      # Returns the fuel costs (€/MWh) per mwh for electricity
+      def fuel_costs_per_mwh_electricity
+        fetch(:fuel_costs_per_mwh_electricity) do
+          raise IllegalZeroError.new(self, :fuel_costs_per_mwh_electricity_not_set_by_merit)
         end
       end
 

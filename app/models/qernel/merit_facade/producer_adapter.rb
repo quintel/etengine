@@ -9,29 +9,21 @@ module Qernel
 
         case config.subtype
         when :dispatchable
-          # revenue (per_mwh)
           DispatchableAdapter
         when :must_run, :volatile
-          # revenue (per_mwh)
           curtailment = config.production_curtailment
           curtailment&.positive? ? CurtailedAlwaysOnAdapter : AlwaysOnAdapter
         when :electrolyser
-          # NIKS
           ElectrolyserAdapter
         when :import
-          # NIKS
           ImportAdapter
         when :import_must_run
-          # NIKS
           ImportAlwaysOnAdapter
         when :backup
-          # NIKS
           BackupAdapter
         when :always_on_battery_park
-          # revenue (per_mwh)
           AlwaysOnBatteryParkAdapter
         when :hybrid_offshore
-          # revenue (per_mwh) op output_curve: opletten voor electrolyser (hydrogen) - hoe gaan zijn fuel costs?
           HybridOffshoreAdapter
         else
           raise "Unknown #{context.attribute}.subtype " \

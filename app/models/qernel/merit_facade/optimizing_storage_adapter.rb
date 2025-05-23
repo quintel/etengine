@@ -70,8 +70,7 @@ module Qernel
           production_participant.load_curve
         end
 
-        inject_fuel_costs!
-        # TODO: Figure out the battery price based on the electricity price curve.
+        inject_costs!
       end
 
       def participant
@@ -128,6 +127,20 @@ module Qernel
 
       def producer_class
         Merit::CurveProducer
+      end
+
+      def inject_costs!
+        target_api.dataset_lazy_set(:fuel_costs_per_mwh_electricit) do
+          consumption_participant.fuel_costs_per_mwh.to_f
+        end
+
+        target_api.dataset_lazy_set(:revenue_hourly_electricity) do
+          production_participant.revenue
+        end
+
+        target_api.dataset_lazy_set(:revenue_hourly_electricity_per_mwh) do
+          production_participant.revenue_per_mwh
+        end
       end
     end
   end

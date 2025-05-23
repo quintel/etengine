@@ -106,16 +106,16 @@ module Qernel
         inject_curve!(full_name: :storage_curve) { @participant.reserve.to_a }
       end
 
-      def inject_financial!
+      def inject_costs!
+        super
+
         target_api.dataset_lazy_set(:revenue_hourly_electricity) do
           participant.revenue
         end
 
         target_api.dataset_lazy_set(:revenue_hourly_electricity_per_mwh) do
-          participant.revenue_hourly_electricity_per_mwh
+          participant.revenue_per_mwh
         end
-
-        # TODO: set fuel costs as well (check Merit!)
       end
 
       # Internal: When "output_capacity_from_demand_of" is set, set the capacity
