@@ -211,51 +211,51 @@ module Qernel
         end
       end
 
-      # Public: The total CAPEX per plant per year (CCS + non-CCS).
+      # Public: The total CAPEX per year (CCS + non-CCS).
       #
-      # Returns a float (€/year) or nil if neither component is available.
+      # Returns the total yearly capital expendituresin euro.
       def capital_expenditures
         fetch(:capital_expenditures) do
-          capital_expenditures_ccs.to_f + capital_expenditures_excluding_ccs.to_f
+          capital_expenditures_ccs + capital_expenditures_excluding_ccs
         end
       end
 
-      # Public: The CAPEX in €/MWh of electricity produced by a “typical” plant.
+      # Public: The total OPEX per year (CCS + non-CCS).
       #
-      # Uses #typical_electricity_output (MJ/yr) → MWh/yr = MJ/yr / 3 600.
-      #
-      # Returns a float (€/MWh) or nil if output is zero or capex is nil.
-      # TODO: should also work for other carriers! (like p2g, p2h, hydrogen etc)
-      def capital_expenditures_per_mwh
-        fetch(:capital_expenditures_per_mwh) do
-          capex = capital_expenditures
-          mj_per_year = typical_electricity_output.to_f
-          next nil if capex.nil? || mj_per_year.zero?
-
-          capex * SECS_PER_HOUR / mj_per_year
-        end
-      end
-
-      # Public: The total OPEX per plant per year (CCS + non-CCS).
-      #
-      # Returns a float (€/year) or nil if neither component is available.
+      # Returns the yearly operating expenses excluding CCS in euro.
       def operating_expenses
         fetch(:operating_expenses) do
           operating_expenses_ccs + operating_expenses_excluding_ccs
         end
       end
 
-      # Public: The OPEX in €/MWh produced by a “typical” plant.
+      # Public: The OPEX in €/year produced by a “typical” plant.
       #
       # Uses the same output‐conversion as CAPEX.
       #
       # Returns a float (€/MWh)
-      def operating_expenses_including_fuel_per_mwh
-        fetch(:operating_expenses_including_fuel_per_mwh) do
+      def operating_expenses_including_fuel
+        fetch(:operating_expenses_including_fuel) do
           if typical_input.zero?
             0.0
           else
-            (operating_expenses * SECS_PER_HOUR / typical_input) + fuel_costs_per_mwh
+            operating_expenses +
+              fuel_costs +
+              co2_emissions_costs_per_typical_input +
+              captured_biogenic_co2_costs_per_typical_input
+          end
+        end
+      end
+
+      # eventueel opbrengsten CO2 hierbij optellen
+      def revenue
+        fetch(:revenue) do
+          node.outputs.sum(0.0) do |slot|
+            next if slot.carrier.key == :electricity
+            next unless slot.carrier.cost_per_mj
+
+            # TODO: Should not be typical input?? how do we find typical output?
+            slot.carrier.cost_per_mj * slot.conversion * typical_input
           end
         end
       end
@@ -440,21 +440,11 @@ module Qernel
             raise IllegalNegativeError.new(self, :typical_input, typical_input)
           end
 
-          typical_input * weighted_carrier_cost_per_mj
-        end
-      end
-
-      # Internal: Calculates fuel costs per mwh for a typical plant
-      #
-      # Returns the fuel costs (€/MWh) per mwh
-      def fuel_costs_per_mwh
-        fetch(:fuel_costs_per_mwh) do
-          if typical_input.zero?
-            0.0
-          elsif input_of_electricity.positive?
-            fuel_costs_per_mwh_excluding_electricity + fuel_costs_per_mwh_electricity
+          # TODO: make this carrier check more clean
+          if inputs.map { |s| s.carrier.key }.include?(:electricity)
+            fuel_costs_electricity + fuel_costs_excluding_electricity
           else
-            fuel_costs_per(:mwh_input)
+            typical_input * weighted_carrier_cost_per_mj
           end
         end
       end
@@ -462,15 +452,15 @@ module Qernel
       # Internal: Calculates the fuel costs for carriers excluding electricity.
       # Only applies to carriers with costs_per_mj set
       #
-      # Returns the fuel costs (€/MWh) per mwh excluding electricity costs
-      def fuel_costs_per_mwh_excluding_electricity
-        fetch(:fuel_costs_per_mwh_excluding_electricity) do
-          node.inputs.sum(0.0) do |input|
-            next if input.carrier.key == :electricity
-
-            # DO THEY HAVE TO BALANCE BASED ON INPUT CONVERSION?
-            # Or (input_of_carrier)
-            carrier.cost_per_mj * SECS_PER_HOUR
+      # Returns the fuel costs in € excluding electricity costs
+      def fuel_costs_excluding_electricity
+        fetch(:fuel_costs_excluding_electricity) do
+          node.inputs.sum(0.0) do |slot|
+            if slot.carrier.key == :electricity
+              0.0
+            else
+              slot.carrier.cost_per_mj * slot.conversion * typical_input
+            end
           end
         end
       end
@@ -479,9 +469,9 @@ module Qernel
       # here. If costs have not been injected, raises an error.
       #
       # Returns the fuel costs (€/MWh) per mwh for electricity
-      def fuel_costs_per_mwh_electricity
-        fetch(:fuel_costs_per_mwh_electricity) do
-          raise IllegalZeroError.new(self, :fuel_costs_per_mwh_electricity_not_set_by_merit)
+      def fuel_costs_electricity
+        fetch(:fuel_costs_electricity) do
+          raise IllegalZeroError.new(self, :fuel_costs_electricity_not_set_by_merit)
         end
       end
 

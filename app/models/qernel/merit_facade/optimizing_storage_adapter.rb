@@ -130,8 +130,8 @@ module Qernel
       end
 
       def inject_costs!
-        target_api.dataset_lazy_set(:fuel_costs_per_mwh_electricit) do
-          consumption_participant.fuel_costs_per_mwh.to_f
+        target_api.dataset_lazy_set(:fuel_costs_electricity) do
+          consumption_participant.fuel_costs.to_f
         end
 
         target_api.dataset_lazy_set(:revenue_hourly_electricity) do
