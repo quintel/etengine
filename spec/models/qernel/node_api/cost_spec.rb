@@ -661,7 +661,49 @@ describe 'Qernel::NodeApi cost calculations' do
     end
   end
 
-  describe '#operating_expenses_including_fuel_per_mwh' do
+  describe '#fuel_costs' do
+    context 'with only electricity as input' do
+      before do
+        node.add_slot(build_slot(node, :heat, :output, 0.9))
+        node.add_slot(build_slot(node, :electricity, :input, 1.0))
+        node.with(
+          input_capacity: 1.0,
+          typical_input: 1.0
+        )
+
+        node.node_api.dataset_lazy_set(:fuel_costs_electricity) { 100000 }
+      end
+
+      it 'calculates fuel costs per output' do
+        expect(node.node_api.fuel_costs_per(:mwh_heat)).to eq(55.56)
+      end
+    end
+
+    context 'with only non electricity as input' do
+    end
+
+    context 'with both electricity and another carrier as input' do
+      # TODO: fix this node - how to fake incoming hydrogen?
+      before do
+        node.add_slot(build_slot(node, :useable_heat, :output, 0.9))
+        node.add_slot(build_slot(node, :electricity, :input, 0.5))
+        node.add_slot(build_slot(node, :hydrogen, :input, 0.5))
+        node.with(
+          input_capacity: 1.0,
+          typical_input: 1.0,
+          typical_heat_output: 0.75
+        )
+
+        node.node_api.dataset_lazy_set(:fuel_costs_electricity) { 5_000 }
+      end
+
+      it 'calculates fuel costs per output' do
+        expect(node.node_api.fuel_costs_per(:mwh_heat)).to eq(55.56)
+      end
+    end
+  end
+
+  describe '#operating_expenses_including_fuel' do
     before do
       node.with(
         fixed_operation_and_maintenance_costs_per_year: 1.5,
@@ -673,17 +715,17 @@ describe 'Qernel::NodeApi cost calculations' do
     end
 
     it 'calculates when everything is set' do
-      expect(node.node_api.operating_expenses_including_fuel_per_mwh).to eq(2.5)
+      expect(node.node_api.operating_expenses_including_fuel).to eq(2.5)
     end
 
     # Calculates after injection of fuel costs
-    context 'when injecting fuel_costs_per_mwh' do
+    context 'when injecting fuel_costs' do
       before do
-        node.node_api.dataset_lazy_set(:fuel_costs_per_mwh) { 50.0 }
+        node.node_api.dataset_lazy_set(:fuel_costs_electricity) { 50.0 }
       end
 
       it 'calculates when everything is set' do
-        expect(node.node_api.operating_expenses_including_fuel_per_mwh).to eq(52.5)
+        expect(node.node_api.operating_expenses_including_fuel).to eq(52.5)
       end
     end
   end
