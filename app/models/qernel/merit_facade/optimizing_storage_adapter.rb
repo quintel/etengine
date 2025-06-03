@@ -134,6 +134,14 @@ module Qernel
           consumption_participant.fuel_costs.to_f
         end
 
+        target_api.dataset_lazy_set(:fuel_costs_electricit_per_plant) do
+          if source_api.number_of_units
+            consumption_participant.fuel_costs.to_f / source_api.number_of_units
+          else
+            0.0
+          end
+        end
+
         target_api.dataset_lazy_set(:revenue_hourly_electricity) do
           production_participant.revenue
         end

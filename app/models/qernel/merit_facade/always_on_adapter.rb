@@ -42,6 +42,7 @@ module Qernel
       end
 
       def inject_costs!
+        # return unless we talk about electricty
         target_api.dataset_lazy_set(:revenue_hourly_electricity) do
           participant.revenue
         end
