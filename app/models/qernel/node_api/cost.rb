@@ -231,9 +231,7 @@ module Qernel
 
       # Public: The OPEX in €/year produced by a “typical” plant.
       #
-      # Uses the same output‐conversion as CAPEX.
-      #
-      # Returns a float (€/MWh)
+      # Returns a float (€)
       def operating_expenses_including_fuel
         fetch(:operating_expenses_including_fuel) do
           if typical_input.zero?
@@ -247,15 +245,20 @@ module Qernel
         end
       end
 
-      # eventueel opbrengsten CO2 hierbij optellen
+      # Public: The revenue in €/year produced by a “typical” plant.
+      #
+      # Returns a float (€)
       def revenue
         fetch(:revenue) do
           node.outputs.sum(0.0) do |slot|
-            next if slot.carrier.key == :electricity
-            next unless slot.carrier.cost_per_mj
-
-            # TODO: Should not be typical input?? how do we find typical output?
-            slot.carrier.cost_per_mj * slot.conversion * typical_input
+            if slot.carrier.key == :electricity
+              # TODO@KAS: is this correct?
+              revenue_hourly_electricity_per_mwh * typical_input
+            elsif slot.carrier.cost_per_mj
+              slot.carrier.cost_per_mj * slot.conversion * typical_input
+            else
+              0.0
+            end
           end
         end
       end
@@ -465,13 +468,25 @@ module Qernel
         end
       end
 
+
       # Internal: fuel costs for electricity should be calculated by Merit and injected
       # here. If costs have not been injected, raises an error.
       #
-      # Returns the fuel costs (€/MWh) per mwh for electricity
+      # Returns the fuel costs (€) for electricity
+      # TODO@KAS: not on plant level! Can I rewrite this in some way?
       def fuel_costs_electricity
         fetch(:fuel_costs_electricity) do
           raise IllegalZeroError.new(self, :fuel_costs_electricity_not_set_by_merit)
+        end
+      end
+
+      # Internal: revenue for electricity should be calculated by Merit and injected
+      # here. If costs have not been injected, raises an error.
+      #
+      # Returns the revenue (€/mwh) for electricity
+      def revenue_hourly_electricity_per_mwh
+        fetch(:revenue_hourly_electricity_per_mwh) do
+          raise IllegalZeroError.new(self, :revenue_hourly_electricity_not_set_by_merit)
         end
       end
 
