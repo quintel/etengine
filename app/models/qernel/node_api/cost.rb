@@ -250,10 +250,11 @@ module Qernel
       # Returns a float (€)
       def revenue
         fetch(:revenue) do
+          # TODO: correctie aan het einde: (1-costable factor)  fuelcosts+co2+capture
+
           node.outputs.sum(0.0) do |slot|
             if slot.carrier.key == :electricity
-              # TODO@KAS: is this correct?
-              revenue_hourly_electricity_per_mwh * typical_input
+              revenue_hourly_electricity / number_of_units
             elsif slot.carrier.cost_per_mj
               slot.carrier.cost_per_mj * slot.conversion * typical_input
             else
@@ -443,7 +444,6 @@ module Qernel
             raise IllegalNegativeError.new(self, :typical_input, typical_input)
           end
 
-          # TODO: make this carrier check more clean
           if inputs.map { |s| s.carrier.key }.include?(:electricity)
             fuel_costs_electricity + fuel_costs_excluding_electricity
           else
@@ -468,14 +468,12 @@ module Qernel
         end
       end
 
-
       # Internal: fuel costs for electricity should be calculated by Merit and injected
       # here. If costs have not been injected, raises an error.
       #
-      # Returns the fuel costs (€) for electricity
-      # TODO@KAS: not on plant level! Can I rewrite this in some way?
+      # Returns the fuel costs (€) for electricity for the node
       def fuel_costs_electricity
-        fetch(:fuel_costs_electricity) do
+        fetch(:fuel_costs_electricity_per_plant) do
           raise IllegalZeroError.new(self, :fuel_costs_electricity_not_set_by_merit)
         end
       end
@@ -483,9 +481,9 @@ module Qernel
       # Internal: revenue for electricity should be calculated by Merit and injected
       # here. If costs have not been injected, raises an error.
       #
-      # Returns the revenue (€/mwh) for electricity
-      def revenue_hourly_electricity_per_mwh
-        fetch(:revenue_hourly_electricity_per_mwh) do
+      # Returns the revenue (€) for electricity for the node
+      def revenue_hourly_electricity
+        fetch(:revenue_hourly_electricity) do
           raise IllegalZeroError.new(self, :revenue_hourly_electricity_not_set_by_merit)
         end
       end
