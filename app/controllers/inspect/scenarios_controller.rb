@@ -95,7 +95,11 @@ module Inspect
 
     # GET /inspect/scenarios/dump?scenario_ids=1,2,3
     def dump
-      ids = extract_or_redirect_ids and return if ids.empty?
+      ids = parsed_scenario_ids
+      if ids.empty?
+        flash[:alert] = 'Please enter at least one scenario ID.'
+        return redirect_back(fallback_location: inspect_scenarios_path)
+      end
 
       packer = ScenarioPacker::DumpCollection.new(ids)
       send_data(packer.to_json,
@@ -119,20 +123,13 @@ module Inspect
 
     # Parses params[:scenario_ids], sets a flash + redirect if empty,
     # and returns a (possibly empty) Array of Integer IDs.
-    def extract_or_redirect_ids
+    def parsed_scenario_ids
       raw = params[:scenario_ids].to_s
-      ids = raw
-            .split(/\s*,\s*/)
-            .map(&:to_i)
-            .reject(&:zero?)
-            .uniq
-
-      if ids.empty?
-        flash[:alert] = 'Please enter at least one scenario ID.'
-        redirect_back(fallback_location: inspect_scenarios_path)
-      end
-
-      ids
+      raw
+        .split(/\s*,\s*/)
+        .map(&:to_i)
+        .reject(&:zero?)
+        .uniq
     end
 
     # Finds and sets the current scenario for edit/show/update actions
