@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Inspect
-  class ScenariosController < Inspect::BaseController
+  class ScenariosController < BaseController
     layout 'application'
 
     load_and_authorize_resource only: %i[load_dump dump], class: 'Scenario'
