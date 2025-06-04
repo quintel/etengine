@@ -1,17 +1,14 @@
 - content_for(:title, 'Scenario')
-
 = render "inspect/shared/inspect_subnav"
 
-%div{ style: 'float: right' }
+%div{ style: 'float: right;' }
+  = form_with url: dump_inspect_scenarios_path,
+              method: :get,
+              local: true,
+              html: { 'data-turbo': false, style: 'display: inline; margin-right: 0.5rem;' } do |f|
+    = f.hidden_field :scenario_ids, value: @scenario.id
+    = f.submit "Download Dump", class: 'btn btn-secondary'
   = link_to 'Edit scenario', edit_inspect_scenario_path(@scenario), class: 'btn btn-primary'
-
-.row{ style: 'margin-bottom: 0.8rem;' }
-  .span12{ style: 'display: flex; align-items: center;' }
-    %span{ style: 'margin-right: 0.8rem; white-space: nowrap;' }
-      Export current scenario
-    = link_to 'Download Dump',
-        download_dump_inspect_scenarios_path(@scenario.id, scenario_ids: [ @scenario.id ]),
-        class: 'btn btn-secondary'
 
 .row
   .span8
@@ -73,7 +70,6 @@
 .row
   .span10
     - {future: @scenario.inputs.future, present: @scenario.inputs.present}.each do |name, inputs|
-
       %h3== Inputs #{name}
       - if inputs.empty?
         %p No updates
@@ -87,7 +83,7 @@
               %td.span1.tar min
               %td.span1.tar max
           %tbody
-            - inputs.group_by{|h| h.first.share_group.to_s }.each do |share_group, input_value|
+            - inputs.group_by { |h| h.first.share_group.to_s }.each do |share_group, input_value|
               %tr
                 %td(colspan=2)
                   %strong
@@ -97,7 +93,7 @@
                     = auto_number input_value.map(&:last).compact.sum rescue 'error'
                 %td(colspan=2)
 
-              - input_value.sort_by{|iv| iv.first.key.to_s}.each do |input, value|
+              - input_value.sort_by { |iv| iv.first.key.to_s }.each do |input, value|
                 %tr
                   %td.tar= input.id
                   %td= input.key

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe ScenarioPacker::LoadCollection do
@@ -31,7 +33,7 @@ RSpec.describe ScenarioPacker::LoadCollection do
         expect(result).to be_a(described_class)
         expect(result.scenarios).to eq([scenario1])
         expect(result.first_id).to eq(10)
-        expect(result.single?).to be true
+        expect(result.single?).to be(true)
       end
     end
 
@@ -59,7 +61,7 @@ RSpec.describe ScenarioPacker::LoadCollection do
         aggregate_failures do
           expect(result.scenarios).to eq([scenario1, scenario2])
           expect(result.first_id).to eq(1)
-          expect(result.single?).to be false
+          expect(result.single?).to be(false)
         end
       end
     end

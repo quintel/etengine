@@ -1,0 +1,25 @@
+#importModal.modal.hide.fade
+  .modal-header
+    %button.close{'data-dismiss' => 'modal'} ×
+    %h3 Import Scenarios
+
+  = form_tag load_dump_inspect_scenarios_path,
+             multipart: true,
+             local: true,
+             data: { turbo: false },
+             id: 'import_form',
+             class: 'form-inline' do
+
+    .modal-body
+      = label_tag :modal_dump_file, 'JSON file', class: 'inline-label'
+      = file_field_tag :dump,
+                       accept: 'application/json',
+                       id: 'modal_dump_file'
+
+    .modal-footer
+      = submit_tag 'Confirm Import',
+                   class: 'btn btn-primary'
+      = button_tag 'Close',
+                   type: 'button',
+                   class: 'btn',
+                   'data-dismiss' => 'modal'

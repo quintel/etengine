@@ -14,74 +14,17 @@
         = link_to "Create a new scenario", new_inspect_scenario_path, class: 'btn btn-primary'
         - if params[:api_scenario_id]
           = link_to 'View current scenario', inspect_scenario_path(id: params[:api_scenario_id]), class: 'btn'
-
-
     / ──────────── Download + Import ─────────────
     .span6.text-right
-      = button_tag 'Download Dump',
-                   type: 'button',
-                   class: 'btn btn-primary',
-                   style: 'min-width:130px; text-align:center;',
-                   'data-toggle' => 'modal',
-                   'data-target' => '#downloadModal'
+      = render "dump_form"
       = button_tag 'Import dump',
-                  type: 'button',
-                  class: 'btn btn-secondary',
-                  style: 'min-width:130px; text-align:center;',
-                  'data-toggle' => 'modal',
-                  'data-target' => '#importModal'
+              type: 'button',
+              class: 'btn btn-secondary mt-2',
+              style: 'min-width:130px; text-align:center;',
+              'data-toggle' => 'modal',
+              'data-target' => '#importModal'
 
-:javascript
-  document.addEventListener('DOMContentLoaded', function() {
-    const input  = document.getElementById('scenario_ids_input');
-    const button = document.getElementById('download_button');
-    const baseUrl = button.dataset.baseUrl;
-    const VALID_PATTERN = /^\s*\d+(?:\s*,\s*\d+)*\s*$/;
-
-    input.addEventListener('input', () => {
-      let raw = input.value;
-      if (!VALID_PATTERN.test(raw)) {
-        button.disabled = true;
-        button.removeAttribute('href');
-        return;
-      }
-      raw = raw.replace(/\s+/g, '');
-      const params = new URLSearchParams({
-        type:        'user_input',
-        scenario_ids: raw
-      });
-      const href = `${baseUrl}?${params.toString()}`;
-
-      button.disabled = false;
-      button.setAttribute('onclick', `window.location='${href}'`);
-    });
-  });
-
-  document.addEventListener('DOMContentLoaded', function() {
-    // Download confirm
-    document.getElementById('confirm_download').addEventListener('click', function() {
-      var ids = document.getElementById('modal_scenario_ids').value;
-      if (!ids.match(/^\s*\d+(?:\s*,\s*\d+)*\s*$/)) {
-        alert('Please enter a comma-separated list of numbers.');
-        return;
-      }
-      var form = document.getElementById('download_form');
-      ids = ids.replace(/\s+/g, '');
-      form.action = form.action + '?scenario_ids=' + encodeURIComponent(ids);
-      form.submit();
-    });
-
-    // Import confirm
-    document.getElementById('confirm_import').addEventListener('click', function() {
-      var fileInput = document.getElementById('modal_dump_file');
-      if (!fileInput.value) {
-        alert('Please choose a JSON file to import.');
-        return;
-      }
-      document.getElementById('import_form').submit();
-    });
-  });
-
+  = render 'import_modal'
 
 
 %table.table.table-condensed.scenario-list
@@ -134,56 +77,3 @@
           - else
             = link_to 'Make active', inspect_scenarios_path(@list_params.to_h.symbolize_keys.merge(api_scenario_id: s.id))
           = link_to 'Edit', edit_inspect_scenario_path(:id => s.id)
-
-/ Download Modal
-#downloadModal.modal.hide.fade
-  .modal-header
-    %button.close{'data-dismiss' => 'modal'} ×
-    %h3 Download Scenarios
-  .modal-body
-    %p.text-muted
-      Enter one or more scenario IDs, separated by commas (e.g. <code>123, 456</code>), to download a JSON dump of their data.
-    = form_tag download_dump_inspect_scenarios_path(format: :json),
-               method: :get,
-               id: 'download_form',
-               class: 'form-inline' do
-      = label_tag :modal_scenario_ids, 'Scenario IDs', class: 'inline-label'
-      = text_field_tag :scenario_ids,
-                       '',
-                       placeholder: '123,456',
-                       class: 'input-medium',
-                       id: 'modal_scenario_ids'
-  .modal-footer
-    = button_tag 'Confirm Download',
-                 type: 'button',
-                 id: 'confirm_download',
-                 class: 'btn btn-primary'
-    = button_tag 'Close',
-                 type: 'button',
-                 class: 'btn',
-                 'data-dismiss' => 'modal'
-
-/ Import Modal
-#importModal.modal.hide.fade
-  .modal-header
-    %button.close{'data-dismiss' => 'modal'} ×
-    %h3 Import Scenarios
-  .modal-body
-    = form_tag load_dump_inspect_scenarios_path,
-               multipart: true,
-               local: true,
-               id: 'import_form',
-               class: 'form-inline' do
-      = label_tag :modal_dump_file, 'JSON file', class: 'inline-label'
-      = file_field_tag :dump,
-                       accept: 'application/json',
-                       id: 'modal_dump_file'
-  .modal-footer
-    = button_tag 'Confirm Import',
-                 type: 'button',
-                 id: 'confirm_import',
-                 class: 'btn btn-primary'
-    = button_tag 'Close',
-                 type: 'button',
-                 class: 'btn',
-                 'data-dismiss' => 'modal'

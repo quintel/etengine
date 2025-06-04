@@ -1,0 +1,11 @@
+%section#dump_box
+  = form_with url: dump_inspect_scenarios_path, method: :get, local: true, html: { 'data-turbo': false } do |f|
+    .form-group
+      = f.label :scenario_ids, "Download a dump of scenarios by (comma-separated) scenario IDs", class: "control-label"
+      = f.text_field :scenario_ids,
+                     value: params[:scenario_ids],
+                     placeholder: "e.g. 1034534, 234573, etc",
+                     class: "form-control",
+                     id: "dump_scenario_ids"
+    .form-group.mt-2
+      = f.submit "Download Dump", class: "btn btn-primary"

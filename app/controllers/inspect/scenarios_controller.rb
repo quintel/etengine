@@ -4,10 +4,9 @@ module Inspect
   class ScenariosController < Inspect::BaseController
     layout 'application'
 
-    load_and_authorize_resource only: %i[load_dump download_dump], class: 'Scenario'
+    load_and_authorize_resource only: %i[load_dump dump], class: 'Scenario'
     before_action :find_scenario, only: %i[show edit update]
-    before_action :build_packer,     only: %i[download_dump]
-    skip_before_action :initialize_gql, only: %i[download_dump load_dump]
+    skip_before_action :initialize_gql, only: %i[load_dump dump]
 
     # Lists recent scenarios with optional search and pagination
     def index
@@ -80,8 +79,10 @@ module Inspect
     def load_dump
       loader = ScenarioPacker::LoadCollection.from_file(dump_file_param)
       if loader.single?
-        redirect_to inspect_scenario_path(id: loader.first_id, api_scenario_id: loader.first_id),
-                    notice: 'Scenario created'
+        redirect_to inspect_scenario_path(
+                      id: loader.first_id,
+                      api_scenario_id: loader.first_id
+                    ), notice: 'Scenario created'
       else
         @api_scenario = Scenario.find(loader.first_id)
         @scenario     = Scenario::Editable.new(@api_scenario)
@@ -92,44 +93,21 @@ module Inspect
       redirect_back(fallback_location: root_path, alert: 'No file provided')
     end
 
-    # Sends JSON file containing one or more scenario dumps
-    def download_dump
-      send_data @packer.to_json,
-                filename: @packer.filename,
+    # GET /inspect/scenarios/dump?scenario_ids=1,2,3
+    def dump
+      ids = extract_or_redirect_ids and return if ids.empty?
+
+      packer = ScenarioPacker::DumpCollection.new(ids)
+      send_data(packer.to_json,
+                filename: packer.filename,
                 type: 'application/json',
-                disposition: 'attachment'
+                disposition: 'attachment')
     end
 
     private
 
-    # Prepares the dumper for the requested IDs
-    def build_packer
-      ids     = ScenarioSetFetcher.fetch(
-                  type:     dump_type_param,
-                  ids:      scenario_ids_param,
-                  end_year: params[:end_year]&.to_i,
-                  group:    params[:group]
-                )
-      @packer = ScenarioPacker::DumpCollection.new(ids)
-    end
-
-    # Returns the dump type (e.g. 'user_input', 'featured'), or raises if invalid
-    def dump_type_param
-      params.fetch(:type, 'user_input').to_s.tap do |t|
-        unless %w[user_input featured].include?(t)
-          raise ActionController::BadRequest, 'Invalid dump type'
-        end
-      end
-    end
-
-    # Parses and returns an array of integer scenario IDs from comma-separated string
-    def scenario_ids_param
-      raw = params[:scenario_ids].to_s
-      raw
-        .split(/\s*,\s*/)    # [ "2684908", "2684909" ]
-        .map(&:to_i)         # [ 2684908, 2684909 ]
-        .reject(&:zero?)     # drop any invalid zeros
-        .uniq
+    def dump_params
+      params.permit(:scenario_ids, :commit)
     end
 
     # Returns the uploaded file for scenario loading or raises error if invalid
@@ -137,6 +115,24 @@ module Inspect
       params.require(:dump).tap do |f|
         raise ArgumentError, 'No file provided' unless f.respond_to?(:path)
       end
+    end
+
+    # Parses params[:scenario_ids], sets a flash + redirect if empty,
+    # and returns a (possibly empty) Array of Integer IDs.
+    def extract_or_redirect_ids
+      raw = params[:scenario_ids].to_s
+      ids = raw
+            .split(/\s*,\s*/)
+            .map(&:to_i)
+            .reject(&:zero?)
+            .uniq
+
+      if ids.empty?
+        flash[:alert] = 'Please enter at least one scenario ID.'
+        redirect_back(fallback_location: inspect_scenarios_path)
+      end
+
+      ids
     end
 
     # Finds and sets the current scenario for edit/show/update actions
