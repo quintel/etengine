@@ -2,6 +2,8 @@ etsource_lazy_load_dataset: false
 etsource_export: tmp/etsource
 etsource_working_copy: <%= ENV.fetch('ETSOURCE_PATH', '/app/etsource') %>
 
+etmodel: https://energytransitionmodel.com
+
 identity:
   issuer: https://my.energytransitionmodel.com
   client_uri: https://engine.energytransitionmodel.com
