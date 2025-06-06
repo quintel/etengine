@@ -467,22 +467,24 @@ module Qernel
       end
 
       # Internal: fuel costs for electricity should be calculated by Merit and injected
-      # here. If costs have not been injected, raises an error.
+      # here. If costs have not been injected (possibly due to no installed capacity),
+      # returns 0.0.
       #
       # Returns the fuel costs (€) for electricity for the node
       def fuel_costs_electricity_per_plant
         fetch(:fuel_costs_electricity_per_plant) do
-          raise IllegalZeroError.new(self, :fuel_costs_electricity_not_set_by_merit)
+          0.0
         end
       end
 
       # Internal: revenue for electricity should be calculated by Merit and injected
-      # here. If costs have not been injected, raises an error.
+      # here. If costs have not been injected (possibly due to no installed capacity),
+      # returns 0.0.
       #
       # Returns the revenue (€) for electricity for the node
       def revenue_hourly_electricity_per_plant
         fetch(:revenue_hourly_electricity_per_plant) do
-          raise IllegalZeroError.new(self, :revenue_hourly_electricity_not_set_by_merit)
+          0.0
         end
       end
 
