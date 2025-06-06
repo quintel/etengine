@@ -252,7 +252,7 @@ module Qernel
         fetch(:revenue) do
           node.outputs.sum(0.0) do |slot|
             if slot.carrier.key == :electricity
-              revenue_hourly_electricity
+              revenue_hourly_electricity_per_plant
             elsif slot.carrier.cost_per_mj
               slot.carrier.cost_per_mj * slot.conversion * typical_input
             else
@@ -480,7 +480,7 @@ module Qernel
       # here. If costs have not been injected, raises an error.
       #
       # Returns the revenue (€) for electricity for the node
-      def revenue_hourly_electricity
+      def revenue_hourly_electricity_per_plant
         fetch(:revenue_hourly_electricity_per_plant) do
           raise IllegalZeroError.new(self, :revenue_hourly_electricity_not_set_by_merit)
         end
