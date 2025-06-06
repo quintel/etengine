@@ -20,6 +20,22 @@ module Qernel
         target_api.dataset_lazy_set(:profit_per_mwh_electricity) do
           participant.profit_per_mwh_electricity
         end
+
+        target_api.dataset_lazy_set(:revenue_hourly_electricity) do
+          participant.revenue
+        end
+
+        target_api.dataset_lazy_set(:revenue_hourly_electricity_per_plant) do
+          if source_api.number_of_units.positive?
+            participant.revenue / source_api.number_of_units
+          else
+            0.0
+          end
+        end
+
+        target_api.dataset_lazy_set(:revenue_hourly_electricity_per_mwh) do
+          participant.revenue_per_mwh
+        end
       end
 
       def producer_attributes
