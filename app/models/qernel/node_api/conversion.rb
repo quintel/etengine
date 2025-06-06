@@ -89,6 +89,10 @@ module Qernel
         convert_to(fuel_costs, unit)
       end
 
+      def revenue_per(unit)
+        convert_to(revenue, unit)
+      end
+
       def co2_emissions_costs_per(unit)
         convert_to(co2_emissions_costs, unit)
       end
