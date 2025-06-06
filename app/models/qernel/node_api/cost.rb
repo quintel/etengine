@@ -443,7 +443,7 @@ module Qernel
           end
 
           if inputs.map { |s| s.carrier.key }.include?(:electricity)
-            fuel_costs_electricity + fuel_costs_excluding_electricity
+            fuel_costs_electricity_per_plant + fuel_costs_excluding_electricity
           else
             typical_input * weighted_carrier_cost_per_mj
           end
@@ -470,7 +470,7 @@ module Qernel
       # here. If costs have not been injected, raises an error.
       #
       # Returns the fuel costs (€) for electricity for the node
-      def fuel_costs_electricity
+      def fuel_costs_electricity_per_plant
         fetch(:fuel_costs_electricity_per_plant) do
           raise IllegalZeroError.new(self, :fuel_costs_electricity_not_set_by_merit)
         end
