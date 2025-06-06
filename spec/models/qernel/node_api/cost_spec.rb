@@ -712,9 +712,14 @@ describe 'Qernel::NodeApi cost calculations' do
 
         node.node_api.dataset_lazy_set(:fuel_costs_electricity_per_plant) { 5_000 }
 
+        node.inputs.each do |slot|
+          allow(slot.carrier).to receive(:cost_per_mj).and_return(5.0)
+        end
+
         allow(api).to receive(:area).and_return(
           double(co2_price: 2.0, co2_percentage_free: 0.0, captured_biogenic_co2_price: 2.0)
         )
+        allow(api).to receive(:cost_per_mj).and_return(5.0)
       end
 
       it 'calculates fuel costs per output' do
@@ -732,6 +737,10 @@ describe 'Qernel::NodeApi cost calculations' do
         input_capacity: 10.0,
         typical_input: 5.0
       )
+
+      node.inputs.each do |slot|
+        allow(slot.carrier).to receive(:cost_per_mj).and_return(5.0)
+      end
 
       allow(api).to receive(:area).and_return(
         double(co2_price: 2.0, co2_percentage_free: 0.0, captured_biogenic_co2_price: 2.0)
@@ -752,6 +761,46 @@ describe 'Qernel::NodeApi cost calculations' do
 
       it 'calculates when everything is set' do
         expect(node.node_api.operating_expenses_including_fuel).to eq(52.5)
+      end
+    end
+  end
+
+  describe '#revenue' do
+    before do
+      node.add_slot(build_slot(node, :hydrogen, :input, 1.0))
+      node.with(
+        input_capacity: 1.0,
+        typical_input: 1.0,
+      )
+
+      allow(api).to receive(:area).and_return(
+        double(co2_price: 2.0, co2_percentage_free: 0.0, captured_biogenic_co2_price: 2.0)
+      )
+    end
+
+    context 'with non electricity output' do
+      before do
+        node.add_slot(build_slot(node, :hydrogen, :output, 0.9))
+
+        node.outputs.each do |slot|
+          allow(slot.carrier).to receive(:cost_per_mj).and_return(5.0)
+        end
+      end
+
+      it 'calculates when everything is set' do
+        expect(node.node_api.revenue).to eq(2.5)
+      end
+    end
+
+    context 'when injecting revenue for electricity' do
+      before do
+        node.add_slot(build_slot(node, :electricity, :output, 0.9))
+
+        node.node_api.dataset_lazy_set(:revenue_hourly_electricity_per_plant) { 50.0 }
+      end
+
+      it 'calculates when everything is set' do
+        expect(node.node_api.revenue).to eq(52.5)
       end
     end
   end

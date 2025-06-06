@@ -250,11 +250,9 @@ module Qernel
       # Returns a float (€)
       def revenue
         fetch(:revenue) do
-          # TODO: correctie aan het einde: (1-costable factor)  fuelcosts+co2+capture
-
           node.outputs.sum(0.0) do |slot|
             if slot.carrier.key == :electricity
-              revenue_hourly_electricity / number_of_units
+              revenue_hourly_electricity
             elsif slot.carrier.cost_per_mj
               slot.carrier.cost_per_mj * slot.conversion * typical_input
             else
@@ -483,7 +481,7 @@ module Qernel
       #
       # Returns the revenue (€) for electricity for the node
       def revenue_hourly_electricity
-        fetch(:revenue_hourly_electricity) do
+        fetch(:revenue_hourly_electricity_per_plant) do
           raise IllegalZeroError.new(self, :revenue_hourly_electricity_not_set_by_merit)
         end
       end

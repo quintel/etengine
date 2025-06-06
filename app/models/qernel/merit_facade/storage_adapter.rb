@@ -113,6 +113,14 @@ module Qernel
           participant.revenue
         end
 
+        target_api.dataset_lazy_set(:revenue_hourly_electricity_per_plant) do
+          if source_api.number_of_units.positive?
+            participant.revenue / source_api.number_of_units
+          else
+            0.0
+          end
+        end
+
         target_api.dataset_lazy_set(:revenue_hourly_electricity_per_mwh) do
           participant.revenue_per_mwh
         end
