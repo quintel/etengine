@@ -234,14 +234,10 @@ module Qernel
       # Returns a float (€)
       def operating_expenses_including_fuel
         fetch(:operating_expenses_including_fuel) do
-          if typical_input.zero?
-            0.0
-          else
-            operating_expenses +
-              fuel_costs +
-              co2_emissions_costs_per_typical_input +
-              captured_biogenic_co2_costs_per_typical_input
-          end
+          operating_expenses +
+            fuel_costs +
+            co2_emissions_costs_per_typical_input +
+            captured_biogenic_co2_costs_per_typical_input
         end
       end
 
