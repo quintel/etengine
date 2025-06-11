@@ -52,7 +52,14 @@ class InputSerializer
   # @return [InputSerializer]
   #   Returns the input serializer (or subclass) instance.
   def self.serializer_for(input, *args, **kwargs)
-    klass = input.unit == 'enum' ? EnumInputSerializer : self
+    klass =
+      if input.unit == 'bool'
+        BooleanInputSerializer
+      elsif input.unit == 'enum'
+        EnumInputSerializer
+      else
+        self
+      end
     klass.new(input, *args, **kwargs)
   end
 
