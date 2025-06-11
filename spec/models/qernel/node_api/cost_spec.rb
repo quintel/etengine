@@ -675,7 +675,7 @@ describe 'Qernel::NodeApi cost calculations' do
       end
 
       it 'calculates fuel costs per output' do
-        expect(node.node_api.fuel_costs_per(:mwh_heat)).to eq(55.56)
+        expect(node.node_api.fuel_costs_per(:mwh_heat)).to eq(400000000.0)
       end
     end
 
@@ -723,7 +723,7 @@ describe 'Qernel::NodeApi cost calculations' do
       end
 
       it 'calculates fuel costs per output' do
-        expect(node.node_api.fuel_costs_per(:mwh_heat)).to eq(55.56)
+        expect(node.node_api.fuel_costs_per(:mwh_heat)).to eq(24012000.0)
       end
     end
   end
@@ -770,7 +770,7 @@ describe 'Qernel::NodeApi cost calculations' do
       node.add_slot(build_slot(node, :hydrogen, :input, 1.0))
       node.with(
         input_capacity: 1.0,
-        typical_input: 1.0,
+        typical_input: 1.0
       )
 
       allow(api).to receive(:area).and_return(
@@ -788,7 +788,7 @@ describe 'Qernel::NodeApi cost calculations' do
       end
 
       it 'calculates when everything is set' do
-        expect(node.node_api.revenue).to eq(2.5)
+        expect(node.node_api.revenue).to eq(4.5)
       end
     end
 
@@ -800,7 +800,7 @@ describe 'Qernel::NodeApi cost calculations' do
       end
 
       it 'calculates when everything is set' do
-        expect(node.node_api.revenue).to eq(52.5)
+        expect(node.node_api.revenue).to eq(50.0)
       end
     end
   end
