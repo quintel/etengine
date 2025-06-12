@@ -93,25 +93,22 @@ module Inspect
       redirect_back(fallback_location: root_path, alert: 'No file provided')
     end
 
-    # GET /inspect/scenarios/dump?scenario_ids=1,2,3
+    # Dump a set of scenarios according to the parameters
     def dump
-      ids = parsed_scenario_ids
-      if ids.empty?
-        flash[:alert] = 'Please enter at least one scenario ID.'
-        return redirect_back(fallback_location: inspect_scenarios_path)
-      end
-
-      packer = ScenarioPacker::DumpCollection.new(ids)
-      send_data(packer.to_json,
-                filename: packer.filename,
-                type: 'application/json',
-                disposition: 'attachment')
+      packer = ScenarioPacker::DumpCollection.from_params(dump_params.to_h, current_user)
+      send_data packer.to_json,
+                filename:    packer.filename,
+                type:        'application/json',
+                disposition: 'attachment'
+    rescue ScenarioPacker::DumpCollection::InvalidParamsError => e
+      flash[:alert] = e.message
+      redirect_back(fallback_location: inspect_scenarios_path)
     end
 
     private
 
     def dump_params
-      params.permit(:scenario_ids, :commit)
+      params.permit(:dump_type, :scenario_ids)
     end
 
     # Returns the uploaded file for scenario loading or raises error if invalid
@@ -119,17 +116,6 @@ module Inspect
       params.require(:dump).tap do |f|
         raise ArgumentError, 'No file provided' unless f.respond_to?(:path)
       end
-    end
-
-    # Parses params[:scenario_ids], sets a flash + redirect if empty,
-    # and returns a (possibly empty) Array of Integer IDs.
-    def parsed_scenario_ids
-      raw = params[:scenario_ids].to_s
-      raw
-        .split(/\s*,\s*/)
-        .map(&:to_i)
-        .reject(&:zero?)
-        .uniq
     end
 
     # Finds and sets the current scenario for edit/show/update actions

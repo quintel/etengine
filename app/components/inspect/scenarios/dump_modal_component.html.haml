@@ -1,17 +1,25 @@
 = render ModalComponent.new(id: "dumpModal", title: "Download Scenarios") do |m|
   - m.with_body do
-    = form_tag dump_inspect_scenarios_path,
-               method: :get,
-               local: true,
-               data: { turbo: false },
-               id: 'dump_form',
-               class: 'form-inline' do
-      = label_tag :scenario_ids, "Scenario IDs (comma-separated)", class: "inline-label"
-      = text_field_tag :scenario_ids,
-                       @params[:scenario_ids],
-                       placeholder: "e.g. 1034534, 234573, etc",
-                       id: "modal_scenario_ids",
-                       class: "input-medium form-control"
+    = form_with url: dump_inspect_scenarios_path,
+                method: :get,
+                local: true,
+                data: { turbo: false } do |f|
+      .form-group
+        = f.label :dump_type, "Dump type", class: "mr-2"
+        = f.select :dump_type, options_for_select([["By IDs", "ids"], ["Featured", "featured"], ["My recent scenarios", "my_scenarios"]], selected: (params[:dump_type] || "ids")), {}, class: "form-control"
+
+      - if (params[:dump_type] || "ids") == "ids"
+        .form-group.ml-4
+          = f.text_field :scenario_ids,
+            value: params[:scenario_ids],
+            placeholder: "e.g. 1,2,3",
+            class: "form-control"
+
+      .form-group.ml-4
+        = f.submit "Download", class: "btn btn-primary"
 
   - m.with_footer do
-    = submit_tag "Download Dump", class: "btn btn-primary", form: "dump_form"
+    = button_tag "Close",
+      type: "button",
+      class: "btn btn-secondary",
+      data: { dismiss: "modal" }
