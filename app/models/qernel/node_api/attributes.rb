@@ -48,7 +48,7 @@ module Qernel
           :capital_expenditures => ['', 'euro / unit / year'],
           :operating_expenses => ['', 'euro / unit / year'],
           :operating_expenses_including_fuel => ['', 'euro / unit / year'],
-          :revenue= => ['', 'euro / unit / year']
+          :revenue => ['', 'euro / unit / year']
         },
 
         :merit_order => {
