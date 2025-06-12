@@ -131,6 +131,8 @@ module Qernel
       end
 
       def inject_costs!
+        return unless @context.carrier == :electricity
+
         target_api.dataset_lazy_set(:fuel_costs_electricity) do
           participant.fuel_costs.to_f
         end
