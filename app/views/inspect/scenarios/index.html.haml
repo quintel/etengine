@@ -22,25 +22,6 @@
 = render Inspect::Scenarios::DumpModalComponent.new(params: params)
 = render Inspect::Scenarios::LoadModalComponent.new(params: params)
 
-    / ──────────── Download + Import ─────────────
-    .span6.text-right
-      = button_tag 'Download dump',
-                   type: 'button',
-                   class: 'btn btn-primary',
-                   style: 'min-width:130px; text-align:center;',
-                   'data-toggle' => 'modal',
-                   'data-target' => '#dumpModal'
-
-      = button_tag 'Import dump',
-                   type: 'button',
-                   class: 'btn btn-secondary mt-2',
-                   style: 'min-width:130px; text-align:center;',
-                   'data-toggle' => 'modal',
-                   'data-target' => '#loadModal'
-
-  = render 'dump_modal'
-  = render 'load_modal'
-
 %table.table.table-condensed.scenario-list
   %thead
     %tr
