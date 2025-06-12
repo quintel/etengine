@@ -45,10 +45,10 @@ module Qernel
           :profit_per_mwh_electricity => ['', 'eur/MWh'],  # Used by merit order,
           :marginal_costs => ['', 'euro / MWh'],
           :max_consumption_price => ['', 'euro / MWh'],
-          :revenue_hourly_electricity_per_mwh => ['', 'eur/MWh'],
-          :revenue_hourly_electricity => ['', 'eur/MWh'],
-          :operating_expenses_hourly_electricity_per_mwh => ['', 'eur/MWh'],
-          :operating_expenses_hourly_electricity => ['', 'eur/MWh']
+          :capital_expenditures => ['', 'euro / unit / year'],
+          :operating_expenses => ['', 'euro / unit / year'],
+          :operating_expenses_including_fuel => ['', 'euro / unit / year'],
+          :revenue= => ['', 'euro / unit / year']
         },
 
         :merit_order => {

@@ -7,22 +7,16 @@ module Qernel
       def self.factory(node, context)
         case context.node_config(node).subtype
         when :pseudo
-          # NIKS
           PseudoConsumerAdapter
         when :export_must_run
-          # NIKS
           ExportConsumerAdapter
         when :consumption_loss
-          # NIKS
           ConsumptionLossAdapter
         when :electricity_loss
-          # NIKS
           ElectricityLossAdapter
         when :subordinate
-          # NIKS
           SubordinateConsumerAdapter
         else
-          # NIKS
           self
         end
       end
