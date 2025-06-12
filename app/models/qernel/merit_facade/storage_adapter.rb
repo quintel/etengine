@@ -109,6 +109,8 @@ module Qernel
       def inject_costs!
         super
 
+        return unless @context.carrier == :electricity
+
         target_api.dataset_lazy_set(:revenue_hourly_electricity) do
           participant.revenue
         end
