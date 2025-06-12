@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
-class Inspect::Scenarios::SearchComponent < ApplicationComponent
-  def initialize(query:)
-    @query = query
+module Inspect
+  module Scenarios
+    class SearchComponent < ApplicationComponent
+      def initialize(query:)
+        @query = query
+      end
+    end
   end
 end
