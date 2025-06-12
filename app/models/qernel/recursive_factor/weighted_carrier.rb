@@ -14,7 +14,7 @@ module Qernel::RecursiveFactor::WeightedCarrier
 
     # Carriers with no or zero intrinsic costs are not counted in this calculation.
 
-    edge.carrier.cost_per_mj if edge.carrier.cost_per_mj || domestic_dead_end?
+    edge.carrier.cost_per_mj if edge.carrier.cost_per_mj || right_dead_end?
 
     # Else: continue traversing right.
   end
@@ -31,7 +31,7 @@ module Qernel::RecursiveFactor::WeightedCarrier
 
     # Carriers with no or zero intrinsic CO2 are not counted in this calculation.
 
-    if edge.carrier.co2_conversion_per_mj || domestic_dead_end?
+    if edge.carrier.co2_conversion_per_mj || right_dead_end?
       edge.carrier.co2_conversion_per_mj
     end
 
@@ -51,7 +51,7 @@ module Qernel::RecursiveFactor::WeightedCarrier
     # Carriers with no or zero intrinsic biogenic CO2 capture potential are not
     # counted in this calculation.
 
-    if edge.carrier.potential_co2_conversion_per_mj || domestic_dead_end?
+    if edge.carrier.potential_co2_conversion_per_mj || right_dead_end?
       edge.carrier.potential_co2_conversion_per_mj
     end
 
