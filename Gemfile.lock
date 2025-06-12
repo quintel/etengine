@@ -36,8 +36,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/merit.git
-  revision: 257bcfbb52658dbb86d03ecbe1956d5e1c565395
-  ref: 257bcfb
+  revision: 0421876b42bbedbd6bf8b6422127c120f2c86091
+  ref: 0421876
   specs:
     quintel_merit (0.1.0)
       numo-narray
