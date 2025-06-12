@@ -9,7 +9,6 @@ module Qernel
       include RecursiveFactor::PrimaryDemand
       include RecursiveFactor::BioDemand
       include RecursiveFactor::BioEmissions
-      include RecursiveFactor::DependentSupply
       include RecursiveFactor::FinalDemand
       include RecursiveFactor::PrimaryCo2
       include RecursiveFactor::Sustainable
