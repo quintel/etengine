@@ -133,7 +133,7 @@ module Qernel
     # Calculation --------------------------------------------------------------
 
     def max_demand
-      dataset_get(:max_demand) || rgt_node.query.max_demand
+      dataset_get(:max_demand)
     end
 
     def priority
