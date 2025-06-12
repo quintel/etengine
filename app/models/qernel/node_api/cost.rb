@@ -235,9 +235,10 @@ module Qernel
       def operating_expenses_including_fuel
         fetch(:operating_expenses_including_fuel) do
           operating_expenses + (
-              fuel_costs +
+              fuel_costs + (
               co2_emissions_costs_per_typical_input +
               captured_biogenic_co2_costs_per_typical_input
+              ) * typical_input
             ) * costable_energy_factor
         end
       end
