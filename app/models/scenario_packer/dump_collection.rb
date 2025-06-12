@@ -53,6 +53,7 @@ module ScenarioPacker
     def self.build_from_ids(raw_ids)
       ids = parse_ids(raw_ids)
       raise InvalidParamsError, 'Please enter at least one scenario ID.' if ids.empty?
+
       from_ids(ids)
     end
 

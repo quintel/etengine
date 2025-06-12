@@ -96,10 +96,10 @@ module Inspect
     # Dump a set of scenarios according to the parameters
     def dump
       packer = ScenarioPacker::DumpCollection.from_params(dump_params.to_h, current_user)
-      send_data packer.to_json,
+      send_data(packer.to_json,
                 filename:    packer.filename,
                 type:        'application/json',
-                disposition: 'attachment'
+                disposition: 'attachment')
     rescue ScenarioPacker::DumpCollection::InvalidParamsError => e
       flash[:alert] = e.message
       redirect_back(fallback_location: inspect_scenarios_path)

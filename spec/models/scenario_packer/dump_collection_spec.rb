@@ -32,8 +32,8 @@ RSpec.describe ScenarioPacker::DumpCollection do
     it 'builds a collection from explicit IDs' do
       col = described_class.from_ids(ids)
       expect(col.as_json).to eq(dummy_hashes)
-      expect(col.to_json      ).to include(dummy_hashes.first[:foo])
-      expect(col.filename     ).to eq('1-2-3-dump.json')
+      expect(col.to_json).to include(dummy_hashes.first[:foo])
+      expect(col.filename).to eq('1-2-3-dump.json')
     end
   end
 
@@ -64,8 +64,8 @@ RSpec.describe ScenarioPacker::DumpCollection do
         packer = described_class.from_params(params, user)
 
         expect(packer.dump_type).to eq('ids')
-        expect(packer.as_json  ).to eq(dummy_hashes)
-        expect(packer.filename ).to eq('1-2-3-dump.json')
+        expect(packer.as_json).to eq(dummy_hashes)
+        expect(packer.filename).to eq('1-2-3-dump.json')
       end
 
       it 'raises an error if no IDs are provided' do
@@ -73,16 +73,16 @@ RSpec.describe ScenarioPacker::DumpCollection do
           dump_type:    'ids',
           scenario_ids: ''
         )
-        expect {
+        expect do
           described_class.from_params(params, user)
-        }.to raise_error(ScenarioPacker::DumpCollection::InvalidParamsError,
+        end.to raise_error(ScenarioPacker::DumpCollection::InvalidParamsError,
                          /enter at least one scenario ID/)
       end
     end
 
     context 'when dump_type is featured' do
       before do
-        allow(::MyEtm::FeaturedScenario).to receive(:cached_ids).and_return(ids)
+        allow(MyEtm::FeaturedScenario).to receive(:cached_ids).and_return(ids)
       end
 
       it 'returns a packer for featured scenario IDs' do
@@ -90,8 +90,8 @@ RSpec.describe ScenarioPacker::DumpCollection do
         packer = described_class.from_params(params, user)
 
         expect(packer.dump_type).to eq('featured')
-        expect(packer.as_json  ).to eq(dummy_hashes)
-        expect(packer.filename ).to eq('featured-dump.json')
+        expect(packer.as_json).to eq(dummy_hashes)
+        expect(packer.filename).to eq('featured-dump.json')
       end
     end
 
@@ -101,18 +101,17 @@ RSpec.describe ScenarioPacker::DumpCollection do
         packer = described_class.from_params(params, user)
 
         expect(packer.dump_type).to eq('my_scenarios')
-        expect(packer.as_json  ).to eq(dummy_hashes)
-        # user_name "Alice Smith" parameterizes to "alice-smith"
-        expect(packer.filename ).to eq('alice-smith-dump.json')
+        expect(packer.as_json).to eq(dummy_hashes)
+        expect(packer.filename).to eq('alice-smith-dump.json')
       end
     end
 
     context 'with an unknown dump_type' do
       it 'raises an error' do
         params = ActionController::Parameters.new(dump_type: 'wat')
-        expect {
+        expect do
           described_class.from_params(params, user)
-        }.to raise_error(ScenarioPacker::DumpCollection::InvalidParamsError,
+        end.to raise_error(ScenarioPacker::DumpCollection::InvalidParamsError,
                          /Unknown dump type/)
       end
     end
@@ -123,7 +122,6 @@ RSpec.describe ScenarioPacker::DumpCollection do
       sparse_ids = [1, 99, 2]
       available = records.select { |r| [1, 2].include?(r.id) }
 
-      # Stub a new relation for sparse_ids
       rel2 = instance_double(ActiveRecord::Relation).tap do |rel|
         allow(rel).to receive(:pluck).with(:id).and_return(sparse_ids)
         allow(rel).to receive(:index_by).and_return(available.index_by(&:id))
