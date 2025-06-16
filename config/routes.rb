@@ -27,6 +27,7 @@ Rails.application.routes.draw do
           get :sankey,                 to: 'export#sankey'
           get :storage_parameters,     to: 'export#storage_parameters'
           get :merit
+          get :dump
           put :dashboard
           post :interpolate
           post :uncouple
@@ -35,6 +36,7 @@ Rails.application.routes.draw do
 
         collection do
           post :merge
+          post :load_dump
           get  :templates
           get  'versions', to: 'scenario_version_tags#index'
         end
@@ -126,6 +128,13 @@ Rails.application.routes.draw do
 
     get 'search.js' => 'search#index', as: :search_autocomplete
 
+    resources :scenarios, only: [] do
+      collection do
+        get :dump
+        post :load_dump
+      end
+    end
+
     scope '/:api_scenario_id' do
       root to: 'pages#index'
       post '/clear_cache' => 'pages#clear_cache', as: 'clear_cache'
@@ -160,6 +169,7 @@ Rails.application.routes.draw do
 
       resources :scenarios, only: %i[index show edit update new create] do
         put :fix, on: :member
+        post :load_dump, on: :collection
       end
 
       # Checks

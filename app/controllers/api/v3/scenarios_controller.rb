@@ -1,13 +1,14 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class ScenariosController < BaseController
-
       rescue_from Scenario::YearInterpolator::InterpolationError do |ex|
         render json: { errors: [ex.message] }, status: :bad_request
       end
 
-      load_resource except: %i[show create destroy]
-      load_and_authorize_resource class: Scenario, only: %i[index show destroy]
+      load_resource except: %i[show create destroy dump]
+      load_and_authorize_resource class: Scenario, only: %i[index show destroy dump]
 
       before_action only: %i[batch] do
         # Only check that the user can read. We restrict the search in the action.
@@ -121,10 +122,12 @@ module Api
         # Weird ActiveResource bug: the user values attribute is nested inside
         # another user_values hash. Used when generating a scenario with the
         # average values of other scenarios.
-        inputs = params[:scenario][:user_values]["user_values"] rescue nil
-        if inputs
-          params[:scenario][:user_values] = inputs
+        inputs = begin
+                   params[:scenario][:user_values]['user_values']
+        rescue StandardError
+                   nil
         end
+        params[:scenario][:user_values] = inputs if inputs
 
         attrs = Scenario.default_attributes.merge(scenario_params || {})
         parent = nil
@@ -319,7 +322,9 @@ module Api
         if coupling_parameters[:force]
           force_uncouple
         else
-          coupling_parameters[:groups].each { |coupling| @scenario.deactivate_coupling(coupling.to_s) }
+          coupling_parameters[:groups].each do |coupling|
+            @scenario.deactivate_coupling(coupling.to_s)
+          end
           if @scenario.save
             render json: ScenarioSerializer.new(self, @scenario)
           else
@@ -339,6 +344,24 @@ module Api
         else
           render json: { errors: @scenario.errors.messages }, status: :unprocessable_entity
         end
+      end
+
+      # GET /api/v3/scenarios/:id/dump
+      def dump
+        render json: ScenarioPacker::Dump.new(@scenario)
+      end
+
+      # POST /api/v3/scenarios/:id/load_dump
+      def load_dump
+        unless current_user&.admin?
+          render(
+            json: { errors: ['You must be authenticated to load dumps'] },
+            status: :forbidden
+          )
+          return
+        end
+
+        render json: ScenarioSerializer.new(self, ScenarioPacker::Load.new(params.permit!).scenario)
       end
 
       private
@@ -388,9 +411,7 @@ module Api
           attrs[:user_values] = user_vals
         end
 
-        if attrs[:scenario]&.key?(:metadata)
-          attrs[:metadata] = filtered_metadata(attrs[:scenario])
-        end
+        attrs[:metadata] = filtered_metadata(attrs[:scenario]) if attrs[:scenario]&.key?(:metadata)
 
         attrs[:descale] = true if attrs[:descale] == 'true'
 
@@ -481,8 +502,8 @@ module Api
       # scenario which caused the error.
       #
       # Returns the result of the block.
-      def wrap_with_sentry_context
-        ScenarioSentryContext.with_context(@scenario) { yield }
+      def wrap_with_sentry_context(&)
+        ScenarioSentryContext.with_context(@scenario, &)
       end
     end
   end
