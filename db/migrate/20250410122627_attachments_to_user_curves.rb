@@ -26,7 +26,7 @@ class AttachmentsToUserCurves < ActiveRecord::Migration[7.0]
           config = Etsource::Config.user_curves[attachment.key.chomp('_curve')]
           next if config.nil?
 
-          service = CurveHandler::AttachService.new(config, file_stub, scenario, attachment.metadata_json)
+          service = CurveHandler::Services::AttachService.new(config, file_stub, scenario, attachment.metadata_json)
 
           if service.call(false)
             # attachment.destroy!

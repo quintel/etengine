@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe CurveHandler::Reducer do
+RSpec.describe CurveHandler::Reducers::Reducer do
   let(:scenario) { FactoryBot.create(:scenario) }
 
   before do
