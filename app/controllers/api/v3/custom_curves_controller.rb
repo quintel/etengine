@@ -4,7 +4,7 @@ module Api
   module V3
     # Provides the ability to upload or remove a custom curve from a scenario.
     #
-    # This controller now uses the UserCurve model, which stores curves in the database using
+    # This controller uses the UserCurve model, which stores curves in the database using
     # MessagePack-encoded Merit::Curve objects.
     class CustomCurvesController < BaseController
       include ActionController::MimeResponds
@@ -19,7 +19,7 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/custom_curves
       def index
-        result = Curves::Manager.new(scenario, params, nil).index
+        result = CurveHandler::Services::IndexService.new(scenario, params).call
         render json: result.series
       end
 
@@ -27,12 +27,12 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/custom_curves/:name
       def show
-        result = Curves::Manager.new(scenario, params, nil).show
+        result = CurveHandler::Services::ShowService.new(scenario, params).call
 
         if request.format.csv?
           send_data result.csv_data,
-                type: 'text/csv',
-                filename: result.filename
+                    type: 'text/csv',
+                    filename: result.filename
         else
           render json: result.json
         end
@@ -42,11 +42,11 @@ module Api
       #
       # PUT /api/v3/scenarios/:scenario_id/custom_curves/:name
       def update
-        result = Curves::Manager.new(scenario, params, metadata_parameters).update
+        result = CurveHandler::Services::UpdateService.new(scenario, params, metadata_parameters).call
 
-        if result.errors
+        if result.errors.present?
           render json: { errors: result.errors, error_keys: result.error_keys },
-                 status: :unprocessable_entity
+                status: :unprocessable_entity
         else
           render json: result.json
         end
@@ -56,7 +56,7 @@ module Api
       #
       # DELETE /api/v3/scenarios/:scenario_id/custom_curves/:id
       def destroy
-        Curves::Manager.new(scenario, params, nil).destroy
+        CurveHandler::Services::DestroyService.new(scenario, params).call
         head :no_content
       end
 
@@ -87,9 +87,9 @@ module Api
 
       # Asserts that the requested curve exists and is loadable.
       def ensure_curve_set
-        render_not_found unless scenario
-          .attached_curve(CurveHandler::Config.find(params[:id].chomp('_curve')).db_key)
-          &.loadable_curve?
+        key    = params[:id].to_s.chomp('_curve')
+        config = CurveHandler::Config.find(key)
+        render_not_found unless scenario.attached_curve(config.db_key)&.loadable_curve?
       end
 
       # Asserts that the user uploaded a file, and not a string or other object.
