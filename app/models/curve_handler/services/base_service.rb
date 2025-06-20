@@ -20,7 +20,7 @@ module CurveHandler
       end
 
       def bool(key)
-        ActiveModel::Type::Boolean.new.cast(params[key])
+        !!ActiveModel::Type::Boolean.new.cast(params[key])
       end
 
       def find_config!
