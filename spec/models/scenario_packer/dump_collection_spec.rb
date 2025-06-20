@@ -76,7 +76,7 @@ RSpec.describe ScenarioPacker::DumpCollection do
         expect do
           described_class.from_params(params, user)
         end.to raise_error(ScenarioPacker::DumpCollection::InvalidParamsError,
-                         /enter at least one scenario ID/)
+          /enter at least one scenario ID/)
       end
     end
 
@@ -112,7 +112,7 @@ RSpec.describe ScenarioPacker::DumpCollection do
         expect do
           described_class.from_params(params, user)
         end.to raise_error(ScenarioPacker::DumpCollection::InvalidParamsError,
-                         /Unknown dump type/)
+          /Unknown dump type/)
       end
     end
   end

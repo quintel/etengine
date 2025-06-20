@@ -6,14 +6,15 @@
                 data: { turbo: false } do |f|
       .form-group
         = f.label :dump_type, "Dump type", class: "mr-2"
-        = f.select :dump_type, options_for_select([["By IDs", "ids"], ["Featured", "featured"], ["My recent scenarios", "my_scenarios"]], selected: (params[:dump_type] || "ids")), {}, class: "form-control"
+        = f.select :dump_type, options_for_select([["By ID - enter comma separated ids", "ids"], ["Featured scenarios", "featured"], ["Your scenarios edited within the last month", "my_scenarios"]], selected: (params[:dump_type] || "ids")), {}, class: "form-control",  style: "width: 100%; max-width: 400px;"
 
       - if (params[:dump_type] || "ids") == "ids"
         .form-group.ml-4
           = f.text_field :scenario_ids,
             value: params[:scenario_ids],
             placeholder: "e.g. 1,2,3",
-            class: "form-control"
+            class: "form-control",
+            style: "width: 100%; max-width: 385px;"
 
       .form-group.ml-4
         = f.submit "Download", class: "btn btn-primary"
