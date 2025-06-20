@@ -80,9 +80,9 @@ module Inspect
       loader = ScenarioPacker::LoadCollection.from_file(dump_file_param)
       if loader.single?
         redirect_to inspect_scenario_path(
-                      id: loader.first_id,
-                      api_scenario_id: loader.first_id
-                    ), notice: 'Scenario created'
+          id: loader.first_id,
+          api_scenario_id: loader.first_id
+        ), notice: 'Scenario created'
       else
         @api_scenario = Scenario.find(loader.first_id)
         @scenario     = Scenario::Editable.new(@api_scenario)
@@ -97,9 +97,9 @@ module Inspect
     def dump
       packer = ScenarioPacker::DumpCollection.from_params(dump_params.to_h, current_user)
       send_data(packer.to_json,
-                filename:    packer.filename,
-                type:        'application/json',
-                disposition: 'attachment')
+        filename:    packer.filename,
+        type:        'application/json',
+        disposition: 'attachment')
     rescue ScenarioPacker::DumpCollection::InvalidParamsError => e
       flash[:alert] = e.message
       redirect_back(fallback_location: inspect_scenarios_path)
