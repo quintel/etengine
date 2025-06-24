@@ -106,6 +106,28 @@ module Qernel
         inject_curve!(full_name: :storage_curve) { @participant.reserve.to_a }
       end
 
+      def inject_costs!
+        super
+
+        return unless @context.carrier == :electricity
+
+        target_api.dataset_lazy_set(:revenue_hourly_electricity) do
+          participant.revenue
+        end
+
+        target_api.dataset_lazy_set(:revenue_hourly_electricity_per_plant) do
+          if source_api.number_of_units.positive?
+            participant.revenue / source_api.number_of_units
+          else
+            0.0
+          end
+        end
+
+        target_api.dataset_lazy_set(:revenue_hourly_electricity_per_mwh) do
+          participant.revenue_per_mwh
+        end
+      end
+
       # Internal: When "output_capacity_from_demand_of" is set, set the capacity
       # of the storage to be equal to the average demand of another node,
       # multiplied by a constant chosen by the user.

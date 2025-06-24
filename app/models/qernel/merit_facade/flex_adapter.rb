@@ -37,6 +37,7 @@ module Qernel
 
       def inject!
         inject_demand!
+        inject_costs!
 
         inject_curve!(:input) do
           @participant.load_curve.map { |v| v.negative? ? v.abs : 0.0 }
@@ -127,6 +128,22 @@ module Qernel
           (full_load_seconds / input_efficiency) *
           participant.input_capacity_per_unit *
           participant.number_of_units
+      end
+
+      def inject_costs!
+        return unless @context.carrier == :electricity
+
+        target_api.dataset_lazy_set(:fuel_costs_electricity) do
+          participant.fuel_costs.to_f
+        end
+
+        target_api.dataset_lazy_set(:fuel_costs_electricity_per_plant) do
+          if participant.number_of_units.positive?
+            participant.fuel_costs.to_f / participant.number_of_units
+          else
+            0.0
+          end
+        end
       end
     end
   end

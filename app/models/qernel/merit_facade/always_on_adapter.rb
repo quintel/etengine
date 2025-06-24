@@ -4,6 +4,12 @@ module Qernel
   module MeritFacade
     # Sets up a producer whose demand is determined by a fixed profile.
     class AlwaysOnAdapter < ProducerAdapter
+      def inject!
+        super
+
+        inject_costs!
+      end
+
       private
 
       def producer_attributes
@@ -33,6 +39,26 @@ module Qernel
 
       def production_profile
         @context.curves.curve(@config.group, @node)
+      end
+
+      def inject_costs!
+        return unless @context.carrier == :electricity
+        
+        target_api.dataset_lazy_set(:revenue_hourly_electricity) do
+          participant.revenue
+        end
+
+        target_api.dataset_lazy_set(:revenue_hourly_electricity_per_plant) do
+          if source_api.number_of_units.positive?
+            participant.revenue / source_api.number_of_units
+          else
+            0.0
+          end
+        end
+
+        target_api.dataset_lazy_set(:revenue_hourly_electricity_per_mwh) do
+          participant.revenue_per_mwh
+        end
       end
     end
   end

@@ -69,6 +69,9 @@ module Qernel
       def storage_volume_per_unit
         infinite_storage? ? Float::INFINITY : super
       end
+
+      # Heat storage should not set costs
+      def inject_costs!;end
     end
   end
 end

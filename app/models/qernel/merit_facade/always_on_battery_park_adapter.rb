@@ -70,7 +70,7 @@ module Qernel
         storage_demand = @park.storage_input_curve.sum
         output_demand = @park.producer_output_curve.sum
 
-        # binding.pry
+        inject_costs!
 
         find_edge(curtailment_node).dataset_set(:share, safe_div(curtailment_demand, total_demand))
         find_edge(storage_node).dataset_set(:share, safe_div(storage_demand, total_demand))
@@ -140,6 +140,24 @@ module Qernel
 
       def curtailment_node
         @context.graph.node(@config.relations[:curtailment])
+      end
+
+      def inject_costs!
+        target_api.dataset_lazy_set(:revenue_hourly_electricity) do
+          participant.revenue
+        end
+
+        target_api.dataset_lazy_set(:revenue_hourly_electricity_per_plant) do
+          if source_api.number_of_units.positive?
+            participant.revenue / source_api.number_of_units
+          else
+            0.0
+          end
+        end
+
+        target_api.dataset_lazy_set(:revenue_hourly_electricity_per_mwh) do
+          participant.revenue_per_mwh
+        end
       end
     end
   end

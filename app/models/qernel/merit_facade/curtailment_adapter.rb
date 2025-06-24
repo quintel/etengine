@@ -41,6 +41,9 @@ module Qernel
 
         attrs
       end
+
+      # Curtailment should not inject costs
+      def inject_costs!;end
     end
   end
 end

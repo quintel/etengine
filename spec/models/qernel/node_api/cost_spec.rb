@@ -660,4 +660,148 @@ describe 'Qernel::NodeApi cost calculations' do
       expect(node.node_api.operating_expenses_excluding_ccs).to eq(2)
     end
   end
+
+  describe '#fuel_costs' do
+    context 'with only electricity as input' do
+      before do
+        node.add_slot(build_slot(node, :useable_heat, :output, 0.9))
+        node.add_slot(build_slot(node, :electricity, :input, 1.0))
+        node.with(
+          input_capacity: 1.0,
+          typical_input: 1.0
+        )
+
+        node.node_api.dataset_lazy_set(:fuel_costs_electricity_per_plant) { 100000 }
+      end
+
+      it 'calculates fuel costs per output' do
+        expect(node.node_api.fuel_costs_per(:mwh_heat)).to eq(400000000.0)
+      end
+    end
+
+    context 'with only non electricity as input' do
+      before do
+        node.add_slot(build_slot(node, :useable_heat, :output, 0.9))
+        node.add_slot(build_slot(node, :hydrogen, :input, 1.0))
+        node.with(
+          input_capacity: 1.0,
+          typical_input: 1.0,
+          weighted_carrier_cost_per_mj: 2.0
+        )
+
+        allow(api).to receive(:area).and_return(
+          double(co2_price: 2.0, co2_percentage_free: 0.0, captured_biogenic_co2_price: 2.0)
+        )
+      end
+
+      it 'calculates fuel costs per output' do
+        expect(node.node_api.fuel_costs_per(:mwh_heat)).to eq(8000.0)
+      end
+    end
+
+    context 'with both electricity and another carrier as input' do
+      before do
+        node.add_slot(build_slot(node, :useable_heat, :output, 0.9))
+        node.add_slot(build_slot(node, :electricity, :input, 0.5))
+        node.add_slot(build_slot(node, :hydrogen, :input, 0.5))
+        node.with(
+          input_capacity: 1.0,
+          typical_input: 1.0,
+          typical_heat_output: 0.75
+        )
+
+        node.node_api.dataset_lazy_set(:fuel_costs_electricity_per_plant) { 5_000 }
+
+        node.inputs.each do |slot|
+          allow(slot.carrier).to receive(:cost_per_mj).and_return(5.0)
+        end
+
+        allow(api).to receive(:area).and_return(
+          double(co2_price: 2.0, co2_percentage_free: 0.0, captured_biogenic_co2_price: 2.0)
+        )
+        allow(api).to receive(:cost_per_mj).and_return(5.0)
+      end
+
+      it 'calculates fuel costs per output' do
+        expect(node.node_api.fuel_costs_per(:mwh_heat)).to eq(24012000.0)
+      end
+    end
+  end
+
+  describe '#operating_expenses_including_fuel' do
+    before do
+      node.with(
+        fixed_operation_and_maintenance_costs_per_year: 1.5,
+        variable_operation_and_maintenance_costs_per_full_load_hour: 3600.0,
+        variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour: 3600.0,
+        input_capacity: 10.0,
+        typical_input: 5.0
+      )
+
+      node.inputs.each do |slot|
+        allow(slot.carrier).to receive(:cost_per_mj).and_return(5.0)
+      end
+
+      allow(api).to receive(:area).and_return(
+        double(co2_price: 2.0, co2_percentage_free: 0.0, captured_biogenic_co2_price: 2.0)
+      )
+    end
+
+    it 'calculates when everything is set' do
+      expect(node.node_api.operating_expenses_including_fuel).to eq(2.5)
+    end
+
+    # Calculates after injection of fuel costs
+    context 'when injecting fuel_costs' do
+      before do
+        node.add_slot(build_slot(node, :electricity, :input, 0.5))
+
+        node.node_api.dataset_lazy_set(:fuel_costs_electricity_per_plant) { 50.0 }
+      end
+
+      it 'calculates when everything is set' do
+        expect(node.node_api.operating_expenses_including_fuel).to eq(52.5)
+      end
+    end
+  end
+
+  describe '#revenue' do
+    before do
+      node.add_slot(build_slot(node, :hydrogen, :input, 1.0))
+      node.with(
+        input_capacity: 1.0,
+        typical_input: 1.0
+      )
+
+      allow(api).to receive(:area).and_return(
+        double(co2_price: 2.0, co2_percentage_free: 0.0, captured_biogenic_co2_price: 2.0)
+      )
+    end
+
+    context 'with non electricity output' do
+      before do
+        node.add_slot(build_slot(node, :hydrogen, :output, 0.9))
+
+        node.outputs.each do |slot|
+          allow(slot.carrier).to receive(:cost_per_mj).and_return(5.0)
+        end
+      end
+
+      it 'calculates when everything is set' do
+        expect(node.node_api.revenue).to eq(4.5)
+      end
+    end
+
+    context 'when injecting revenue for electricity' do
+      before do
+        node.add_slot(build_slot(node, :electricity, :output, 0.9))
+
+        node.node_api.dataset_lazy_set(:revenue_hourly_electricity_per_plant) { 50.0 }
+      end
+
+      it 'calculates when everything is set' do
+        expect(node.node_api.revenue).to eq(50.0)
+      end
+    end
+  end
 end

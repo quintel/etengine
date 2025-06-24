@@ -38,6 +38,9 @@ module Qernel
       def related_adapter
         @context.plugin.adapters[@config.relations[:input].to_sym]
       end
+
+      # Do not overwrite costs
+      def inject_costs!;end
     end
   end
 end

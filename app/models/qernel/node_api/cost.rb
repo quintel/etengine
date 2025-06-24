@@ -211,6 +211,55 @@ module Qernel
         end
       end
 
+      # Public: The total CAPEX per year (CCS + non-CCS).
+      #
+      # Returns the total yearly capital expendituresin euro.
+      def capital_expenditures
+        fetch(:capital_expenditures) do
+          capital_expenditures_ccs + capital_expenditures_excluding_ccs
+        end
+      end
+
+      # Public: The total OPEX per year (CCS + non-CCS).
+      #
+      # Returns the yearly operating expenses excluding CCS in euro.
+      def operating_expenses
+        fetch(:operating_expenses) do
+          operating_expenses_ccs + operating_expenses_excluding_ccs
+        end
+      end
+
+      # Public: The OPEX in €/year produced by a “typical” plant.
+      #
+      # Returns a float (€)
+      def operating_expenses_including_fuel
+        fetch(:operating_expenses_including_fuel) do
+          operating_expenses + (
+              fuel_costs + (
+              co2_emissions_costs_per_typical_input +
+              captured_biogenic_co2_costs_per_typical_input
+              ) * typical_input
+            ) * costable_energy_factor
+        end
+      end
+
+      # Public: The revenue in €/year produced by a “typical” plant.
+      #
+      # Returns a float (€)
+      def revenue
+        fetch(:revenue) do
+          node.outputs.sum(0.0) do |slot|
+            if slot.carrier.key == :electricity
+              revenue_hourly_electricity_per_plant
+            elsif slot.carrier.cost_per_mj
+              slot.carrier.cost_per_mj * slot.conversion * typical_input
+            else
+              0.0
+            end
+          end
+        end
+      end
+
       private
 
       # Internal: Calculates the total cost of a plant in euro per plant per year.
@@ -391,7 +440,49 @@ module Qernel
             raise IllegalNegativeError.new(self, :typical_input, typical_input)
           end
 
-          typical_input * weighted_carrier_cost_per_mj
+          if inputs.map { |s| s.carrier.key }.include?(:electricity)
+            fuel_costs_electricity_per_plant + fuel_costs_excluding_electricity
+          else
+            typical_input * weighted_carrier_cost_per_mj
+          end
+        end
+      end
+
+      # Internal: Calculates the fuel costs for carriers excluding electricity.
+      # Only applies to carriers with costs_per_mj set
+      #
+      # Returns the fuel costs in € excluding electricity costs
+      def fuel_costs_excluding_electricity
+        fetch(:fuel_costs_excluding_electricity) do
+          node.inputs.sum(0.0) do |slot|
+            if slot.carrier.key == :electricity
+              0.0
+            else
+              slot.carrier.cost_per_mj * slot.conversion * typical_input
+            end
+          end
+        end
+      end
+
+      # Internal: fuel costs for electricity should be calculated by Merit and injected
+      # here. If costs have not been injected (possibly due to no installed capacity),
+      # returns 0.0.
+      #
+      # Returns the fuel costs (€) for electricity for the node
+      def fuel_costs_electricity_per_plant
+        fetch(:fuel_costs_electricity_per_plant) do
+          0.0
+        end
+      end
+
+      # Internal: revenue for electricity should be calculated by Merit and injected
+      # here. If costs have not been injected (possibly due to no installed capacity),
+      # returns 0.0.
+      #
+      # Returns the revenue (€) for electricity for the node
+      def revenue_hourly_electricity_per_plant
+        fetch(:revenue_hourly_electricity_per_plant) do
+          0.0
         end
       end
 
