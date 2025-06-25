@@ -1,35 +1,31 @@
 # frozen_string_literal: true
 
+require 'etc'
+
 # Puma can serve each request in a thread from an internal thread pool.
 #
 # The `threads` method setting takes two numbers: a minimum and maximum. Any libraries that use
 # thread pools should be configured to match the maximum value specified for Puma. Default is set to
 # 5 threads for minimum and maximum; this matches the default thread size of Active Record.
 #
-# ETEngine is not thread-safe.
+# ETEngine is not thread-safe, so we use 1 thread per worker.
 threads 1, 1
 
-# Specifies the `port` that Puma will listen on to receive requests; default is 3000.
-port ENV.fetch('PORT') { 3000 }
+# 1 worker per CPU, unless WEB_CONCURRENCY is explicitly set
+workers_count = Integer(ENV.fetch('WEB_CONCURRENCY', cpu_cores.to_s))
+workers workers_count
 
-# Specifies the `environment` that Puma will run in.
-environment ENV.fetch('RAILS_ENV') { 'development' }
+# Preload the app before forking to save memory via Copy-On-Write
+preload_app!
 
-# Specifies the `pidfile` that Puma will use.
-pidfile ENV.fetch('PIDFILE') { 'tmp/pids/server.pid' }
+# Standard Puma settings - environment, pidfile and environment
+port        ENV.fetch('PORT')    { 3000 }
+environment ENV.fetch('RAILS_ENV'){ 'development' }
+pidfile     ENV.fetch('PIDFILE') { 'tmp/pids/server.pid' }
 
-# Specifies the number of `workers` to boot in clustered mode.
-#
-# Workers are forked web server processes. If using threads and workers together the concurrency of
-# the application would be max `threads` * `workers`. Workers do not work on JRuby or Windows (both
-# of which do not support processes).
-workers ENV.fetch('WEB_CONCURRENCY') { 0 }
+# Re-establish connections in each worker
+on_worker_boot do
+  ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
+end
 
-# Use the `preload_app!` method when specifying a `workers` number. This directive tells Puma to
-# first boot the application and load code before forking the application. This takes advantage of
-# Copy On Write process behavior so workers use less memory.
-#
-# preload_app!
-
-# Allow puma to be restarted by `rails restart` command.
 plugin :tmp_restart
