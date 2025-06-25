@@ -83,7 +83,7 @@ module Qernel::RecursiveFactor::PrimaryCo2
   def co2_per_mj_of_carrier_factor(edge, carrier_key)
     return 0.0 if query.free_co2_factor == 1.0
 
-    return nil unless domestic_dead_end? || primary_energy_demand?
+    return nil unless right_dead_end? || primary_energy_demand?
 
     edge ||= output_edges.first
 
@@ -116,9 +116,9 @@ module Qernel::RecursiveFactor::PrimaryCo2
     # In rare cases, we want to exclude a node from being included in the primary demand calculation
     # while opting in to the CO2 calculation. This is done by omitting the node from the PD group
     # and instead adding it to the "include_primary_co2" group.
-    force_co2 = domestic_dead_end? && @node.groups.include?(:force_primary_co2)
+    force_co2 = right_dead_end? && @node.groups.include?(:force_primary_co2)
 
-    return nil unless domestic_dead_end? || primary_energy_demand? || force_co2
+    return nil unless right_dead_end? || primary_energy_demand? || force_co2
 
     edge ||= output_edges.first
 
