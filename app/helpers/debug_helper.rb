@@ -54,7 +54,7 @@ module DebugHelper
 
           concat content_tag(:p, class: type) {
             concat content_tag("span", type.to_s, class: "label unfold_toggle #{LABELS[type]}")
-            haml_concat "&nbsp;".html_safe
+            concat "&nbsp;".html_safe
 
             log_folding_tags(type)
             log_title(parent)
@@ -65,9 +65,7 @@ module DebugHelper
             if gquery =  Gquery.get(gquery_key.to_s)
               concat content_tag('strong', (gquery.unit || '-')+" ", class: 'pull-right')
               concat content_tag('div', class: 'offset1') {
-                with_tabs(0) do
                   concat content_tag(:pre, gquery.query, class: 'gql')
-                end
               }
               @gquery_keys << gquery_key
             end
@@ -97,7 +95,7 @@ module DebugHelper
     else
       concat content_tag('span', attr_name.to_s, class: 'attr_name')
       if log[:node]
-        haml_concat link_to(">>", inspect_node_path(id: log[:node], graph_name: :energy))
+        concat link_to(">>", inspect_node_path(id: log[:node], graph_name: :energy))
       end
     end
   end
