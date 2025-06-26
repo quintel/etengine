@@ -6,12 +6,46 @@ module Api
     class UserSortablesController < BaseController
       include UsesScenario
 
-      before_action :assert_valid_sortable_type
+      before_action :assert_valid_sortable_type, only: %i[show update]
 
       rescue_from NoMethodError do |e|
         raise e unless e.message.starts_with?("undefined method `permit'")
 
         render json: { errors: ['Invalid JSON payload'] }, status: :bad_request
+      end
+
+      SORTABLES = {
+        forecast_storage:        :forecast_storage_order,
+        hydrogen_supply:         :hydrogen_supply_order,
+        hydrogen_demand:         :hydrogen_demand_order,
+        space_heating:           :households_space_heating_producer_order,
+        heat_network:            :heat_network_order
+      }.freeze
+
+      HEAT_NETWORK_SUBTYPES = %i[lt mt ht].freeze
+
+      # GET /api/v3/scenarios/:scenario_id/user_sortables/meta
+      def meta
+        render json: {
+          types: SORTABLES.keys,
+          heat_network_subtypes: HEAT_NETWORK_SUBTYPES
+        }
+      end
+
+      # GET /api/v3/scenarios/:scenario_id/user_sortables
+      # Returns all sortable orders (grouped by type, and by subtype for heat_network)
+      def index
+        data = SORTABLES.each_with_object({}) do |(type, method_name), h|
+          if type == :heat_network
+            h[type] = HEAT_NETWORK_SUBTYPES.each_with_object({}) do |sub, sub_h|
+              sub_h[sub] = scenario.public_send(method_name, sub).order
+            end
+          else
+            h[type] = scenario.public_send(method_name).order
+          end
+        end
+
+        render json: data
       end
 
       def show
@@ -56,13 +90,7 @@ module Api
       end
 
       def sortable_name
-        case params[:sortable_type]
-        when :forecast_storage then :forecast_storage_order
-        when :heat_network then :heat_network_order
-        when :hydrogen_supply then :hydrogen_supply_order
-        when :hydrogen_demand then :hydrogen_demand_order
-        when :space_heating then :households_space_heating_producer_order
-        end
+        SORTABLES[params[:sortable_type]&.to_sym]
       end
 
       # Used for the types of heat networks (lt, mt and ht)

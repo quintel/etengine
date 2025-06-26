@@ -52,6 +52,18 @@ Rails.application.routes.draw do
 
         resource :version, only: %i[create show update], controller: 'scenario_version_tags'
 
+        # New unified entrypoint for sortables - my suggestion is to move from the individualised routes below to this approach.
+        # GET -  /api/v3/scenarios/:scenario_id/user_sortables
+        # GET & PATCH -  /api/v3/scenarios/:scenario_id/user_sortables/:user_sortable
+        resources :user_sortables,
+                  only: %i[index show update],
+                  controller: :user_sortables,
+                  param: :sortable_type do
+          collection do
+            get :meta
+          end
+        end
+
         resource :heat_network_order,                     only: %i[show update],
           controller: :user_sortables, sortable_type: :heat_network
 
