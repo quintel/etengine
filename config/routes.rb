@@ -56,9 +56,13 @@ Rails.application.routes.draw do
         # GET -  /api/v3/scenarios/:scenario_id/user_sortables
         # GET & PATCH -  /api/v3/scenarios/:scenario_id/user_sortables/:user_sortable
         resources :user_sortables,
-            only: %i[index show update],
-            controller: :user_sortables,
-            param: :sortable_type
+                  only: %i[index show update],
+                  controller: :user_sortables,
+                  param: :sortable_type do
+          collection do
+            get :meta
+          end
+        end
 
         resource :heat_network_order,                     only: %i[show update],
           controller: :user_sortables, sortable_type: :heat_network
