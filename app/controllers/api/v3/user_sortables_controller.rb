@@ -6,12 +6,30 @@ module Api
     class UserSortablesController < BaseController
       include UsesScenario
 
-      before_action :assert_valid_sortable_type
+      before_action :assert_valid_sortable_type, only: %i[show update]
 
       rescue_from NoMethodError do |e|
         raise e unless e.message.starts_with?("undefined method `permit'")
 
         render json: { errors: ['Invalid JSON payload'] }, status: :bad_request
+      end
+
+      # GET /api/v3/scenarios/:scenario_id/user_sortables
+      # Returns all sortable orders (grouped by type, and by subtype for heat_network)
+      def index
+        sortables = {
+          forecast_storage:        scenario.forecast_storage_order.order,
+          hydrogen_supply:         scenario.hydrogen_supply_order.order,
+          hydrogen_demand:         scenario.hydrogen_demand_order.order,
+          space_heating:           scenario.households_space_heating_producer_order.order,
+          heat_network:            {}
+        }
+
+        %i[lt mt ht].each do |subtype|
+          sortables[:heat_network][subtype] = scenario.heat_network_order(subtype).order
+        end
+
+        render json: sortables
       end
 
       def show
@@ -56,12 +74,12 @@ module Api
       end
 
       def sortable_name
-        case params[:sortable_type]
-        when :forecast_storage then :forecast_storage_order
-        when :heat_network then :heat_network_order
-        when :hydrogen_supply then :hydrogen_supply_order
-        when :hydrogen_demand then :hydrogen_demand_order
-        when :space_heating then :households_space_heating_producer_order
+        case params[:sortable_type].to_s
+        when 'forecast_storage'  then :forecast_storage_order
+        when 'heat_network'      then :heat_network_order
+        when 'hydrogen_supply'   then :hydrogen_supply_order
+        when 'hydrogen_demand'   then :hydrogen_demand_order
+        when 'space_heating'     then :households_space_heating_producer_order
         end
       end
 
