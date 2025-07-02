@@ -60,7 +60,7 @@ module ScenarioPacker
     # Build packer for featured scenarios with metadata
     def self.build_featured
       featured_scenarios = ::MyEtm::FeaturedScenario.cached_scenarios
-      ids = featured_scenarios.map { |scenario| scenario['id'] }
+      ids = featured_scenarios.map(&:id)
 
       packer = from_ids(ids)
       # Store the featured scenario metadata for use in dumps
@@ -115,10 +115,10 @@ module ScenarioPacker
 
         # Add Title to metadata if available
         if @title_metadata
-          scenario = @title_metadata.find { |fs| fs['id'] == id }
-          if scenario && scenario['title']
+          scenario = @title_metadata.find { |fs| fs.id == id }
+          if scenario && scenario.title
             dump_json['metadata'] ||= {}
-            dump_json['metadata']['title'] = scenario['title']
+            dump_json['metadata']['title'] = scenario.title
           end
         end
 

@@ -83,9 +83,9 @@ RSpec.describe ScenarioPacker::DumpCollection do
     context 'when dump_type is featured' do
       let(:featured_scenarios) do
         [
-          { 'id' => 1, 'title' => 'Featured Scenario 1' },
-          { 'id' => 2, 'title' => 'Featured Scenario 2' },
-          { 'id' => 3, 'title' => 'Featured Scenario 3' }
+          double('FeaturedScenario', id: 1, title: 'Featured Scenario 1', attributes: { 'id' => 1, 'title' => 'Featured Scenario 1' }),
+          double('FeaturedScenario', id: 2, title: 'Featured Scenario 2', attributes: { 'id' => 2, 'title' => 'Featured Scenario 2' }),
+          double('FeaturedScenario', id: 3, title: 'Featured Scenario 3', attributes: { 'id' => 3, 'title' => 'Featured Scenario 3' })
         ]
       end
 
