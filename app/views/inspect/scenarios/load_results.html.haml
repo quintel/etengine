@@ -11,8 +11,12 @@
     %ul
       - @scenarios.each do |scenario|
         - url = "#{Settings.etmodel}/scenarios/#{scenario.id}"
+        - title = scenario.metadata&.dig('title')
         %li
-          = link_to url, url, target: '_blank', rel: 'noopener'
+          - if title.present?
+            = link_to "#{title} (#{scenario.id})", url, target: '_blank', rel: 'noopener'
+          - else
+            = link_to url, url, target: '_blank', rel: 'noopener'
 
     %p
     = link_to 'Back to scenarios list',

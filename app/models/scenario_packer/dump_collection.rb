@@ -57,9 +57,15 @@ module ScenarioPacker
       from_ids(ids)
     end
 
-    # Build packer for featured scenarios
+    # Build packer for featured scenarios with metadata
     def self.build_featured
-      from_ids(::MyEtm::FeaturedScenario.cached_ids)
+      featured_scenarios = ::MyEtm::FeaturedScenario.cached_scenarios
+      ids = featured_scenarios.map { |scenario| scenario['id'] }
+
+      packer = from_ids(ids)
+      # Store the featured scenario metadata for use in dumps
+      packer.instance_variable_set(:@title_metadata, featured_scenarios)
+      packer
     end
 
     # Build packer for current user's recent scenarios
@@ -95,6 +101,7 @@ module ScenarioPacker
       @records_by_id = scope.index_by(&:id)
       @dump_type     = 'ids'
       @user_name     = nil
+      @title_metadata = nil
     end
 
     # Build array of JSON-ready hashes, preserving original ID order
@@ -102,7 +109,20 @@ module ScenarioPacker
     def as_json(*)
       @ids.filter_map do |id|
         rec = @records_by_id[id]
-        Dump.new(rec).as_json if rec
+        next unless rec
+
+        dump_json = Dump.new(rec).as_json
+
+        # Add Title to metadata if available
+        if @title_metadata
+          scenario = @title_metadata.find { |fs| fs['id'] == id }
+          if scenario && scenario['title']
+            dump_json['metadata'] ||= {}
+            dump_json['metadata']['title'] = scenario['title']
+          end
+        end
+
+        dump_json
       end
     end
 
@@ -115,15 +135,26 @@ module ScenarioPacker
     # Determine filename based on dump type
     # @return [String]
     def filename
-      case dump_type
-      when 'featured'
-        'featured-dump.json'
-      when 'my_scenarios'
-        name = user_name.to_s.parameterize.presence || 'user'
-        "#{name}-dump.json"
-      else
-        "#{@ids.join('-')}-dump.json"
-      end
+      date_suffix = Time.current.strftime('%d-%m-%y')
+      environment_map = {
+        'production' => 'pro',
+        'development' => 'local',
+        'staging' => 'beta'
+      }
+
+      environment = environment_map[Rails.env.to_s] || Rails.env.to_s.downcase
+
+      base_name = case dump_type
+                  when 'featured'
+                    'featured'
+                  when 'my_scenarios'
+                    name = user_name.to_s.parameterize.presence || 'user'
+                    "#{name}"
+                  else
+                    "#{@ids.join('-')}"
+                  end
+
+      "#{base_name}_#{environment}_#{date_suffix}.json"
     end
   end
 end

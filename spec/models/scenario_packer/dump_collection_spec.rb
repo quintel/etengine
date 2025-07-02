@@ -33,7 +33,7 @@ RSpec.describe ScenarioPacker::DumpCollection do
       col = described_class.from_ids(ids)
       expect(col.as_json).to eq(dummy_hashes)
       expect(col.to_json).to include(dummy_hashes.first[:foo])
-      expect(col.filename).to eq('1-2-3-dump.json')
+      expect(col.filename).to match(/^1-2-3_.*_\d{2}-\d{2}-\d{2}\.json$/)
     end
   end
 
@@ -65,7 +65,7 @@ RSpec.describe ScenarioPacker::DumpCollection do
 
         expect(packer.dump_type).to eq('ids')
         expect(packer.as_json).to eq(dummy_hashes)
-        expect(packer.filename).to eq('1-2-3-dump.json')
+        expect(packer.filename).to match(/^1-2-3_.*_\d{2}-\d{2}-\d{2}\.json$/)
       end
 
       it 'raises an error if no IDs are provided' do
@@ -81,8 +81,16 @@ RSpec.describe ScenarioPacker::DumpCollection do
     end
 
     context 'when dump_type is featured' do
+      let(:featured_scenarios) do
+        [
+          { 'id' => 1, 'title' => 'Featured Scenario 1' },
+          { 'id' => 2, 'title' => 'Featured Scenario 2' },
+          { 'id' => 3, 'title' => 'Featured Scenario 3' }
+        ]
+      end
+
       before do
-        allow(MyEtm::FeaturedScenario).to receive(:cached_ids).and_return(ids)
+        allow(MyEtm::FeaturedScenario).to receive(:cached_scenarios).and_return(featured_scenarios)
       end
 
       it 'returns a packer for featured scenario IDs' do
@@ -91,7 +99,7 @@ RSpec.describe ScenarioPacker::DumpCollection do
 
         expect(packer.dump_type).to eq('featured')
         expect(packer.as_json).to eq(dummy_hashes)
-        expect(packer.filename).to eq('featured-dump.json')
+        expect(packer.filename).to eq('featured_test_02-07-25.json')
       end
     end
 
@@ -102,7 +110,7 @@ RSpec.describe ScenarioPacker::DumpCollection do
 
         expect(packer.dump_type).to eq('my_scenarios')
         expect(packer.as_json).to eq(dummy_hashes)
-        expect(packer.filename).to eq('alice-smith-dump.json')
+        expect(packer.filename).to match(/^alice-smith_.*_\d{2}-\d{2}-\d{2}\.json$/)
       end
     end
 
@@ -145,7 +153,7 @@ RSpec.describe ScenarioPacker::DumpCollection do
   describe '#filename' do
     it 'defaults to hyphenated IDs list' do
       col = described_class.from_ids(ids)
-      expect(col.filename).to eq('1-2-3-dump.json')
+      expect(col.filename).to match(/^1-2-3_.*_\d{2}-\d{2}-\d{2}\.json$/)
     end
   end
 end

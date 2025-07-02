@@ -4,11 +4,11 @@ module MyEtm
   class FeaturedScenario < ActiveResource::Base
     self.site = "#{Settings.identity.issuer}/api/v1"
 
-    def self.cached_ids
-      Rails.cache.fetch('featured_scenario_ids', expires_in: 1.week) do
-        connection.get('/api/v1/featured_scenarios/scenario_ids')
+    def self.cached_scenarios
+      Rails.cache.fetch('featured_scenarios', expires_in: 1.day) do
+        connection.get('/api/v1/featured_scenarios/scenarios')
           .body
-          .then { |json| JSON.parse(json)['scenario_ids'] }
+          .then { |json| JSON.parse(json)['scenarios'] }
       end
     end
   end
