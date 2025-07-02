@@ -19,7 +19,7 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/custom_curves
       def index
-        result = CurveHandler::Services::IndexService.new(scenario, params).call
+        result = CurveHandler::Serializers::CurvesSerializer.new(scenario, params).call
         render json: result.series
       end
 
@@ -27,7 +27,7 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/custom_curves/:name
       def show
-        result = CurveHandler::Services::ShowService.new(scenario, params).call
+        result = CurveHandler::Serializers::CurveSerializer.new(scenario, params).call
 
         if request.format.csv?
           send_data result.csv_data,
@@ -42,22 +42,32 @@ module Api
       #
       # PUT /api/v3/scenarios/:scenario_id/custom_curves/:name
       def update
-        result = CurveHandler::Services::UpdateService.new(scenario, params, metadata_parameters).call
+        serializer = CurveHandler::Serializers::BaseSerializer.new(scenario, params, metadata_parameters)
+        cfg        = serializer.send(:find_config!)
+        upload     = params.require(:file)
+        handler    = CurveHandler::Services::AttachService.new(cfg, upload, scenario, metadata_parameters)
 
-        if result.errors.present?
-          render json: { errors: result.errors, error_keys: result.error_keys },
-                status: :unprocessable_entity
-        else
-          render json: result.json
-        end
+        return render(
+          json: { errors: handler.errors, error_keys: handler.error_keys },
+          status: :unprocessable_entity
+        ) unless handler.valid?
+
+        uc   = handler.call
+        raw  = cfg.serializer.new(uc).as_json
+        json = serializer.send(:process, raw, uc, cfg)
+
+        render json: json
       end
 
       # Removes an existing custom curve from a scenario.
       #
       # DELETE /api/v3/scenarios/:scenario_id/custom_curves/:id
       def destroy
-        CurveHandler::Services::DestroyService.new(scenario, params).call
-        head :no_content
+        cfg = CurveHandler::Config.find(params[:id].to_s.chomp('_curve'))
+        if (uc = scenario.attached_curve(cfg.db_key))
+          CurveHandler::Services::DetachService.call(uc)
+        end
+        CurveHandler::Result.new
       end
 
       private
