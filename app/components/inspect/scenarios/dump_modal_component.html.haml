@@ -3,15 +3,13 @@
     = form_with url: dump_inspect_scenarios_path,
                 method: :get,
                 local: true,
-                data: { turbo: false } do |f|
+                data: { turbo: false, controller: "dump-modal" } do |f|
       .form-group
         = f.label :dump_type, "Dump type", class: "mr-2"
-        = f.select :dump_type, options_for_select([["By ID - enter comma separated ids", "ids"], ["Featured scenarios", "featured"], ["Your scenarios edited within the last month", "my_scenarios"]], selected: (params[:dump_type] || "ids")), {}, class: "form-control",  style: "width: 100%; max-width: 400px;"
+        = f.select :dump_type, options_for_select([["By ID - enter comma separated ids", "ids"], ["Featured scenarios", "featured"], ["Your scenarios edited within the last month", "my_scenarios"]], selected: (params[:dump_type] || "ids")), {}, class: "form-control",  style: "width: 100%; max-width: 400px;", data: { "dump-modal-target": "select", action: "change->dump-modal#toggleIdsField" }
 
-      - if (params[:dump_type] || "ids") == "ids"
-        .form-group.ml-4
-          = f.text_field :scenario_ids,
-            value: params[:scenario_ids],
+      %div{ class: "form-group ml-4 d-none", data: { "dump-modal-target": "idsField" } }
+        = f.text_field :scenario_ids,
             placeholder: "e.g. 1,2,3",
             class: "form-control",
             style: "width: 100%; max-width: 385px;"
@@ -21,6 +19,6 @@
 
   - m.with_footer do
     = button_tag "Close",
-      type: "button",
-      class: "btn btn-secondary",
-      data: { dismiss: "modal" }
+        type: "button",
+        class: "btn btn-secondary",
+        data: { dismiss: "modal" }
