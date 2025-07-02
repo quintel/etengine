@@ -6,9 +6,7 @@ module MyEtm
 
     def self.cached_scenarios
       Rails.cache.fetch('featured_scenarios', expires_in: 1.day) do
-        connection.get('/api/v1/featured_scenarios/scenarios')
-          .body
-          .then { |json| JSON.parse(json)['scenarios'] }
+        find(:all, from: :scenarios)
       end
     end
   end
