@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-shared_examples_for 'a successful CurveHandler::DetachService' do
+shared_examples_for 'a successful CurveHandler::Services::DetachService' do
   it 'returns true' do
     expect(service.call(user_curve)).to be(true)
   end
@@ -13,7 +13,7 @@ shared_examples_for 'a successful CurveHandler::DetachService' do
   end
 end
 
-RSpec.describe CurveHandler::DetachService do
+RSpec.describe CurveHandler::Services::DetachService do
   let(:file) do
     fixture_file_upload('price_curve.csv', 'text/csv')
   end
@@ -33,7 +33,7 @@ RSpec.describe CurveHandler::DetachService do
   let(:attach_config) { config }
 
   let!(:user_curve) do
-    CurveHandler::AttachService
+    CurveHandler::Services::AttachService
       .new(attach_config, file, scenario)
       .call
       .tap { scenario.reload }
@@ -44,7 +44,7 @@ RSpec.describe CurveHandler::DetachService do
   context 'with a curve and no reducer' do
     let(:config) { CurveHandler::Config.new(:generic, :generic) }
 
-    include_examples 'a successful CurveHandler::DetachService'
+    include_examples 'a successful CurveHandler::Services::DetachService'
 
     it 'does not change the scenario inputs' do
       expect { service.call(user_curve) }
@@ -64,7 +64,7 @@ RSpec.describe CurveHandler::DetachService do
       )
     end
 
-    include_examples 'a successful CurveHandler::DetachService'
+    include_examples 'a successful CurveHandler::Services::DetachService'
 
     it 'removes the reducer inputs but keeps others' do
       expect { service.call(user_curve) }
@@ -92,7 +92,7 @@ RSpec.describe CurveHandler::DetachService do
       scenario.save!(validate: false)
     end
 
-    include_examples 'a successful CurveHandler::DetachService'
+    include_examples 'a successful CurveHandler::Services::DetachService'
 
     it 'removes only the present reducer input' do
       expect { service.call(user_curve) }
@@ -106,7 +106,7 @@ RSpec.describe CurveHandler::DetachService do
     let(:attach_config) { CurveHandler::Config.new(:generic, :generic) }
     let(:config) { nil }
 
-    include_examples 'a successful CurveHandler::DetachService'
+    include_examples 'a successful CurveHandler::Services::DetachService'
 
     it 'does not change the scenario inputs' do
       expect { service.call(user_curve) }
