@@ -25,7 +25,7 @@ module ScenarioPacker
     def scenario_attributes
       %i[
         area_code end_year private keep_compatible
-        user_values balanced_values
+        user_values balanced_values metadata
       ]
     end
 
