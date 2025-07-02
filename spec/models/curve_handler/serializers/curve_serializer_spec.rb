@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe CurveHandler::Services::ShowService do
+RSpec.describe CurveHandler::Serializers::CurveSerializer do
   let(:params)   { ActionController::Parameters.new(id: 'key_curve') }
   let(:scenario) { instance_double('Scenario') }
   let(:curve)    { double('Curve', to_a: [1, 2, 3]) }

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe CurveHandler::Services::IndexService do
+RSpec.describe CurveHandler::Serializers::CurvesSerializer do
   let(:attached_keys)      { ['a'] }
   let(:include_internal)   { 'false' }
   let(:include_unattached) { 'false' }

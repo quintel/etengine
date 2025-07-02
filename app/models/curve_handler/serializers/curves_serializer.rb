@@ -1,6 +1,6 @@
 module CurveHandler
-  module Services
-    class IndexService < BaseService
+  module Serializers
+    class CurvesSerializer < BaseSerializer
       def call
         available = Etsource::Config.user_curves.values
         available = available.reject(&:internal?) unless bool(:include_internal)

@@ -1,6 +1,6 @@
 module CurveHandler
-  module Services
-    class ShowService < BaseService
+  module Serializers
+    class CurveSerializer < BaseSerializer
       def call
         cfg        = find_config!
         uc         = find_curve!(cfg)
