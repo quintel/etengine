@@ -1,6 +1,17 @@
 # frozen_string_literal: true
 
-require 'etc'
+# Get CPU allocation for container
+def get_container_cpus
+  quota = File.read('/sys/fs/cgroup/cpu/cpu.cfs_quota_us').to_i
+  period = File.read('/sys/fs/cgroup/cpu/cpu.cfs_period_us').to_i
+  (quota.to_f / period).ceil
+rescue
+  # Fallback if files can't be read
+  ENV.fetch("WEB_CONCURRENCY") { 25 }.to_i
+end
+
+# Get the actual CPU allocation
+cpu_allocation = get_container_cpus
 
 # Puma can serve each request in a thread from an internal thread pool.
 #
@@ -11,8 +22,8 @@ require 'etc'
 # ETEngine is not thread-safe, so we use 1 thread per worker.
 threads 1, 1
 
-# 1 worker per CPU
-workers Etc.nprocessors
+# Use actual container CPU allocation instead of host CPU count
+workers cpu_allocation
 
 # Preload the app before forking to save memory via Copy-On-Write
 preload_app!
