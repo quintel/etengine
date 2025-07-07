@@ -16,69 +16,70 @@ describe Api::V3::ScenariosController do
     request.headers.merge!(headers)
   end
 
-  describe "GET show.json" do
-    it "should return a scenario info" do
-      get :show, params: { :id => scenario.id }, :format => :json
+  describe 'GET show.json' do
+    it 'returns a scenario info' do
+      get :show, params: { id: scenario.id }, format: :json
       expect(response).to be_successful
       expect(assigns(:scenario)).to eq(scenario)
     end
   end
 
-  describe "GET batch.json" do
-    it "should return the info of multiple scenarios" do
-      get :batch, params: { :id => [scenarios.map(&:id)].join(',') }, :format => :json
+  describe 'GET batch.json' do
+    it 'returns the info of multiple scenarios' do
+      get :batch, params: { id: [scenarios.map(&:id)].join(',') }, format: :json
       expect(response).to be_successful
 
       expect(assigns(:serializers)).to all(be_a(ScenarioSerializer))
     end
   end
 
-  describe "PUT scenario" do
+  describe 'PUT scenario' do
     before do
-      @scenario = FactoryBot.create(:scenario, :user_values => {'foo' => 23.0})
+      @scenario = FactoryBot.create(:scenario, user_values: { 'foo' => 23.0 })
     end
 
-    it "should reset parameters" do
-      put :update, params: { :id => @scenario.id, :reset => true }
+    it 'resets parameters' do
+      put :update, params: { id: @scenario.id, reset: true }
       expect(response).to be_successful
       expect(@scenario.reload.user_values).to eq({})
     end
 
-    it "should merge parameters" do
-      put :update, params: {:id => @scenario.id, :scenario => {:user_values => {'bar' => 56.0}}}
+    it 'merges parameters' do
+      put :update, params: { id: @scenario.id, scenario: { user_values: { 'bar' => 56.0 } } }
       expect(response).to be_successful
-      expect(@scenario.reload.user_values.to_set).to eq({'foo' => 23.0, 'bar' => 56.0}.to_set)
+      expect(@scenario.reload.user_values.to_set).to eq({ 'foo' => 23.0, 'bar' => 56.0 }.to_set)
     end
 
-    it "should merge parameters resetting old values when needed" do
-      put :update, params: {:id => @scenario.id, :scenario => {:user_values => {'bar' => 56.0}}, :reset => true}
+    it 'merges parameters resetting old values when needed' do
+      put :update,
+        params: { id: @scenario.id, scenario: { user_values: { 'bar' => 56.0 } }, reset: true }
       expect(response).to be_successful
-      expect(@scenario.reload.user_values.to_set).to eq({'bar' => 56.0}.to_set)
+      expect(@scenario.reload.user_values.to_set).to eq({ 'bar' => 56.0 }.to_set)
     end
 
-    it "should update parameters" do
-      put :update, params: {:id => @scenario.id, :scenario => {:user_values => {'foo' => 56.0}}}
+    it 'updates parameters' do
+      put :update, params: { id: @scenario.id, scenario: { user_values: { 'foo' => 56.0 } } }
       expect(response).to be_successful
-      expect(@scenario.reload.user_values.to_set).to eq({'foo' => 56.0}.to_set)
-      expect(@scenario.reload.user_values).to eq({'foo' => 56.0})
+      expect(@scenario.reload.user_values.to_set).to eq({ 'foo' => 56.0 }.to_set)
+      expect(@scenario.reload.user_values).to eq({ 'foo' => 56.0 })
     end
 
-    it "shouldn't update end_year" do
-      put :update, params: {:id => @scenario.id, :scenario => {:end_year => 2050}}
+    it 'does not update end_year' do
+      put :update, params: { id: @scenario.id, scenario: { end_year: 2050 } }
       expect(response).to be_successful
       expect(@scenario.reload.end_year).to eq(2040)
     end
 
-    it "shouldn't update start_year" do
-      expect {
-        put :update, params: {:id => @scenario.id, :scenario => {:start_year => 2009}}
-      }.to_not change { @scenario.reload.start_year }
+    it 'does not update start_year' do
+      expect do
+        put(:update, params: { id: @scenario.id, scenario: { start_year: 2009 } })
+      end.not_to(change { @scenario.reload.start_year })
 
       expect(response).to be_successful
     end
 
-    it "shouldn't update area" do
-      put :update, params: {:id => @scenario.id, :scenario => {:area_code => 'de'}}
+    it 'does not update area' do
+      put :update, params: { id: @scenario.id, scenario: { area_code: 'de' } }
       expect(response).to be_successful
       expect(@scenario.reload.area_code).to eq('nl')
     end
@@ -129,7 +130,7 @@ describe Api::V3::ScenariosController do
   describe 'POST create' do
     context 'with supplied metadata' do
       before do
-        post :create, params: { scenario: { area_code: 'nl', metadata: metadata } }
+        post :create, params: { scenario: { area_code: 'nl', metadata: } }
       end
 
       let(:metadata) { { ctm_scenario_id: 123 } }
@@ -145,7 +146,7 @@ describe Api::V3::ScenariosController do
 
       it 'makes the ctm_scenario_id available' do
         scenario = Scenario.find(JSON.parse(response.body)['id'])
-        expect(scenario.metadata["ctm_scenario_id"]).to eq('123')
+        expect(scenario.metadata['ctm_scenario_id']).to eq('123')
       end
 
       context 'when metadata is huge' do
@@ -156,7 +157,9 @@ describe Api::V3::ScenariosController do
         end
 
         it 'gives an error message' do
-          expect(JSON.parse(response.body)['errors']).to have_key('metadata')
+          expect(JSON.parse(response.body)['errors']).to include(
+            'Invalid request parameters: total number of query parameters (15002) exceeds limit (4096)'
+          )
         end
       end
     end
@@ -190,9 +193,9 @@ describe Api::V3::ScenariosController do
   describe 'POST couple' do
     context 'when activating a coupling that exists' do
       before do
-        allow(Input).to receive(:coupling_groups).and_return(["steel_sector"])
+        allow(Input).to receive(:coupling_groups).and_return(['steel_sector'])
 
-        post :couple, params: { id: scenario.id, groups: ["steel_sector"] }
+        post :couple, params: { id: scenario.id, groups: ['steel_sector'] }
       end
 
       it 'is succesful' do
@@ -200,11 +203,11 @@ describe Api::V3::ScenariosController do
       end
 
       it 'activates the coupling' do
-        expect(scenario.reload.active_couplings).to include("steel_sector")
+        expect(scenario.reload.active_couplings).to include('steel_sector')
       end
 
       it 'returns the active coupling' do
-        expect(JSON.parse(response.body)['active_couplings']).to include("steel_sector")
+        expect(JSON.parse(response.body)['active_couplings']).to include('steel_sector')
       end
     end
 
@@ -230,8 +233,8 @@ describe Api::V3::ScenariosController do
   describe 'POST uncouple' do
     context 'when deactivating a coupling that exists' do
       before do
-        scenario.activate_coupling("steel_sector")
-        post :uncouple, params: { id: scenario.id, groups: ["steel_sector"] }
+        scenario.activate_coupling('steel_sector')
+        post :uncouple, params: { id: scenario.id, groups: ['steel_sector'] }
       end
 
       it 'is succesful' do
@@ -239,7 +242,7 @@ describe Api::V3::ScenariosController do
       end
 
       it 'deactivates the coupling' do
-        expect(scenario.reload.active_couplings).not_to include("steel_sector")
+        expect(scenario.reload.active_couplings).not_to include('steel_sector')
       end
 
       it 'returns the inactive coupling' do
@@ -249,7 +252,7 @@ describe Api::V3::ScenariosController do
 
     context 'when deactivating a coupling that does not exists' do
       before do
-        scenario.activate_coupling("steel_sector")
+        scenario.activate_coupling('steel_sector')
         post :uncouple, params: { id: scenario.id, groups: [:party] }
       end
 
@@ -258,7 +261,7 @@ describe Api::V3::ScenariosController do
       end
 
       it 'does not deactivate the coupling' do
-        expect(scenario.reload.inactive_couplings).not_to include("steel_sector")
+        expect(scenario.reload.inactive_couplings).not_to include('steel_sector')
       end
     end
 
