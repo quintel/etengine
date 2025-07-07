@@ -39,8 +39,8 @@ module Api
 
       def process_action(*args)
         super
-      rescue ActionDispatch::Http::Parameters::ParseError => e
-        render status: 400, json: { errors: [e.message] }
+      rescue ActionController::BadRequest, ActionDispatch::Http::Parameters::ParseError => e
+        render status: :bad_request, json: { errors: [e.message] }
       end
 
       private
