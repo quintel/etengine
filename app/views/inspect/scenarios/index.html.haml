@@ -4,35 +4,23 @@
 .container-fluid
   .row-fluid
     .span6
-      / ──────────── New + Search ───────────────────
-      %section#search_box
-        = form_tag inspect_scenarios_path, method: :get do
-          = search_field_tag :q, params[:q], placeholder: 'Scenario ID'
-          = submit_tag 'Search', class: 'btn'
+      = render Inspect::Scenarios::SearchComponent.new(query: params[:q])
 
-      %p
-        = link_to "Create a new scenario", new_inspect_scenario_path, class: 'btn btn-primary'
-        - if params[:api_scenario_id]
-          = link_to 'View current scenario', inspect_scenario_path(id: params[:api_scenario_id]), class: 'btn'
-
-    / ──────────── Download + Import ─────────────
     .span6.text-right
       = button_tag 'Download dump',
                    type: 'button',
                    class: 'btn btn-primary',
                    style: 'min-width:130px; text-align:center;',
-                   'data-toggle' => 'modal',
-                   'data-target' => '#dumpModal'
+                   data: { toggle: 'modal', target: '#dumpModal' }
 
       = button_tag 'Import dump',
                    type: 'button',
                    class: 'btn btn-secondary mt-2',
                    style: 'min-width:130px; text-align:center;',
-                   'data-toggle' => 'modal',
-                   'data-target' => '#loadModal'
+                   data: { toggle: 'modal', target: '#loadModal' }
 
-  = render 'dump_modal'
-  = render 'load_modal'
+= render Inspect::Scenarios::DumpModalComponent.new
+= render Inspect::Scenarios::LoadModalComponent.new
 
 %table.table.table-condensed.scenario-list
   %thead
