@@ -17,8 +17,8 @@ class CustomProfileCurveSerializer < CustomCurveSerializer
   #
   # Returns the full load hours associated to the profile
   def reduced
-    if config.sets_inputs? && @user_curve.scenario.user_values.key?(config.input_keys.first)
-      @user_curve.scenario.user_values[config.input_keys.first]
+    if config.sets_inputs? && @user_curve.scenario.user_values.key?(config.input_keys.last)
+      @user_curve.scenario.user_values[config.input_keys.last]
     else
       config.reducer.call(@curve.to_a)
     end
