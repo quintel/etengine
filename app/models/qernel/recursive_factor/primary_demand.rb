@@ -53,7 +53,7 @@ module Qernel::RecursiveFactor::PrimaryDemand
   end
 
   def primary_demand_factor(_edge)
-    factor_for_primary_demand if primary_energy_demand? || domestic_dead_end?
+    factor_for_primary_demand if primary_energy_demand? || right_dead_end?
   end
 
   def primary_demand_including_abroad_factor(_edge)
