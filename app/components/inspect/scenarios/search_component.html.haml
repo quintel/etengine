@@ -1,0 +1,9 @@
+%section#search_box
+  = form_tag inspect_scenarios_path, method: :get do
+    = search_field_tag :q, @query, placeholder: 'Scenario ID'
+    = submit_tag 'Search', class: 'btn'
+
+  %p
+    = link_to "Create a new scenario", new_inspect_scenario_path, class: 'btn btn-primary'
+    - if params[:api_scenario_id]
+      = link_to 'View current scenario', inspect_scenario_path(id: params[:api_scenario_id]), class: 'btn'

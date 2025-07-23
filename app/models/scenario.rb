@@ -61,7 +61,6 @@ class Scenario < ApplicationRecord
 
   validates_associated :scaler, on: :create
 
-  scope :in_start_menu, ->    { where(:in_start_menu => true) }
   scope :by_id,         ->(q) { where(id: q)}
 
   # Expired ApiScenario will be deleted by rake task :clean_expired_api_scenarios
@@ -75,8 +74,7 @@ class Scenario < ApplicationRecord
   # thousands of stale records.
   scope(:deletable, lambda do
     where(%q[
-        in_start_menu IS NULL
-        AND keep_compatible = ?
+        keep_compatible = ?
         AND scenario_users IS NULL
         AND (
           user_values IS NULL

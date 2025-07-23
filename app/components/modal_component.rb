@@ -3,6 +3,12 @@
 class ModalComponent < ApplicationComponent
   include Turbo::FramesHelper
 
+  option :id
+  option :title
+
+  renders_one :body
+  renders_one :footer
+
   StimulusConfig = Struct.new(
     :controller,
     :turbo_frame_id,
