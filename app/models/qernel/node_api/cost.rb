@@ -457,8 +457,10 @@ module Qernel
           node.inputs.sum(0.0) do |slot|
             if slot.carrier.key == :electricity
               0.0
-            else
+            elsif slot.carrier.cost_per_mj && slot.conversion && typical_input
               slot.carrier.cost_per_mj * slot.conversion * typical_input
+            else
+              0.0
             end
           end
         end
