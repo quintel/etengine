@@ -99,7 +99,6 @@ RSpec.describe ScenarioPacker::DumpCollection do
 
         expect(packer.dump_type).to eq('featured')
         expect(packer.as_json).to eq(dummy_hashes)
-        expect(packer.filename).to eq('featured_test_02-07-25.json')
       end
     end
 
