@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-shared_examples_for 'a valid CurveHandler::AttachService' do
+shared_examples_for 'a valid CurveHandler::Services::AttachService' do
   it 'is valid' do
     expect(service).to be_valid
   end
@@ -14,7 +14,7 @@ shared_examples_for 'a valid CurveHandler::AttachService' do
   end
 end
 
-RSpec.describe CurveHandler::AttachService do
+RSpec.describe CurveHandler::Services::AttachService do
   let(:file) { fixture_file_upload('price_curve.csv', 'text/csv') }
   let(:scenario) { FactoryBot.create(:scenario) }
   let(:metadata) { {} }
@@ -24,7 +24,7 @@ RSpec.describe CurveHandler::AttachService do
   describe 'when uploading a generic curve' do
     let(:config) { CurveHandler::Config.new(:generic, :generic) }
 
-    include_examples 'a valid CurveHandler::AttachService'
+    include_examples 'a valid CurveHandler::Services::AttachService'
 
     it 'saves the sanitized curve in the UserCurve' do
       curve = service.call.curve
@@ -47,7 +47,7 @@ RSpec.describe CurveHandler::AttachService do
       }
     end
 
-    include_examples 'a valid CurveHandler::AttachService'
+    include_examples 'a valid CurveHandler::Services::AttachService'
 
     it 'sets the metadata on the UserCurve' do
       user_curve = service.call
@@ -72,7 +72,7 @@ RSpec.describe CurveHandler::AttachService do
       end
     end
 
-    include_examples 'a valid CurveHandler::AttachService'
+    include_examples 'a valid CurveHandler::Services::AttachService'
 
     it 'sets the scenario input value with the reduced value' do
       # The 6570.0 comes from running CurveHandler::Reducers::FullLoadHours on the curve.
