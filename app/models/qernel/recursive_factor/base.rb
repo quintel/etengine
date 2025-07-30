@@ -43,10 +43,9 @@ module Qernel::RecursiveFactor::Base
     strategy_method,
     node_share_method = nil,
     edge = nil,
-    *args,
-    include_abroad: false
+    *args
   )
-    if (!include_abroad && abroad?) || recursive_factor_ignore?
+    if recursive_factor_ignore?
       0.0
     elsif (return_value = send(strategy_method, edge, *args)) != nil
       return_value
@@ -89,8 +88,7 @@ module Qernel::RecursiveFactor::Base
           0.0
         else
           parent_value = parent.recursive_factor(
-            strategy_method, node_share_method, edge, *args,
-            include_abroad: include_abroad
+            strategy_method, node_share_method, edge, *args
           )
 
           demanding_share * parent_output_compensation_factor *
@@ -143,10 +141,9 @@ module Qernel::RecursiveFactor::Base
     node_share_method = nil,
     edge = nil,
     *args,
-    include_abroad: false,
     value_type: :factor
   )
-    if (!include_abroad && abroad?) || recursive_factor_ignore?
+    if recursive_factor_ignore?
       0.0
     elsif (return_value = send(strategy_method, edge, *args)) != nil
       return_value
@@ -212,7 +209,6 @@ module Qernel::RecursiveFactor::Base
           # Recurse to the parent...
           parent_value = parent.recursive_factor_without_losses(
             strategy_method, node_share_method, edge, *args,
-            include_abroad: include_abroad,
             value_type: value_type
           )
 
@@ -238,20 +234,6 @@ module Qernel::RecursiveFactor::Base
     end
 
     @right_dead_end
-  end
-
-  # Public: Determines if the node has any parents into which we should
-  # recurse when performing calculations. A domestic dead end includes when the
-  # node inputs are all abroad.
-  #
-  # Returns true or false.
-  def domestic_dead_end?
-    unless defined?(@domestic_dead_end)
-      @domestic_dead_end = right_dead_end? ||
-        input_edges.all? { |edge| edge.rgt_node.abroad? }
-    end
-
-    @domestic_dead_end
   end
 
   # Public: A combination of output and loss output compensation factors.
