@@ -52,9 +52,9 @@ module Api
           status: :unprocessable_entity
         ) unless handler.valid?
 
-        uc   = handler.call
-        raw  = cfg.serializer.new(uc).as_json
-        json = serializer.send(:process, raw, uc, cfg)
+        uc            = handler.call
+        scaled_series = serializer.send(:process, uc.curve.to_a, uc, cfg)
+        json          = cfg.serializer.new(uc).as_json.merge(series: scaled_series)
 
         render json: json
       end

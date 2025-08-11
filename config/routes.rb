@@ -79,8 +79,11 @@ Rails.application.routes.draw do
         resource :households_space_heating_producer_order, only: %i[show update],
           controller: :user_sortables, sortable_type: :space_heating
 
-        resources :custom_curves, only: %i[index show update destroy],
-                  constraints: { id: %r{[a-z\d_\-/]+} }
+        resources :custom_curves, only: %i[index]
+
+        get    'custom_curves/*id', to: 'custom_curves#show'
+        put    'custom_curves/*id', to: 'custom_curves#update'
+        delete 'custom_curves/*id', to: 'custom_curves#destroy'
 
         resource :esdl_file, only: %i[show update]
 
