@@ -89,6 +89,11 @@ module Qernel
         convert_to(fuel_costs, unit)
       end
 
+      # TODO: This is an extraneous method implemented as a quick fix
+      def fuel_costs_dispatchable_per(unit)
+        convert_to(fuel_costs_dispatchable, unit)
+      end
+
       def revenue_per(unit)
         convert_to(revenue, unit)
       end

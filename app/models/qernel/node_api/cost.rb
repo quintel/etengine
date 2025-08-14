@@ -229,13 +229,14 @@ module Qernel
         end
       end
 
+      # TODO: Added fuel_costs_dispatchable as a quick fix - these fuel costs are not equal to the other fuel_costs
       # Public: The OPEX in €/year produced by a “typical” plant.
       #
       # Returns a float (€)
       def operating_expenses_including_fuel
         fetch(:operating_expenses_including_fuel) do
           operating_expenses + (
-              fuel_costs + (
+              fuel_costs_dispatchable + (
               co2_emissions_costs_per_typical_input +
               captured_biogenic_co2_costs_per_typical_input
               ) * typical_input
@@ -435,6 +436,22 @@ module Qernel
       #
       # Returns the the yearly fuel costs for one single plant.
       def fuel_costs
+        fetch(:fuel_costs) do
+          if typical_input && typical_input < 0
+            raise IllegalNegativeError.new(self, :typical_input, typical_input)
+          end
+          typical_input * weighted_carrier_cost_per_mj
+        end
+      end
+
+      # TODO: This is an extraneous method implemented as a quick fix
+      # Internal: Calculates the fuel costs for a single dispatchable plant
+      #
+      # Based on the input of fuel for one plant and the weighted costs of this / these carrier(s)
+      # per mj.
+      #
+      # Returns the the yearly fuel costs for one single dispatchable plant.
+      def fuel_costs_dispatchable
         fetch(:fuel_costs) do
           if typical_input && typical_input < 0
             raise IllegalNegativeError.new(self, :typical_input, typical_input)
