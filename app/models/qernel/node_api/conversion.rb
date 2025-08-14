@@ -89,6 +89,10 @@ module Qernel
         convert_to(fuel_costs, unit)
       end
 
+      def fuel_costs_dispatchable_per(unit)
+        convert_to(fuel_costs_dispatchable, unit)
+      end
+
       def revenue_per(unit)
         convert_to(revenue, unit)
       end
