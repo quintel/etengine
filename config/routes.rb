@@ -26,6 +26,7 @@ Rails.application.routes.draw do
           get :costs_parameters,       to: 'export#costs_parameters'
           get :sankey,                 to: 'export#sankey'
           get :storage_parameters,     to: 'export#storage_parameters'
+          get :bulk_output_curves,     to: 'export#bulk_output_curves'
           get :merit
           get :dump
           put :dashboard
@@ -80,7 +81,6 @@ Rails.application.routes.draw do
           controller: :user_sortables, sortable_type: :space_heating
 
         resources :custom_curves, only: %i[index]
-
         get    'custom_curves/*id', to: 'custom_curves#show'
         put    'custom_curves/*id', to: 'custom_curves#update'
         delete 'custom_curves/*id', to: 'custom_curves#destroy'
