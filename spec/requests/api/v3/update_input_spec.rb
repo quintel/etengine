@@ -13,7 +13,7 @@ describe 'Updating inputs with API v3' do
 
   let(:scenario) do
     FactoryBot.create(:scenario,
-      user: user,
+      user:,
       user_values: { 'unrelated_one' => 25.0 },
       balanced_values: { 'unrelated_two' => 75.0 })
   end
@@ -67,7 +67,7 @@ describe 'Updating inputs with API v3' do
           unit: 'bool',
           share_group: '',
           priority: 0
-        ),
+        )
     )
 
     allow(Input).to receive(:all).and_return(Input.records.values)
@@ -76,9 +76,9 @@ describe 'Updating inputs with API v3' do
   def put_scenario(values: {}, params: {}, headers: token_header)
     values = values.map { |k, v| [k.to_s, v.to_s] }.to_h
 
-    put "/api/v3/scenarios/#{scenario.id}",
+    put("/api/v3/scenarios/#{scenario.id}",
       params: params.merge(scenario: { user_values: values }),
-      headers: headers
+      headers:)
 
     scenario.reload
   end
@@ -134,7 +134,7 @@ describe 'Updating inputs with API v3' do
         expect(json['scenario']).to have_key('created_at')
 
         expect(json['scenario']['url'])
-          .to match(%r{/scenarios/#{ scenario.id }$})
+          .to match(%r{/scenarios/#{scenario.id}$})
       end
 
       it_behaves_like 'updating inputs'
@@ -599,7 +599,7 @@ describe 'Updating inputs with API v3' do
   context 'when updating their own public scenario' do
     before do
       scenario.delete_all_users
-      scenario.update!(user: user)
+      scenario.update!(user:)
 
       autobalance_scenario(
         values: { 'unrelated_one' => 25.0 },
@@ -619,7 +619,7 @@ describe 'Updating inputs with API v3' do
       user = create(:user)
 
       scenario.delete_all_users
-      scenario.update!(user: user)
+      scenario.update!(user:)
 
       autobalance_scenario(
         values: { 'unrelated_one' => 25.0 },
@@ -739,7 +739,7 @@ describe 'Updating inputs with API v3' do
     end
 
     it 'responds 422 Unprocessable Entity' do
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
     end
 
     it 'has an error message' do
@@ -757,7 +757,8 @@ describe 'Updating inputs with API v3' do
 
   context 'when requesting a non-existant query' do
     before do
-      put_scenario(values: { nongrouped: 10 }, params: { gqueries: %w[does_not_exist] }, headers: token_header)
+      put_scenario(values: { nongrouped: 10 }, params: { gqueries: %w[does_not_exist] },
+        headers: token_header)
     end
 
     it 'responds 422 Unprocessable Entity' do
@@ -790,7 +791,8 @@ describe 'Updating inputs with API v3' do
     before do
       put "/api/v3/scenarios/#{scenario.id}",
         params: '{',
-        headers: access_token_header(create(:user), :read).merge('CONTENT_TYPE' => 'application/json')
+        headers: access_token_header(create(:user),
+          :read).merge('CONTENT_TYPE' => 'application/json')
     end
 
     it 'responds 400 Bad Request' do

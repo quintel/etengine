@@ -2,7 +2,7 @@ require 'spec_helper'
 
 RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
   let(:user) { create(:user) }
-  let!(:scenario) { create(:scenario, user: user) }
+  let!(:scenario) { create(:scenario, user:) }
 
   describe 'GET index' do
     it 'returns invalid token without a proper access token' do
@@ -64,9 +64,12 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
 
       it 'adds the given users to the scenario' do
         expect(json).to contain_exactly(
-          a_hash_including('user_id' => nil, 'user_email' => 'viewer@test.com', 'role' => 'scenario_viewer', 'role_id' => 1, 'scenario_id' => scenario.id),
-          a_hash_including('user_id' => nil, 'user_email' => 'collaborator@test.com', 'role' => 'scenario_collaborator', 'role_id' => 2, 'scenario_id' => scenario.id),
-          a_hash_including('user_id' => nil, 'user_email' => 'owner@test.com', 'role' => 'scenario_owner', 'role_id' => 3, 'scenario_id' => scenario.id)
+          a_hash_including('user_id' => nil, 'user_email' => 'viewer@test.com',
+            'role' => 'scenario_viewer', 'role_id' => 1, 'scenario_id' => scenario.id),
+          a_hash_including('user_id' => nil, 'user_email' => 'collaborator@test.com',
+            'role' => 'scenario_collaborator', 'role_id' => 2, 'scenario_id' => scenario.id),
+          a_hash_including('user_id' => nil, 'user_email' => 'owner@test.com',
+            'role' => 'scenario_owner', 'role_id' => 3, 'scenario_id' => scenario.id)
         )
       end
     end
@@ -81,7 +84,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns 422: unprocessable entity' do
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns an error' do
@@ -99,7 +102,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns 422: unprocessable entity' do
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns an error' do
@@ -114,13 +117,13 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
           params: {
             scenario_users: [
               { user_email: 'viewer@test.com', role: 'scenario_viewer' },
-              { user_email: 'viewer@test.com', role: 'scenario_collaborator' },
+              { user_email: 'viewer@test.com', role: 'scenario_collaborator' }
             ]
           }
       end
 
       it 'returns 422: unprocessable entity' do
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns an error' do
@@ -133,7 +136,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
 
       before do
         create(
-          :scenario_user, scenario: scenario, user: user_viewer,
+          :scenario_user, scenario:, user: user_viewer,
           role_id: User::ROLES.key(:scenario_viewer)
         )
         post "/api/v3/scenarios/#{scenario.id}/users", as: :json,
@@ -146,7 +149,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns 422: unprocessable entity' do
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns an error' do
@@ -164,20 +167,18 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
 
       before do
         create(:scenario_user,
-          scenario: scenario, user: user_2,
-          role_id: User::ROLES.key(:scenario_viewer)
-        )
+          scenario:, user: user_2,
+          role_id: User::ROLES.key(:scenario_viewer))
         create(:scenario_user,
-          scenario: scenario, user: user_3,
-          role_id: User::ROLES.key(:scenario_collaborator)
-        )
+          scenario:, user: user_3,
+          role_id: User::ROLES.key(:scenario_collaborator))
 
         put "/api/v3/scenarios/#{scenario.id}/users", as: :json,
           headers: access_token_header(user, :delete),
           params: {
             scenario_users: [
               { user_id: user_2.id, role: 'scenario_owner' },
-              { user_id: user_3.id, role: 'scenario_viewer' },
+              { user_id: user_3.id, role: 'scenario_viewer' }
             ]
           }
       end
@@ -204,7 +205,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns 422: unprocessable entity' do
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns an error' do
@@ -220,7 +221,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
           headers: access_token_header(user, :delete),
           params: {
             scenario_users: [
-              { user_id: 999, role: 'scenario_collaborator' },
+              { user_id: 999, role: 'scenario_collaborator' }
             ]
           }
       end
@@ -240,13 +241,13 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
           headers: access_token_header(user, :delete),
           params: {
             scenario_users: [
-              { user_id: 999, role: 'scenario_collaborator' },
+              { user_id: 999, role: 'scenario_collaborator' }
             ]
           }
       end
 
       it 'returns 422: unprocessable entity' do
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns an error' do
@@ -261,9 +262,8 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
 
       before do
         create(:scenario_user,
-          scenario: scenario, user: user_2,
-          role_id: User::ROLES.key(:scenario_viewer)
-        )
+          scenario:, user: user_2,
+          role_id: User::ROLES.key(:scenario_viewer))
 
         put "/api/v3/scenarios/#{scenario.id}/users", as: :json,
           headers: access_token_header(user, :delete),
@@ -273,7 +273,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns 422: unprocessable entity' do
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns an error' do
@@ -291,13 +291,11 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
 
       before do
         create(:scenario_user,
-          scenario: scenario, user: user_2,
-          role_id: User::ROLES.key(:scenario_viewer)
-        )
+          scenario:, user: user_2,
+          role_id: User::ROLES.key(:scenario_viewer))
         create(:scenario_user,
-          scenario: scenario, user: user_3,
-          role_id: User::ROLES.key(:scenario_collaborator)
-        )
+          scenario:, user: user_3,
+          role_id: User::ROLES.key(:scenario_collaborator))
 
         delete "/api/v3/scenarios/#{scenario.id}/users", as: :json,
           headers: access_token_header(user, :delete),
@@ -327,7 +325,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns 422: unprocessable entity' do
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns an error' do
@@ -347,7 +345,7 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
 
       it 'returns 422: unprocessable entity' do
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns an error' do

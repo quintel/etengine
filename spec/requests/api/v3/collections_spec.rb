@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Api::V3::CollectionsController, type: :controller do
   let(:user) { create(:user) }
-  let(:scenario) { create(:scenario, user: user) }
+  let(:scenario) { create(:scenario, user:) }
   let(:idp_client) { instance_double(Faraday::Connection) }
   let(:response_body) { { 'data' => [], 'links' => {} } }
 
@@ -32,7 +32,7 @@ describe Api::V3::CollectionsController, type: :controller do
   describe 'GET #show' do
     context 'with a valid ID' do
       before do
-        allow(idp_client).to receive(:get).with("/api/v1/collections/1").and_return(double(body: response_body))
+        allow(idp_client).to receive(:get).with('/api/v1/collections/1').and_return(double(body: response_body))
         get :show, params: { id: 1 }
       end
 
@@ -68,7 +68,7 @@ describe Api::V3::CollectionsController, type: :controller do
     context 'when successful' do
       before do
         allow(upsert_service).to receive(:call).and_return(Dry::Monads::Success([{ 'id' => 1, 'title' => 'New Collection' }]))
-        post :create, params: params
+        post :create, params:
       end
 
       it 'responds successfully' do
@@ -83,11 +83,11 @@ describe Api::V3::CollectionsController, type: :controller do
     context 'when failure occurs' do
       before do
         allow(upsert_service).to receive(:call).and_return(Dry::Monads::Failure(['Invalid data']))
-        post :create, params: params
+        post :create, params:
       end
 
       it 'responds with unprocessable entity' do
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns the errors' do
@@ -107,7 +107,7 @@ describe Api::V3::CollectionsController, type: :controller do
     context 'when successful' do
       before do
         allow(upsert_service).to receive(:call).and_return(Dry::Monads::Success([{ 'id' => 1, 'title' => 'Updated Collection' }]))
-        put :update, params: params
+        put :update, params:
       end
 
       it 'responds successfully' do
@@ -122,11 +122,11 @@ describe Api::V3::CollectionsController, type: :controller do
     context 'when failure occurs' do
       before do
         allow(upsert_service).to receive(:call).and_return(Dry::Monads::Failure(['Invalid data']))
-        put :update, params: params
+        put :update, params:
       end
 
       it 'responds with unprocessable entity' do
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns the errors' do
@@ -138,7 +138,7 @@ describe Api::V3::CollectionsController, type: :controller do
   describe 'DELETE #destroy' do
     context 'with a valid ID' do
       before do
-        allow(idp_client).to receive(:delete).with("/api/v1/collections/1").and_return(double(body: response_body))
+        allow(idp_client).to receive(:delete).with('/api/v1/collections/1').and_return(double(body: response_body))
         delete :destroy, params: { id: 1 }
       end
 

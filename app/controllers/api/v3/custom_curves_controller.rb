@@ -49,7 +49,7 @@ module Api
 
         return render(
           json: { errors: handler.errors, error_keys: handler.error_keys },
-          status: :unprocessable_entity
+          status: :unprocessable_content
         ) unless handler.valid?
 
         uc            = handler.call
@@ -91,7 +91,7 @@ module Api
 
         render(
           json: { errors: ["No such custom curve: #{params[:id].inspect}"] },
-          status: :unprocessable_entity
+          status: :unprocessable_content
         )
       end
 
@@ -111,7 +111,7 @@ module Api
             errors: ['"file" was not a valid multipart/form-data file'],
             error_keys: [:not_multipart_form_data]
           },
-          status: :unprocessable_entity
+          status: :unprocessable_content
         )
       end
 
@@ -125,7 +125,7 @@ module Api
             errors: ['Curve should not be larger than 1MB'],
             error_keys: [:file_too_large]
           },
-          status: :unprocessable_entity
+          status: :unprocessable_content
         )
       end
     end

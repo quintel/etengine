@@ -36,12 +36,12 @@ module Api
       # Returns all sortable orders (grouped by type, and by subtype for heat_network)
       def index
         data = SORTABLES.each_with_object({}) do |(type, method_name), h|
-          if type == :heat_network
-            h[type] = HEAT_NETWORK_SUBTYPES.each_with_object({}) do |sub, sub_h|
-              sub_h[sub] = scenario.public_send(method_name, sub).order
+          h[type] = if type == :heat_network
+            HEAT_NETWORK_SUBTYPES.index_with do |sub|
+              scenario.public_send(method_name, sub).order
             end
           else
-            h[type] = scenario.public_send(method_name).order
+            scenario.public_send(method_name).order
           end
         end
 
@@ -115,7 +115,7 @@ module Api
       end
 
       def render_errors(sortable)
-        render json: { errors: sortable.errors.full_messages }, status: :unprocessable_entity
+        render json: { errors: sortable.errors.full_messages }, status: :unprocessable_content
       end
     end
   end

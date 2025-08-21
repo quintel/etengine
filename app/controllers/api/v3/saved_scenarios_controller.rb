@@ -72,7 +72,7 @@ module Api
       private
 
       def hydrate_scenarios(saved_scenarios)
-        saved_scenarios = saved_scenarios.is_a?(Array) ? saved_scenarios : [saved_scenarios]
+        saved_scenarios = [saved_scenarios] unless saved_scenarios.is_a?(Array)
 
         scenarios = Scenario
           .accessible_by(current_ability)
@@ -117,7 +117,7 @@ module Api
         if failure.respond_to?(:to_response)
           render failure.to_response
         else
-          render json: { errors: failure }, status: :unprocessable_entity
+          render json: { errors: failure }, status: :unprocessable_content
         end
       end
     end
