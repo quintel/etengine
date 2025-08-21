@@ -153,7 +153,8 @@ module Api
         if errors.empty? && extra_condition
           render json: @succesful_records, status: ok_status
         else
-          render json: { success: @succesful_records, errors: errors }, status: :unprocessable_entity
+          render json: { success: @succesful_records, errors: },
+            status: :unprocessable_content
         end
       end
     end

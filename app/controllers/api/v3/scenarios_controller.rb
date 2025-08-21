@@ -107,7 +107,7 @@ module Api
         end
 
         if serializer.errors.any?
-          render json: { errors: serializer.errors }, status: :unprocessable_entity
+          render json: { errors: serializer.errors }, status: :unprocessable_content
         else
           render json: serializer
         end
@@ -138,7 +138,7 @@ module Api
           unless parent && can?(:read, parent)
             render(
               json: { errors: { scenario_id: ['does not exist'] } },
-              status: :unprocessable_entity
+              status: :unprocessable_content
             )
             return
           end
@@ -194,7 +194,7 @@ module Api
 
         render json: ScenarioSerializer.new(self, @scenario)
       rescue ActiveRecord::RecordInvalid
-        render json: { errors: @scenario.errors }, status: :unprocessable_entity
+        render json: { errors: @scenario.errors }, status: :unprocessable_content
       end
 
       # POST /api/v3/scenarios/interpolate
@@ -273,7 +273,7 @@ module Api
         end
 
         if serializer.errors.any?
-          render json: { errors: serializer.errors }, status: :unprocessable_entity
+          render json: { errors: serializer.errors }, status: :unprocessable_content
         else
           render json: serializer
         end
@@ -307,7 +307,7 @@ module Api
           # redirect_to api_v3_scenario_url(scenario)
           render json: ScenarioSerializer.new(self, scenario)
         else
-          render json: { errors: merger.errors }, status: :unprocessable_entity
+          render json: { errors: merger.errors }, status: :unprocessable_content
         end
       rescue ScenarioMerger::Error => e
         render json: { errors: { base: [e.message] } }, status: :bad_request
@@ -328,7 +328,7 @@ module Api
           if @scenario.save
             render json: ScenarioSerializer.new(self, @scenario)
           else
-            render json: { errors: @scenario.errors.messages }, status: :unprocessable_entity
+            render json: { errors: @scenario.errors.messages }, status: :unprocessable_content
           end
         end
       end
@@ -342,7 +342,7 @@ module Api
         if @scenario.save
           render json: ScenarioSerializer.new(self, @scenario)
         else
-          render json: { errors: @scenario.errors.messages }, status: :unprocessable_entity
+          render json: { errors: @scenario.errors.messages }, status: :unprocessable_content
         end
       end
 
@@ -491,7 +491,7 @@ module Api
         end
 
         if serializer.errors.any?
-          render json: { errors: serializer.errors }, status: :unprocessable_entity
+          render json: { errors: serializer.errors }, status: :unprocessable_content
         else
           render json: serializer
         end

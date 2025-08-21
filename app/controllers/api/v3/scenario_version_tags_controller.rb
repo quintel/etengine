@@ -3,7 +3,7 @@ module Api
     class ScenarioVersionTagsController < BaseController
       include UsesScenario
 
-      skip_before_action :authorize_scenario!, :only => :index
+      skip_before_action :authorize_scenario!, only: :index
 
       before_action :validate_scenario_version_tag, only: :update
 
@@ -37,7 +37,7 @@ module Api
         version = ScenarioVersionTag.new(
           description: version_params[:description],
           user: current_user,
-          scenario: scenario
+          scenario:
         )
 
         version.save
@@ -45,7 +45,7 @@ module Api
         render json: ScenarioVersionSerializer.new(scenario)
       rescue ActiveRecord::RecordNotUnique
         render(
-          status: :unprocessable_entity,
+          status: :unprocessable_content,
           json: { errors: ['A version was already tagged'] }
         )
       end
@@ -60,7 +60,7 @@ module Api
           render json: ScenarioVersionSerializer.new(scenario)
         else
           render(
-            status: :unprocessable_entity,
+            status: :unprocessable_content,
             json: { errors: version.errors.messages }
           )
         end

@@ -140,7 +140,7 @@ RSpec.describe Api::V3::UserSortablesController, type: :controller do
             order:         new_order
           }
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         json = JSON.parse(response.body)
         expect(json['errors']).to include('failure')
       end

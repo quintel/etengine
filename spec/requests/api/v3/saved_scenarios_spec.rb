@@ -117,7 +117,7 @@ describe Api::V3::SavedScenariosController, type: :controller do
       end
 
       it 'responds with unprocessable entity' do
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns the errors' do
@@ -165,7 +165,7 @@ describe Api::V3::SavedScenariosController, type: :controller do
       end
 
       it 'responds with unprocessable entity' do
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns the errors' do
