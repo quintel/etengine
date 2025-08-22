@@ -661,7 +661,7 @@ describe 'Qernel::NodeApi cost calculations' do
     end
   end
 
-  describe '#fuel_costs' do
+  describe '#fuel_costs_hourly_electricity' do
     context 'with only electricity as input' do
       before do
         node.add_slot(build_slot(node, :useable_heat, :output, 0.9))
@@ -675,7 +675,7 @@ describe 'Qernel::NodeApi cost calculations' do
       end
 
       it 'calculates fuel costs per output' do
-        expect(node.node_api.fuel_costs_per(:mwh_heat)).to eq(400000000.0)
+        expect(node.node_api.fuel_costs_hourly_electricity_per(:mwh_heat)).to eq(400000000.0)
       end
     end
 
@@ -695,7 +695,7 @@ describe 'Qernel::NodeApi cost calculations' do
       end
 
       it 'calculates fuel costs per output' do
-        expect(node.node_api.fuel_costs_per(:mwh_heat)).to eq(8000.0)
+        expect(node.node_api.fuel_costs_hourly_electricity_per(:mwh_heat)).to eq(8000.0)
       end
     end
 
@@ -723,7 +723,7 @@ describe 'Qernel::NodeApi cost calculations' do
       end
 
       it 'calculates fuel costs per output' do
-        expect(node.node_api.fuel_costs_per(:mwh_heat)).to eq(24012000.0)
+        expect(node.node_api.fuel_costs_hourly_electricity_per(:mwh_heat)).to eq(24012000.0)
       end
     end
   end
