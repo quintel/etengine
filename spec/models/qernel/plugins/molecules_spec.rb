@@ -136,6 +136,33 @@ RSpec.shared_examples_for 'running the molecule graph plugin' do
       expect(molecule_node.demand).to eq(35) # 25% of elec. 100% of natural gas.
     end
   end
+
+  context 'when the molecule node uses input with a carrier attribute and a multiplier' do
+    let(:conversion_attributes) do
+      super().merge(direction: :input, conversion: {
+        electricity: 'carrier: co2_conversion_per_mj, factor: 0.5',
+        natural_gas: 1.0
+      })
+    end
+
+    before do
+      allow(energy_node.input(:electricity).carrier)
+        .to receive(:co2_conversion_per_mj).and_return(0.4)
+
+      allow(energy_node.input(:electricity)).to receive(:conversion).and_return(1.0)
+      allow(energy_node.input(:natural_gas)).to receive(:conversion).and_return(0.1)
+
+      graph.calculate
+    end
+
+    # electricity: 0.4 * 0.5 = 0.2, natural_gas: 1.0
+    # demand = (energy_node.demand * 0.2) + (energy_node.demand * 0.1)
+    # But input(:natural_gas).conversion is 0.1, so:
+    # demand = (100 * 1.0 * 0.2) + (100 * 0.1 * 1.0) = 20 + 10 = 30
+    it 'applies the multiplier to the carrier attribute' do
+      expect(molecule_node.demand).to eq(30)
+    end
+  end
 end
 
 RSpec.describe Qernel::Plugins::Molecules do
