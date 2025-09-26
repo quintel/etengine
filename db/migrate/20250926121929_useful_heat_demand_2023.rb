@@ -5,15 +5,6 @@ class UsefulHeatDemand2023 < ActiveRecord::Migration[7.1]
 
   # Reverse mapping from new area codes to old area codes
   OLD_AREA_CODE_MAPPING = {
-    # TODO: HOW TO HANDLE MERGED MUNICIPALITIES?
-    # === Merged municipalities ===
-    "GM1980_dijk_en_waard" => "GM0398_heerhugowaard", # At the moment the mapping just relies on the first municipality as representative...
-    "GM0363_amsterdam" => "GM0457_weesp",
-    "GM1992_voorne_aan_zee" => "GM0501_brielle", # At the moment the mapping just relies on the first municipality as representative...
-    "GM1982_land_van_cuijk" => "GM0756_boxmeer", # At the moment the mapping just relies on the first municipality as representative...
-    "GM1981_maashorst" => "GM0856_uden", # At the moment the mapping just relies on the first municipality as representative...
-    "GM0439_purmerend" => "GM0370_beemster",
-
     # === Province rename ===
     "PV21_fryslan" => "PV21_friesland",
 
@@ -65,6 +56,7 @@ class UsefulHeatDemand2023 < ActiveRecord::Migration[7.1]
     1965_1984
     1985_2004
     2005_present
+    future
   ].freeze
 
 
@@ -75,6 +67,7 @@ class UsefulHeatDemand2023 < ActiveRecord::Migration[7.1]
     migrate_scenarios do |scenario|
       next unless scenario.area_code.start_with?('GM', 'ES', 'PV')
       next if scenario.area_code == 'ES_spain'
+      next unless Atlas::Dataset.exists?(scenario.area_code)
       migrate_useful_heat_demand(scenario)
     end
 
@@ -103,16 +96,21 @@ class UsefulHeatDemand2023 < ActiveRecord::Migration[7.1]
 
         default_key = user_key_to_default_key(user_key)
         old_area_code = get_old_area_code(scenario.area_code)
-        default_houses = @defaults[old_area_code][default_key]
-        default_houses_23 = scenario.area[default_key]
-        user_houses = scenario.user_values[user_key]
 
-        if user_houses < default_houses
-          scaling_factor = user_houses / default_houses
-          scenario.user_values[user_key] = default_houses_23 * scaling_factor
-          scenario.user_values[user_key] = [scenario.area[user_key], scenario.user_values[user_key]].max
-        else
-          scenario.user_values[user_key] = default_houses_23
+        # Skip if no defaults for this area
+        next unless @defaults[old_area_code]&.key?(default_key)
+
+        default_insulation = @defaults[old_area_code][default_key]
+        default_insulation_23 = scenario.area[user_key]
+        user_insulation = scenario.user_values[user_key]
+
+        # Skip if area data is missing
+        next if default_insulation_23.nil?
+
+        if user_insulation < default_insulation
+          scaling_factor = user_insulation / default_insulation
+          scenario.user_values[user_key] = default_insulation_23 * scaling_factor
+          scenario.user_values[user_key] = [1, scenario.user_values[user_key]].max
         end
       end
     end

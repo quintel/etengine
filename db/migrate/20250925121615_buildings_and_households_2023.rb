@@ -5,15 +5,6 @@ class BuildingsAndHouseholds2023 < ActiveRecord::Migration[7.1]
 
   # Reverse mapping from new area codes to old area codes
   OLD_AREA_CODE_MAPPING = {
-    # TODO: HOW TO HANDLE MERGED MUNICIPALITIES?
-    # === Merged municipalities ===
-    "GM1980_dijk_en_waard" => "GM0398_heerhugowaard", # At the moment the mapping just relies on the first municipality as representative...
-    "GM0363_amsterdam" => "GM0457_weesp",
-    "GM1992_voorne_aan_zee" => "GM0501_brielle", # At the moment the mapping just relies on the first municipality as representative...
-    "GM1982_land_van_cuijk" => "GM0756_boxmeer", # At the moment the mapping just relies on the first municipality as representative...
-    "GM1981_maashorst" => "GM0856_uden", # At the moment the mapping just relies on the first municipality as representative...
-    "GM0439_purmerend" => "GM0370_beemster",
-
     # === Province rename ===
     "PV21_fryslan" => "PV21_friesland",
 
@@ -65,6 +56,7 @@ class BuildingsAndHouseholds2023 < ActiveRecord::Migration[7.1]
     1965_1984
     1985_2004
     2005_present
+    future
   ].freeze
 
   def up
@@ -75,6 +67,8 @@ class BuildingsAndHouseholds2023 < ActiveRecord::Migration[7.1]
     migrate_scenarios do |scenario|
       next unless scenario.area_code.start_with?('GM', 'ES', 'PV')
       next if scenario.area_code == 'ES_spain'
+      next unless Atlas::Dataset.exists?(scenario.area_code)
+
       migrate_buildings(scenario)
       migrate_households(scenario)
     end
@@ -87,8 +81,11 @@ class BuildingsAndHouseholds2023 < ActiveRecord::Migration[7.1]
   end
 
   def user_key_to_default_key(user_key)
-    if user_key == 'buildings_number_of_buildings_present'
+    if user_key == 'buildings_number_of_buildings_present' || user_key == 'buildings_number_of_buildings_future'
       'present_number_of_buildings'
+    elsif user_key.start_with?('households_number_of_') && user_key.end_with?('_future')
+      # For future households, use the present equivalent as the default
+      user_key.sub('_future', '_present')
     elsif user_key.start_with?('households_number_of_')
       user_key.sub('households_number_of_', 'present_number_of_')
     else
@@ -97,20 +94,21 @@ class BuildingsAndHouseholds2023 < ActiveRecord::Migration[7.1]
   end
 
   def migrate_buildings(scenario)
-    user_key = 'buildings_number_of_buildings_present'
-    return unless scenario.user_values.key?(user_key)
+    user_keys = ['buildings_number_of_buildings_present', 'buildings_number_of_buildings_future']
 
-    default_key = user_key_to_default_key(user_key)
-    old_area_code = get_old_area_code(scenario.area_code)
-    default_buildings_original = @defaults[old_area_code][default_key]
-    default_buildings_23 = scenario.area[default_key]
+    user_keys.each do |user_key|
+      next unless scenario.user_values.key?(user_key)
 
-    user_buildings = scenario.user_values[user_key]
-    if user_buildings < default_buildings_original
-      scaling_factor = user_buildings / default_buildings_original
-      scenario.user_values[user_key] = default_buildings_23 * scaling_factor
-    else
-      scenario.user_values[user_key] = default_buildings_23
+      default_key = user_key_to_default_key(user_key)
+      old_area_code = get_old_area_code(scenario.area_code)
+      default_buildings_original = @defaults[old_area_code][default_key]
+      default_buildings_23 = scenario.area[default_key]
+
+      user_buildings = scenario.user_values[user_key]
+      if user_buildings < default_buildings_original
+        scaling_factor = user_buildings / default_buildings_original
+        scenario.user_values[user_key] = default_buildings_23 * scaling_factor
+      end
     end
   end
 
@@ -129,8 +127,6 @@ class BuildingsAndHouseholds2023 < ActiveRecord::Migration[7.1]
 
         if user_houses < default_houses
           scenario.user_values[user_key] = [user_houses, default_houses_23].min
-        else
-          scenario.user_values[user_key] = default_houses_23
         end
       end
     end
