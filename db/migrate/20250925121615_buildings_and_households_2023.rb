@@ -59,6 +59,12 @@ class BuildingsAndHouseholds2023 < ActiveRecord::Migration[7.1]
     future
   ].freeze
 
+  BUILDINGS_PRESENT = 'buildings_number_of_buildings_present'.freeze
+  BUILDINGS_FUTURE = 'buildings_number_of_buildings_future'.freeze
+  BUILDINGS_ATTRIBUTE = 'present_number_of_buildings'.freeze
+  BUILDINGS_OLD_SIZE = 293.627703981492.freeze
+  BUILDINGS_SIZE_ATTRIBUTE = 'area_per_building_residence_equivalent'.freeze
+
   def up
     @defaults = JSON.load(File.read(
       Rails.root.join("db/migrate/#{File.basename(__FILE__, '.rb')}/dataset_values.json")
@@ -81,9 +87,7 @@ class BuildingsAndHouseholds2023 < ActiveRecord::Migration[7.1]
   end
 
   def user_key_to_default_key(user_key)
-    if user_key == 'buildings_number_of_buildings_present' || user_key == 'buildings_number_of_buildings_future'
-      'present_number_of_buildings'
-    elsif user_key.start_with?('households_number_of_') && user_key.end_with?('_future')
+    if user_key.start_with?('households_number_of_') && user_key.end_with?('_future')
       # For future households, use the present equivalent as the default
       user_key.sub('_future', '_present')
     elsif user_key.start_with?('households_number_of_')
@@ -94,21 +98,32 @@ class BuildingsAndHouseholds2023 < ActiveRecord::Migration[7.1]
   end
 
   def migrate_buildings(scenario)
-    user_keys = ['buildings_number_of_buildings_present', 'buildings_number_of_buildings_future']
-
-    user_keys.each do |user_key|
-      next unless scenario.user_values.key?(user_key)
-
-      default_key = user_key_to_default_key(user_key)
+    # Present
+    if scenario.user_values.key?(BUILDINGS_PRESENT)
       old_area_code = get_old_area_code(scenario.area_code)
-      default_buildings_original = @defaults[old_area_code][default_key]
-      default_buildings_23 = scenario.area[default_key]
+      old_default = @defaults[old_area_code][BUILDINGS_ATTRIBUTE]
 
-      user_buildings = scenario.user_values[user_key]
-      if user_buildings < default_buildings_original
-        scaling_factor = user_buildings / default_buildings_original
-        scenario.user_values[user_key] = default_buildings_23 * scaling_factor
+      # If user value was set below the old default/max
+      # Then calculate the percentage of change in the input
+      # And multiply that with the new default/max
+      if scenario.user_values[BUILDINGS_PRESENT] < old_default
+        scenario.user_values[BUILDINGS_PRESENT] = (
+          scenario.area[BUILDINGS_ATTRIBUTE] * (               # new default/max
+            scenario.user_values[BUILDINGS_PRESENT] / old_default       # change
+          )
+        )
       end
+    end
+
+    # Future
+    if scenario.user_values.key?(BUILDINGS_FUTURE)
+      # When buildings were added (newly built)
+      # Then multiply those by the change in size
+      scenario.user_values[BUILDINGS_FUTURE] = (
+        scenario.user_values[BUILDINGS_FUTURE] * (
+          BUILDINGS_OLD_SIZE / scenario.area[BUILDINGS_SIZE_ATTRIBUTE]
+        )
+      )
     end
   end
 

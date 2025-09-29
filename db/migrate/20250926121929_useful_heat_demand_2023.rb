@@ -56,7 +56,6 @@ class UsefulHeatDemand2023 < ActiveRecord::Migration[7.1]
     1965_1984
     1985_2004
     2005_present
-    future
   ].freeze
 
 
