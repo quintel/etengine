@@ -96,15 +96,9 @@ class UsefulHeatDemand2023 < ActiveRecord::Migration[7.1]
         default_key = user_key_to_default_key(user_key)
         old_area_code = get_old_area_code(scenario.area_code)
 
-        # Skip if no defaults for this area
-        next unless @defaults[old_area_code]&.key?(default_key)
-
         default_insulation = @defaults[old_area_code][default_key]
-        default_insulation_23 = scenario.area[user_key]
+        default_insulation_23 = scenario.area[default_key]
         user_insulation = scenario.user_values[user_key]
-
-        # Skip if area data is missing
-        next if default_insulation_23.nil?
 
         if user_insulation < default_insulation
           scaling_factor = user_insulation / default_insulation

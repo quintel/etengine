@@ -74,7 +74,7 @@ class BuildingsAndHouseholds2023 < ActiveRecord::Migration[7.1]
       next unless scenario.area_code.start_with?('GM', 'ES', 'PV')
       next if scenario.area_code == 'ES_spain'
       next unless Atlas::Dataset.exists?(scenario.area_code)
-
+      
       migrate_buildings(scenario)
       migrate_households(scenario)
     end
@@ -88,8 +88,7 @@ class BuildingsAndHouseholds2023 < ActiveRecord::Migration[7.1]
 
   def user_key_to_default_key(user_key)
     if user_key.start_with?('households_number_of_') && user_key.end_with?('_future')
-      # For future households, use the present equivalent as the default
-      user_key.sub('_future', '_present')
+      "present_number_of_residences"
     elsif user_key.start_with?('households_number_of_')
       user_key.sub('households_number_of_', 'present_number_of_')
     else
@@ -139,7 +138,6 @@ class BuildingsAndHouseholds2023 < ActiveRecord::Migration[7.1]
         default_houses = @defaults[old_area_code][default_key]
         default_houses_23 = scenario.area[default_key]
         user_houses = scenario.user_values[user_key]
-
         if user_houses < default_houses
           scenario.user_values[user_key] = [user_houses, default_houses_23].min
         end
