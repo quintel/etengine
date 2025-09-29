@@ -41,11 +41,8 @@ class RenameAreas2023 < ActiveRecord::Migration[7.0]
     }.freeze
 
   def up
-    migrate_scenarios do |scenario|
-      if AREA_CODE_MAPPING.key?(scenario.area_code)
-        new_code = AREA_CODE_MAPPING[scenario.area_code]
-        scenario.update!(area_code: new_code)
-      end
+    AREA_CODE_MAPPING.each do |old_code, new_code|
+      Scenario.where(area_code: old_code).update_all(area_code: new_code)
     end
   end
 end
