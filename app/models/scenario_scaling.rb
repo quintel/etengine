@@ -4,10 +4,6 @@ class ScenarioScaling < ActiveRecord::Base
   SCALEABLE_AREA_ATTRS = Atlas::Dataset.attribute_set
     .select { |attr| attr.options[:proportional] }.map(&:name).freeze
 
-  # Area attributes which are always set to a specified value, regardless of the
-  # original area setting.
-  CUSTOM_AREA_ATTRS = { use_network_calculations: false }.freeze
-
   belongs_to :scenario, inverse_of: :scaler
 
   validates :area_attribute, presence: true, inclusion: {
@@ -157,10 +153,6 @@ class ScenarioScaling < ActiveRecord::Base
   def scale_area_dataset!(data)
     SCALEABLE_AREA_ATTRS.each do |key|
       scale_hash_value(data, key)
-    end
-
-    CUSTOM_AREA_ATTRS.each do |key, value|
-      data[key] = value
     end
 
     data[:disabled_sectors] ||= []
