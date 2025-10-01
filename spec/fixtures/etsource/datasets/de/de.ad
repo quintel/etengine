@@ -15,7 +15,6 @@
 - has_merit_order = true
 - has_metal = true
 - has_mountains = false
-- has_other = true
 - has_solar_csp = false
 - has_import_export = true
 - use_merit_order_demands = false
