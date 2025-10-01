@@ -6,7 +6,6 @@ describe AreaSerializer do
       'area' => 'nl',
       'enabled' => { 'etmodel' => true, 'etengine' => true },
       'has_agriculture' => true,
-      'use_network_calculations' => false,
       'co2_percentage_free' => 0.85
     }
   end
@@ -35,10 +34,6 @@ describe AreaSerializer do
     it 'has the has_agriculture attribute' do
       expect(json).to include('has_agriculture' => true)
     end
-
-    it 'has the use_network_calculations attribute' do
-      expect(json).to include('use_network_calculations' => false)
-    end
   end
 
   context 'when detailed=true' do
@@ -62,10 +57,6 @@ describe AreaSerializer do
 
     it 'has the has_agriculture attribute' do
       expect(json).to include('has_agriculture' => true)
-    end
-
-    it 'has the use_network_calculations attribute' do
-      expect(json).to include('use_network_calculations' => false)
     end
   end
 end

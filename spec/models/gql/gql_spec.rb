@@ -60,17 +60,4 @@ describe Gql::Gql do
         .to be_within(1e-9).of(50 * (1.01**29))
     end
   end
-
-  describe 'use_network_calculations' do
-    it 'is unchanged for unscaled scenarios' do
-      gql.prepare
-      expect(gql.future.graph.area.use_network_calculations).to eql(true)
-    end
-
-    it 'is false for scaled scenarios' do
-      scenario.build_scaler(base_value: 1000, value: 10)
-      gql.prepare
-      expect(gql.future.graph.area.use_network_calculations).to eql(false)
-    end
-  end
 end
