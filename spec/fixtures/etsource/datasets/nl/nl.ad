@@ -9,7 +9,6 @@
 - has_climate = true
 - has_coastline = true
 - has_cold_network = false
-- has_electricity_storage = true
 - has_employment = true
 - has_industry = true
 - has_lignite = false
