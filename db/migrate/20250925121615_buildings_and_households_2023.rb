@@ -67,18 +67,18 @@ class BuildingsAndHouseholds2023 < ActiveRecord::Migration[7.1]
   # Only migrate scenarios from (and including) this ID onwards to avoid re-processing
   # scenarios already migrated
   FIRST_MIGRATABLE_SCENARIO_ID = 336076
-  FLAG = false
 
   def up
     @defaults = JSON.load(File.read(
       Rails.root.join("db/migrate/#{File.basename(__FILE__, '.rb')}/dataset_values.json")
     ))
+    @flag = false
 
     migrate_scenarios do |scenario|
       if scenario.id == FIRST_MIGRATABLE_SCENARIO_ID
-        FLAG = true
+        @flag = true
       end
-      next if FLAG
+      next unless @flag
       next unless scenario.area_code.start_with?('GM', 'ES', 'PV')
       next if scenario.area_code == 'ES_spain'
       next unless Atlas::Dataset.exists?(scenario.area_code)
