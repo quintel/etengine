@@ -64,6 +64,10 @@ class BuildingsAndHouseholds2023 < ActiveRecord::Migration[7.1]
   BUILDINGS_ATTRIBUTE = 'present_number_of_buildings'.freeze
   BUILDINGS_OLD_SIZE = 293.627703981492.freeze
   BUILDINGS_SIZE_ATTRIBUTE = 'area_per_building_residence_equivalent'.freeze
+  # Only migrate scenarios from (and including) this ID onwards to avoid re-processing
+  # scenarios already migrated
+  FIRST_MIGRATABLE_SCENARIO_ID = 336076
+  FLAG = false
 
   def up
     @defaults = JSON.load(File.read(
@@ -71,10 +75,14 @@ class BuildingsAndHouseholds2023 < ActiveRecord::Migration[7.1]
     ))
 
     migrate_scenarios do |scenario|
+      if scenario.id == FIRST_MIGRATABLE_SCENARIO_ID
+        FLAG = true
+      end
+      next if FLAG
       next unless scenario.area_code.start_with?('GM', 'ES', 'PV')
       next if scenario.area_code == 'ES_spain'
       next unless Atlas::Dataset.exists?(scenario.area_code)
-      
+
       migrate_buildings(scenario)
       migrate_households(scenario)
     end
