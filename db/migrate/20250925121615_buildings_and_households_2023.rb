@@ -66,7 +66,7 @@ class BuildingsAndHouseholds2023 < ActiveRecord::Migration[7.1]
   BUILDINGS_SIZE_ATTRIBUTE = 'area_per_building_residence_equivalent'.freeze
   # Only migrate scenarios from (and including) this ID onwards to avoid re-processing
   # scenarios already migrated
-  FIRST_MIGRATABLE_SCENARIO_ID = 336076
+  FIRST_MIGRATABLE_SCENARIO_ID = 1189929
 
   def up
     @defaults = JSON.load(File.read(
@@ -146,7 +146,7 @@ class BuildingsAndHouseholds2023 < ActiveRecord::Migration[7.1]
         default_houses = @defaults[old_area_code][default_key]
         default_houses_23 = scenario.area[default_key]
         user_houses = scenario.user_values[user_key]
-        if user_houses < default_houses
+        if user_houses && user_houses < default_houses
           scenario.user_values[user_key] = [user_houses, default_houses_23].min
         end
       end
