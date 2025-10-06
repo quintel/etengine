@@ -24,7 +24,7 @@ module Gql
     def query(obj, input_value = nil)
       case obj
       when Gquery                  then subquery(obj.key) # sending it to subquery allows for caching of gqueries
-      when Input, InitializerInput then execute_input(obj, input_value)
+      when Input                   then execute_input(obj, input_value)
       when Symbol                  then subquery(obj)
       when String                  then rubel_execute(Command.new(obj))
       when Command, Proc           then rubel_execute(obj)

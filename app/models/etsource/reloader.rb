@@ -32,7 +32,6 @@ module Etsource
       datasets
       gqueries
       graphs
-      initializer_inputs
       inputs
       presets
     ].freeze
@@ -41,7 +40,6 @@ module Etsource
     RECORD_RELOAD = %w[
       gqueries
       inputs
-      initializer_inputs
       presets
     ].freeze
 

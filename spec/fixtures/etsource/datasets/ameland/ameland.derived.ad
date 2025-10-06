@@ -66,6 +66,5 @@
 - scaling.has_energy =
 - scaling.has_industry =
 - scaling.value = 1000
-- uses_deprecated_initializer_inputs = true
 - init.foo_demand = 50.0
 - init.baz_demand = 50.0
