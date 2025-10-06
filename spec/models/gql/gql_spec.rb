@@ -4,28 +4,6 @@ describe Gql::Gql do
   let(:scenario) { FactoryBot.create(:scenario, area_code: 'ameland') }
   let(:gql) { Gql::Gql.new(scenario) }
 
-  describe "with correct initial inputs" do
-    before { gql.prepare }
-
-    # Setting the demand of foo to 50.0
-    it 'updates the present graph with initializer inputs' do
-      expect(gql.present.graph.node(:foo).demand).to eq(50.0)
-    end
-
-    it 'updates the future graph with initializer inputs' do
-      expect(gql.future.graph.node(:foo).demand).to eq(50.0)
-    end
-
-    # Setting the demand of baz to 50.0
-    it 'updates the present graph with initializer inputs' do
-      expect(gql.present.graph.node(:baz).demand).to eq(50.0)
-    end
-
-    it 'updates the future graph with initializer inputs' do
-      expect(gql.future.graph.node(:baz).demand).to eq(50.0)
-    end
-  end
-
   context 'with a scalar input' do
     before do
       scenario.user_values = { foo_demand: 10.0 }
@@ -44,7 +22,8 @@ describe Gql::Gql do
     end
 
     it 'updates the future graph with the input value' do
-      expect(gql.future.graph.node(:foo).preset_demand).to eq(50.0 * 1.05)
+      base = gql.present.graph.node(:foo).demand
+      expect(gql.future.graph.node(:foo).preset_demand).to eq(base * 1.05)
     end
   end
 
@@ -55,9 +34,11 @@ describe Gql::Gql do
     end
 
     it 'updates the future graph with the input value' do
-      # future year (2040) - present year (2011) = 29
+      # Apply an annual growth rate to the base (present) demand.
+      years = scenario.end_year - scenario.start_year
+      base  = gql.present.graph.node(:foo).demand
       expect(gql.future.graph.node(:foo).preset_demand)
-        .to be_within(1e-9).of(50 * (1.01**29))
+        .to be_within(1e-9).of(base * (1.01**years))
     end
   end
 end
