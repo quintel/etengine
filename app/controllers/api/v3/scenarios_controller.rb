@@ -322,7 +322,7 @@ module Api
         if coupling_parameters[:force]
           force_uncouple
         else
-          coupling_parameters[:groups].each do |coupling|
+          coupling_parameters[:groups]&.each do |coupling|
             @scenario.deactivate_coupling(coupling.to_s)
           end
           if @scenario.save
