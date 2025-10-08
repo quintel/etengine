@@ -13,6 +13,17 @@ class ChemicalsAndSyntheticProducts < ActiveRecord::Migration[7.1]
                     energy_distribution_naphtha
                     industry_locally_available_refinery_gas_for_chemical].freeze
 
+  FOSSIL_KEYS_MAPPING = {
+    'energy_export_oil_products' => 'industry_refinery_transformation_crude_oil_to_energy_export_oil_products_crude_oil_demand',
+    'energy_distribution_diesel' => 'industry_refinery_transformation_crude_oil_to_energy_distribution_diesel_diesel_demand',
+    'energy_distribution_gasoline' => 'industry_refinery_transformation_crude_oil_to_energy_distribution_gasoline_gasoline_demand',
+    'energy_distribution_heavy_fuel_oil' => 'industry_refinery_transformation_crude_oil_to_energy_distribution_heavy_fuel_oil_heavy_fuel_oil_demand',
+    'energy_distribution_kerosene' => 'industry_refinery_transformation_crude_oil_to_energy_distribution_kerosene_kerosene_demand',
+    'energy_distribution_lpg' => 'industry_refinery_transformation_crude_oil_to_energy_distribution_lpg_lpg_demand',
+    'energy_distribution_naphtha' => 'industry_refinery_transformation_crude_oil_to_energy_distribution_naphtha_naphtha_demand',
+    'industry_locally_available_refinery_gas_for_chemical' => 'industry_refinery_transformation_crude_oil_to_industry_locally_available_refinery_gas_for_chemical_refinery_gas_demand'
+  }.freeze
+
   KEROSENE_OLD_KEY = 'output_of_energy_production_synthetic_kerosene_must_run'
   KEROSENE_NEW_KEY = 'output_of_energy_production_fischer_tropsch'
   KEROSENE_OUTPUT_CONVERSION_CORRECTION = 1.5
@@ -62,9 +73,10 @@ class ChemicalsAndSyntheticProducts < ActiveRecord::Migration[7.1]
     return unless scenario.user_values.key?(FOSSIL_KEY)
     dataset_refinery_size = 0
     FOSSIL_KEYS.each do |key|
-      dataset_refinery_size += @defaults[scenario.area_code][key] / 1000
+      mapped_key = FOSSIL_KEYS_MAPPING[key]
+      dataset_refinery_size += @defaults[scenario.area_code][mapped_key]
     end
-    scenario.user_values[FOSSIL_KEY] = (scenario.user_values[FOSSIL_KEY] / 100) * dataset_refinery_size
+    scenario.user_values[FOSSIL_KEY] = (scenario.user_values[FOSSIL_KEY] / 100) * (dataset_refinery_size / 1000)
   end
 
   def migrate_synthetic_kerosene(scenario)
