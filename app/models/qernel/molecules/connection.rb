@@ -15,6 +15,12 @@ module Qernel
       #          from the source node.
       #
       # Returns a numeric.
+
+      FACTOR_PREFIX = 'factor:'
+      CARRIER_PATTERN = /\Acarrier:(.+)\z/
+      EDGES_PATTERN = /\Aedges:(.+)\z/
+      FACTOR_MULTIPLIER_PATTERN = /\A(.+?),\s*#{Regexp.escape(FACTOR_PREFIX)}(.+)\z/
+
       def self.demand(source, config)
         new(source, config).demand
       end
@@ -59,28 +65,9 @@ module Qernel
 
       def conversion_factor(slot)
         factor = @config.conversion_of(slot.carrier.key)
-
         return factor if factor.is_a?(Numeric)
 
-        if factor.to_s.start_with?('carrier:')
-          attribute = factor[8..].strip
-
-          return slot.carrier.public_send(attribute) if slot.carrier.respond_to?(attribute)
-
-          raise "Invalid molecule conversion attribute for #{slot.carrier.key} carrier " \
-                "on #{slot.node.key} node: #{factor.inspect}"
-        elsif factor.to_s.start_with?('edges:')
-          attribute = factor[6..].strip
-          total = slot.edges.sum(&:demand)
-
-          return 0.0 if total.zero?
-
-          return slot.edges.sum do |edge|
-            edge.query.public_send(attribute) * (edge.demand / total)
-          end
-        end
-
-        factor
+        calculate_conversion(parse_factor(factor.to_s.strip), slot)
       end
 
       def conversion_slot(direction, carrier)
@@ -91,6 +78,65 @@ module Qernel
           raise "Expected there to be a #{carrier.inspect} #{direction.inspect} slot on " \
                 "#{@source.key}, but no such slot was found"
         end
+      end
+
+      private
+
+      def parse_factor(factor_str)
+        if (match = factor_str.match(FACTOR_MULTIPLIER_PATTERN))
+          main_part = match[1].strip
+          multiplier = match[2].strip.to_f
+        else
+          main_part = factor_str
+          multiplier = 1.0
+        end
+
+        case main_part
+        when CARRIER_PATTERN
+          { type: :carrier, attribute: $1.strip, multiplier: multiplier }
+        when EDGES_PATTERN
+          { type: :edges, attribute: $1.strip, multiplier: multiplier }
+        else
+          { type: :unknown, attribute: main_part, multiplier: multiplier }
+        end
+      end
+
+      def calculate_conversion(parsed_factor, slot)
+        type, attribute, multiplier = parsed_factor.values_at(:type, :attribute, :multiplier)
+        case type
+        when :carrier
+          calculate_carrier_conversion(attribute, multiplier, slot)
+        when :edges
+          calculate_edges_conversion(attribute, multiplier, slot)
+        else
+          attribute
+        end
+      end
+
+      def calculate_carrier_conversion(attribute, multiplier, slot)
+        unless slot.carrier.respond_to?(attribute)
+          raise_conversion_error(slot, "carrier: #{attribute}")
+        end
+
+        slot.carrier.public_send(attribute) * multiplier
+      end
+
+      def calculate_edges_conversion(attribute, multiplier, slot)
+        return 0.0 if slot.edges.empty?
+
+        total_demand = slot.edges.sum(&:demand)
+        return 0.0 if total_demand.zero?
+
+        weighted_sum = slot.edges.sum do |edge|
+          edge.query.public_send(attribute) * (edge.demand / total_demand)
+        end
+
+        weighted_sum * multiplier
+      end
+
+      def raise_conversion_error(slot, factor_description)
+        raise "Invalid molecule conversion attribute for #{slot.carrier.key} carrier " \
+              "on #{slot.node.key} node: #{factor_description.inspect}"
       end
     end
   end
