@@ -59,7 +59,11 @@ class ChemicalsAndSyntheticProducts < ActiveRecord::Migration[7.1]
     ))
 
     migrate_scenarios do |scenario|
-      migrate_fossil_refinery(scenario)
+      if scenario.id < 1069736
+        migrate_fossil_refinery(scenario, true)
+      else
+        migrate_fossil_refinery(scenario)
+      end
       migrate_synthetic_kerosene(scenario)
       migrate_ext_coupling_bionaphtha(scenario)
       rename_inputs(scenario)
@@ -69,14 +73,20 @@ class ChemicalsAndSyntheticProducts < ActiveRecord::Migration[7.1]
 
   private
 
-  def migrate_fossil_refinery(scenario)
+  def migrate_fossil_refinery(scenario, reverse: false)
     return unless scenario.user_values.key?(FOSSIL_KEY)
     dataset_refinery_size = 0
+    puts scenario.id unless @defaults[scenario.area_code]
     FOSSIL_KEYS.each do |key|
       mapped_key = FOSSIL_KEYS_MAPPING[key]
       dataset_refinery_size += @defaults[scenario.area_code][mapped_key]
     end
-    scenario.user_values[FOSSIL_KEY] = (scenario.user_values[FOSSIL_KEY] / 100) * (dataset_refinery_size / 1000)
+
+    if reverse
+      scenario.user_values[FOSSIL_KEY] = (scenario.user_values[FOSSIL_KEY] / (dataset_refinery_size / 1000)) * 100
+    else
+      scenario.user_values[FOSSIL_KEY] = (scenario.user_values[FOSSIL_KEY] / 100) * (dataset_refinery_size / 1000)
+    end
   end
 
   def migrate_synthetic_kerosene(scenario)
