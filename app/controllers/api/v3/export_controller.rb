@@ -71,6 +71,26 @@ module Api
         send_csv(CostsParametersSerializer.new(@scenario), 'costs_parameters.%d.csv')
       end
 
+      # GET /api/v3/scenarios/:id/bulk_output_curves
+      #
+      # Returns a single CSV file with specified output curves as columns.
+      # Query parameter 'curve_types' specifies which curves to include (comma-separated).
+      def bulk_output_curves
+        curve_types = params[:curve_types]&.split(',')&.map(&:strip)
+
+        if curve_types.blank?
+          render json: { error: 'curve_types parameter is required' }, status: :bad_request
+          return
+        end
+
+        serializer = OutputCurvesBulkSerializer.new(@scenario, curve_types)
+        send_data(
+          serializer.as_csv,
+          type: 'text/csv',
+          filename: "output_curves.#{@scenario.id}.csv"
+        )
+      end
+
       private
 
       def send_csv(serializer, filename_template)
