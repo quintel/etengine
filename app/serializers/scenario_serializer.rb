@@ -28,7 +28,7 @@ class ScenarioSerializer
 
     json[:scaling]  = @resource.scaler&.as_json(except: %i[id scenario_id])
     json[:template] = @resource.preset_scenario_id
-    json[:url]      = @controller.api_v3_scenario_url(@resource)
+    json[:url]      = "#{Settings.etmodel}/scenarios/#{@resource.id}"
 
     json
   end

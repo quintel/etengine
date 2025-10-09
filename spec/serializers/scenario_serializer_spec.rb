@@ -1,8 +1,9 @@
 require 'spec_helper'
 
 describe ScenarioSerializer do
-  let(:controller) { double('Controller', api_v3_scenario_url: 'url') }
+  let(:controller) { double('Controller') }
   let(:scenario)   { FactoryBot.create(:scenario) }
+  let(:expected_url) { "#{Settings.etmodel}/scenarios/#{scenario.id}" }
 
   shared_examples_for 'a scenario serializer' do
     it { is_expected.to include(id: scenario.id) }
@@ -15,17 +16,10 @@ describe ScenarioSerializer do
     it { is_expected.to include(balanced_values: scenario.balanced_values) }
     it { is_expected.to include(metadata: {}) }
 
-    it { is_expected.to include(url: 'url') }
-
-    it 'should ask the controller for the scenario URL' do
-      expect(controller).to receive(:api_v3_scenario_url).
-        with(scenario).and_return('my_url')
-
-      expect(subject[:url]).to eql('my_url')
-    end
+    it { is_expected.to include(url: expected_url) }
   end
 
-  context 'when serializer a scenario' do
+  context 'when serializing a scenario' do
     subject do
       described_class.new(controller, scenario).as_json
     end
