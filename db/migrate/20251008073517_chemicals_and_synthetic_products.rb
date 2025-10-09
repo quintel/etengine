@@ -60,7 +60,7 @@ class ChemicalsAndSyntheticProducts < ActiveRecord::Migration[7.1]
 
     migrate_scenarios do |scenario|
       if scenario.id < 1069736
-        migrate_fossil_refinery(scenario, true)
+        migrate_fossil_refinery(scenario, reverse: true)
       else
         migrate_fossil_refinery(scenario)
       end
