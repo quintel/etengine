@@ -53,17 +53,21 @@ class ChemicalsAndSyntheticProducts < ActiveRecord::Migration[7.1]
               external_coupling_energy_chemical_fertilizers_transformation_external_coupling_node_bio_oil_output_share
               output_of_energy_production_synthetic_methanol]
 
+  LAST_MIGRATED_ID = 862995
+
   def up
     @defaults = JSON.load(File.read(
       Rails.root.join("db/migrate/#{File.basename(__FILE__, '.rb')}/dataset_values.json")
     ))
-
+    @flag = false
     migrate_scenarios do |scenario|
-      if scenario.id < 1069736
-        migrate_fossil_refinery(scenario, reverse: true)
-      else
-        migrate_fossil_refinery(scenario)
+      if scenario.id == LAST_MIGRATED_ID
+        @flag = true
       end
+
+      next unless @flag
+
+      migrate_fossil_refinery(scenario)
       migrate_synthetic_kerosene(scenario)
       migrate_ext_coupling_bionaphtha(scenario)
       rename_inputs(scenario)
@@ -76,7 +80,11 @@ class ChemicalsAndSyntheticProducts < ActiveRecord::Migration[7.1]
   def migrate_fossil_refinery(scenario, reverse: false)
     return unless scenario.user_values.key?(FOSSIL_KEY)
     dataset_refinery_size = 0
+
     puts scenario.id unless @defaults[scenario.area_code]
+    unless @defaults[scenario.area_code]
+      next
+    end
     FOSSIL_KEYS.each do |key|
       mapped_key = FOSSIL_KEYS_MAPPING[key]
       dataset_refinery_size += @defaults[scenario.area_code][mapped_key]
