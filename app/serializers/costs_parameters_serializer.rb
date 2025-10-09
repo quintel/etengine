@@ -343,7 +343,7 @@ class CostsParametersSerializer
   #
   # Has subtotal queries
   def costs_production
-    %w[power_plants chp_plants heat_plants dedicated_hydrogen_production biomass other]
+    %w[power_plants chp_plants heat_plants dedicated_hydrogen_production liquid_fuels biomass other ]
   end
 
   # Internal: Categories within costs_storage_and_conversion

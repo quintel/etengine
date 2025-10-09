@@ -621,6 +621,106 @@ module NodeSerializerData
     }
   }.freeze
 
+  LIQUID_FUELS_GENERIC_ATTRIBUTES_AND_METHODS = {
+    technical: {
+      'demand * loss_output_conversion / BILLIONS' => {
+        label: 'Annual fuel production',
+        key: :annual_fuel_production,
+        unit: 'PJ / year'
+      },
+      'input_capacity * number_of_units' => {
+        label: 'Installed input capacity',
+        key: :total_installed_input_capacity,
+        unit: 'MW'
+      },
+      '1 - loss_output_conversion' => {
+        label: 'Production efficiency',
+        key: :production_efficiency,
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      },
+      full_load_hours: { label: 'Full load hours', unit: 'hour / year' },
+      free_co2_factor: { label: 'CCS capture rate', unit: '%', formatter: FORMAT_FAC_TO_PERCENT },
+      technical_lifetime: { label: 'Technical lifetime', unit: 'years', formatter: ->(n) { n.to_i } }
+    }
+  }.freeze
+
+  # If the node belongs to the liquid_fuels presentation group then
+  # add these
+  LIQUID_FUELS_WITHOUT_CCS_ATTRIBUTES_AND_METHODS = LIQUID_FUELS_GENERIC_ATTRIBUTES_AND_METHODS.merge({
+    cost: {
+      'initial_investment_per(:mw_input_capacity) + cost_of_installing_per(:mw_input_capacity) + decommissioning_costs_per(:mw_input_capacity)' => {
+        label: 'Investment over lifetime per MW input',
+        key: :total_initial_investment_per_mw_input_capacity,
+        unit: 'EUR / MW',
+        formatter: ->(n) { n.to_i }
+      },
+      'fixed_operation_and_maintenance_costs_per(:mw_input_capacity)' => {
+        label: 'Fixed operation and maintenance costs',
+        key: :fixed_operation_and_maintenance_costs_per_mw_input_capacity,
+        unit: 'EUR / MW / year',
+        formatter: ->(n) { n.to_i }
+      },
+      'variable_operation_and_maintenance_costs_per(:full_load_hour)' => {
+        label: 'Variable operation and maintenance costs',
+        unit: 'EUR / full load hour'
+      },
+      :wacc => {
+        label: 'Weighted average cost of capital',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      },
+      :takes_part_in_ets => {
+        label: 'Do emissions have to be paid through the ETS?',
+        unit: 'boolean',
+        formatter: ->(x) { x == 1 }
+      }
+    }
+  }).freeze
+
+  # If the node belongs to the liquid_fuels_ccs presentation group then
+  # add these
+  LIQUID_FUELS_CCS_ATTRIBUTES_AND_METHODS = LIQUID_FUELS_GENERIC_ATTRIBUTES_AND_METHODS.merge({
+    cost: {
+      'initial_investment_per(:mw_input_capacity) + cost_of_installing_per(:mw_input_capacity) + decommissioning_costs_per(:mw_input_capacity)' => {
+        label: 'Investment over lifetime per MW input',
+        key: :total_initial_investment_per_mw_input_capacity,
+        unit: 'EUR / MW',
+        formatter: ->(n) { n.to_i }
+      },
+      'ccs_investment_per(:mw_input_capacity)' => {
+        label: 'Additional initial investment for CCS',
+        key: :ccs_investment_per_mw_input_capacity,
+        unit: 'EUR / MW',
+        formatter: ->(n) { n.to_i }
+      },
+      'fixed_operation_and_maintenance_costs_per(:mw_input_capacity)' => {
+        label: 'Fixed operation and maintenance costs',
+        key: :fixed_operation_and_maintenance_costs_per_mw_input_capacity,
+        unit: 'EUR / MW / year',
+        formatter: ->(n) { n.to_i }
+      },
+      'variable_operation_and_maintenance_costs_per(:full_load_hour)' => {
+        label: 'Variable operation and maintenance costs',
+        unit: 'EUR / full load hour'
+      },
+      :variable_operation_and_maintenance_costs_for_ccs_per_full_load_hour => {
+        label: 'Additional variable operation and maintenance costs for CCS',
+        unit: 'EUR / full load hour'
+      },
+      :wacc => {
+        label: 'Weighted average cost of capital',
+        unit: '%',
+        formatter: FORMAT_FAC_TO_PERCENT
+      },
+      :takes_part_in_ets => {
+        label: 'Do emissions have to be paid through the ETS?',
+        unit: 'boolean',
+        formatter: ->(x) { x == 1 }
+      }
+    }
+  }).freeze
+
   CO2_GENERIC_ATTRIBUTES_AND_METHODS = {
     cost: {
       'total_initial_investment_per(:plant)' => {
@@ -818,6 +918,10 @@ module NodeSerializerData
         P2P_ATTRIBUTES_AND_METHODS
       when :v2g
         V2G_ATTRIBUTES_AND_METHODS
+      when :liquid_fuels
+        LIQUID_FUELS_WITHOUT_CCS_ATTRIBUTES_AND_METHODS
+      when :liquid_fuels_ccs
+        LIQUID_FUELS_CCS_ATTRIBUTES_AND_METHODS
       when :biomass
         BIOMASS_ATTRIBUTES_AND_METHODS
       when :steel

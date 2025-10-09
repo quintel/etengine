@@ -55,6 +55,9 @@ module Qernel
             input_of_bio_oil +
             input_of_biodiesel +
             input_of_bio_ethanol +
+            input_of_biomethanol +
+            input_of_bionaphtha +
+            input_of_bio_pyrolysis_oil +
             input_of_biogas +
             input_of_greengas +
             input_of_network_gas +
@@ -73,7 +76,10 @@ module Qernel
             input_of_bio_kerosene +
             input_of_bio_oil +
             input_of_bio_lng +
-            input_of_bio_ethanol
+            input_of_bio_ethanol +
+            input_of_biomethanol +
+            input_of_bionaphtha +
+            input_of_bio_pyrolysis_oil
         end
       end
 
