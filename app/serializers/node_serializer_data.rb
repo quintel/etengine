@@ -621,7 +621,7 @@ module NodeSerializerData
     }
   }.freeze
 
-  LIQUID_FUELS_ATTRIBUTES_AND_METHODS = {
+  LIQUID_FUELS_GENERIC_ATTRIBUTES_AND_METHODS = {
     technical: {
       'demand * loss_output_conversion / BILLIONS' => {
         label: 'Annual fuel production',
@@ -647,7 +647,7 @@ module NodeSerializerData
 
   # If the node belongs to the liquid_fuels presentation group then
   # add these
-  LIQUID_FUELS_ATTRIBUTES_AND_METHODS = LIQUID_FUELS_ATTRIBUTES_AND_METHODS.merge({
+  LIQUID_FUELS_WITHOUT_CCS_ATTRIBUTES_AND_METHODS = LIQUID_FUELS_GENERIC_ATTRIBUTES_AND_METHODS.merge({
     cost: {
       'initial_investment_per(:mw_input_capacity) + cost_of_installing_per(:mw_input_capacity) + decommissioning_costs_per(:mw_input_capacity)' => {
         label: 'Investment over lifetime per MW input',
@@ -680,7 +680,7 @@ module NodeSerializerData
 
   # If the node belongs to the liquid_fuels_ccs presentation group then
   # add these
-  LIQUID_FUELS_CCS_ATTRIBUTES_AND_METHODS = LIQUID_FUELS_ATTRIBUTES_AND_METHODS.merge({
+  LIQUID_FUELS_CCS_ATTRIBUTES_AND_METHODS = LIQUID_FUELS_GENERIC_ATTRIBUTES_AND_METHODS.merge({
     cost: {
       'initial_investment_per(:mw_input_capacity) + cost_of_installing_per(:mw_input_capacity) + decommissioning_costs_per(:mw_input_capacity)' => {
         label: 'Investment over lifetime per MW input',
@@ -919,7 +919,7 @@ module NodeSerializerData
       when :v2g
         V2G_ATTRIBUTES_AND_METHODS
       when :liquid_fuels
-        LIQUID_FUELS_ATTRIBUTES_AND_METHODS
+        LIQUID_FUELS_WITHOUT_CCS_ATTRIBUTES_AND_METHODS
       when :liquid_fuels_ccs
         LIQUID_FUELS_CCS_ATTRIBUTES_AND_METHODS
       when :biomass
