@@ -81,9 +81,9 @@ class ChemicalsAndSyntheticProducts < ActiveRecord::Migration[7.1]
     return unless scenario.user_values.key?(FOSSIL_KEY)
     dataset_refinery_size = 0
 
-    puts scenario.id unless @defaults[scenario.area_code]
     unless @defaults[scenario.area_code]
-      next
+      puts scenario.id
+      return
     end
     FOSSIL_KEYS.each do |key|
       mapped_key = FOSSIL_KEYS_MAPPING[key]
