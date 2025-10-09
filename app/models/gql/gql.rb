@@ -243,7 +243,6 @@ module Gql
       present_graph.dataset ||= dataset_clone
       future_graph.dataset = dataset_clone
       assign_attributes_from_scenario
-      apply_initializer_inputs
       scale_dataset
     end
 
@@ -371,26 +370,11 @@ module Gql
 
     private
 
-    def apply_initializer_inputs
-      with_disabled_dataset_fetch_cache do
-        set_initializer_inputs(:present)
-        set_initializer_inputs(:future)
-      end
-    end
-
     def with_disabled_dataset_fetch_cache
       present.graph.without_dataset_caching do
         future.graph.without_dataset_caching do
           yield
         end
-      end
-    end
-
-    def set_initializer_inputs(graph)
-      return unless present_graph.area.uses_deprecated_initializer_inputs
-
-      present.graph.initializer_inputs.each do |input, value|
-        update_graph(graph, input, value)
       end
     end
 

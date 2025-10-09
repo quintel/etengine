@@ -454,16 +454,6 @@ class Graph
     @graph_query ||= GraphApi.from_graph(self)
   end
 
-  def initializer_inputs
-    decorated_inputs.sort_by { |input, _| [-input.priority, input.key] }
-  end
-
-  def decorated_inputs
-    (area.init || {}).map do |input_key, input_value|
-      [InitializerInput.fetch(input_key), input_value]
-    end
-  end
-
   def cache_dataset_fetch?
     @cache_dataset_fetch
   end
