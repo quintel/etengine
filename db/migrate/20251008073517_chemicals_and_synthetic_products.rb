@@ -4,15 +4,6 @@ class ChemicalsAndSyntheticProducts < ActiveRecord::Migration[7.1]
   include ETEngine::ScenarioMigration
 
   FOSSIL_KEY = 'industry_useful_demand_for_chemical_refineries'
-  FOSSIL_KEYS = %w[ energy_export_oil_products
-                    energy_distribution_diesel
-                    energy_distribution_gasoline
-                    energy_distribution_heavy_fuel_oil
-                    energy_distribution_kerosene
-                    energy_distribution_lpg
-                    energy_distribution_naphtha
-                    industry_locally_available_refinery_gas_for_chemical].freeze
-
   FOSSIL_KEYS_MAPPING = {
     'energy_export_oil_products' => 'industry_refinery_transformation_crude_oil_to_energy_export_oil_products_crude_oil_demand',
     'energy_distribution_diesel' => 'industry_refinery_transformation_crude_oil_to_energy_distribution_diesel_diesel_demand',
@@ -59,14 +50,7 @@ class ChemicalsAndSyntheticProducts < ActiveRecord::Migration[7.1]
     @defaults = JSON.load(File.read(
       Rails.root.join("db/migrate/#{File.basename(__FILE__, '.rb')}/dataset_values.json")
     ))
-    @flag = false
     migrate_scenarios do |scenario|
-      if scenario.id == LAST_MIGRATED_ID
-        @flag = true
-      end
-
-      next unless @flag
-
       migrate_fossil_refinery(scenario)
       migrate_synthetic_kerosene(scenario)
       migrate_ext_coupling_bionaphtha(scenario)
@@ -83,18 +67,13 @@ class ChemicalsAndSyntheticProducts < ActiveRecord::Migration[7.1]
 
     unless @defaults[scenario.area_code]
       puts scenario.id
+      puts scenario.area_code
       return
     end
-    FOSSIL_KEYS.each do |key|
-      mapped_key = FOSSIL_KEYS_MAPPING[key]
+    FOSSIL_KEYS_MAPPING.each do |key, mapped_key|
       dataset_refinery_size += @defaults[scenario.area_code][mapped_key]
     end
-
-    if reverse
-      scenario.user_values[FOSSIL_KEY] = (scenario.user_values[FOSSIL_KEY] / (dataset_refinery_size / 1000)) * 100
-    else
-      scenario.user_values[FOSSIL_KEY] = (scenario.user_values[FOSSIL_KEY] / 100) * (dataset_refinery_size / 1000)
-    end
+    scenario.user_values[FOSSIL_KEY] = (scenario.user_values[FOSSIL_KEY] / 100) * (dataset_refinery_size / 1000)
   end
 
   def migrate_synthetic_kerosene(scenario)
