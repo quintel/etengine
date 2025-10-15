@@ -262,12 +262,17 @@ module Api
           authorize!(:update, @scenario)
         end
 
-        updater    = ScenarioUpdater.new(@scenario, final_params, current_user)
         serializer = nil
 
         Scenario.transaction do
-          updater.apply
-          serializer = ScenarioUpdateSerializer.new(self, updater, final_params)
+          orchestrator = ::ScenarioUpdater::Orchestrator.new(@scenario, final_params, current_user)
+
+          unless orchestrator.apply
+            serializer = ScenarioUpdateSerializer.new(self, orchestrator, final_params)
+            raise ActiveRecord::Rollback
+          end
+
+          serializer = ScenarioUpdateSerializer.new(self, orchestrator, final_params)
 
           raise ActiveRecord::Rollback if serializer.errors.any?
         end

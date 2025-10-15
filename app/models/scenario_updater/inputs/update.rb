@@ -16,7 +16,8 @@ module ScenarioUpdater
 
       def valid?
         return @valid if defined?(@valid)
-        @valid = @validator.valid? && @balance_validator.valid?
+
+        @valid = @validator.valid? & @balance_validator.valid?
       end
 
       def errors

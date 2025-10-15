@@ -27,7 +27,8 @@ class ScenarioUpdateSerializer
   # @return [Array<String>]
   #
   def errors
-    @updater.errors.messages.values.flatten + @errors
+    updater_errors = @updater.errors.to_hash.values.flatten
+    updater_errors + @errors
   end
 
   #######
