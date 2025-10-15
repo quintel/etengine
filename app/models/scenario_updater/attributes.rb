@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ScenarioUpdater
   class Attributes < Base
     def attributes_to_apply

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ScenarioUpdater
   class Base
     include ActiveModel::Validations
