@@ -4,6 +4,7 @@ FactoryBot.define do
     min_value { 0 }
     max_value { 100 }
     start_value { 10 }
+    step_value { nil }
   end
 
   factory :gql_input, parent: :input do
@@ -16,5 +17,12 @@ FactoryBot.define do
     start_value { 0 }
     min_value { 0 }
     max_value { 100 }
+  end
+
+  factory :input_with_step, parent: :input do
+    step_value { 5.0 }
+    min_value { 0.0 }
+    max_value { 100.0 }
+    start_value { 50.0 }
   end
 end

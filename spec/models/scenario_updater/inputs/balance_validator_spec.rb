@@ -483,5 +483,65 @@ describe ScenarioUpdater::Inputs::BalanceValidator, :etsource_fixture do
         expect(validator.errors).to be_blank
       end
     end
+
+    context 'when Input.in_share_group returns empty array' do
+      let(:user_values) { { 'foo_demand' => 50.0 } }
+      let(:provided_values) { { 'foo_demand' => 50.0 } }
+
+      before do
+        input = Input.get('foo_demand')
+        skip 'Input foo_demand not found in etsource' unless input
+        allow(input).to receive(:share_group).and_return('empty_group')
+        allow(Input).to receive(:in_share_group).with('empty_group').and_return([])
+      end
+
+      it 'does not raise an error during validation' do
+        expect { validator.valid? }.not_to raise_error
+      end
+
+      it_behaves_like 'an invalid balance validator', 'does not balance'
+
+      it 'reports that the empty group does not balance' do
+        validator.valid?
+        expect(validator.errors.full_messages.first).to include('"empty_group"')
+        expect(validator.errors.full_messages.first).to include('sums to 0')
+      end
+    end
+
+    context 'when input has nil share_group' do
+      let(:user_values) { { 'foo_demand' => 50.0 } }
+      let(:provided_values) { { 'foo_demand' => 50.0 } }
+
+      before do
+        input = Input.get('foo_demand')
+        skip 'Input foo_demand not found in etsource' unless input
+        allow(input).to receive(:share_group).and_return(nil)
+      end
+
+      it_behaves_like 'a valid balance validator'
+
+      it 'skips validation for inputs without share groups' do
+        validator.valid?
+        expect(validator.errors).to be_blank
+      end
+    end
+
+    context 'when input has blank share_group' do
+      let(:user_values) { { 'foo_demand' => 50.0 } }
+      let(:provided_values) { { 'foo_demand' => 50.0 } }
+
+      before do
+        input = Input.get('foo_demand')
+        skip 'Input foo_demand not found in etsource' unless input
+        allow(input).to receive(:share_group).and_return('')
+      end
+
+      it_behaves_like 'a valid balance validator'
+
+      it 'skips validation for inputs with blank share groups' do
+        validator.valid?
+        expect(validator.errors).to be_blank
+      end
+    end
   end
 end

@@ -85,68 +85,82 @@ describe ScenarioUpdater::Inputs::Validator, :etsource_fixture do
   end
 
   describe 'step value coercion' do
-    # Note: Using foo_demand for step tests. The actual step value comes from etsource.
-    # We're testing that coercion happens when a value doesn't align with the step.
+    # Create a mock input with a step value
+    let(:step_input) { FactoryBot.build(:input_with_step, key: 'test_step_input') }
+    let(:step_key) { step_input.key }
+    let(:step_value) { 5.0 }
+    let(:min_value) { 0.0 }
+    let(:max_value) { 100.0 }
+
+    before do
+      allow(Input).to receive(:get).with(step_key).and_return(step_input)
+      allow(Input.cache(scenario)).to receive(:read)
+        .with(scenario, step_input)
+        .and_return({
+          min: min_value,
+          max: max_value,
+          default: 50.0,
+          step: step_value
+        })
+    end
 
     context 'with a value that needs coercion' do
-      let(:provided_values) { { 'foo_demand' => 50.3 } }
-      let(:input) { Input.get('foo_demand') }
-      let(:input_data) { Input.cache(scenario).read(scenario, input) }
-
-      before do
-        # Skip if the input has no step or step is 0
-        skip 'foo_demand has no step value' if input_data[:step].nil? || input_data[:step].zero?
+      let(:provided_values) do
+        { step_key => min_value + (step_value * 2.3) }
       end
 
       it 'coerces the value to align with the step' do
         validator.valid?
 
         # Calculate what the coerced value should be
-        min = input_data[:min]
-        step = input_data[:step]
-        steps_from_min = ((50.3 - min) / step).round
-        expected = min + (steps_from_min * step)
+        original_value = min_value + (step_value * 2.3) # 11.5
+        steps_from_min = ((original_value - min_value) / step_value).round # 2
+        expected = min_value + (steps_from_min * step_value) # 10.0
 
-        expect(provided_values['foo_demand']).to eq(expected)
+        expect(provided_values[step_key]).to eq(expected)
+      end
+
+      it 'rounds to the nearest step' do
+        validator.valid?
+        # After coercion, the value should be exactly on a step boundary
+        expect((provided_values[step_key] - min_value) % step_value).to be_within(0.0001).of(0)
       end
     end
 
     context 'with a value that coerces beyond the maximum' do
-      let(:input) { Input.get('foo_demand') }
-      let(:input_data) { Input.cache(scenario).read(scenario, input) }
-
-      # Use a value just above max that will coerce even higher
       let(:provided_values) do
-        max = input_data[:max]
-        step = input_data[:step] || 1.0
-        { 'foo_demand' => max + (step * 0.6) }
-      end
-
-      before do
-        skip 'foo_demand has no step value' if input_data[:step].nil? || input_data[:step].zero?
+        # Use a value just above max that will coerce even higher
+        # 100 + (5 * 0.6) = 103, which rounds to 105
+        { step_key => max_value + (step_value * 0.6) }
       end
 
       it_behaves_like 'an invalid validator', 'cannot be greater than'
 
       it 'coerces the value first, then fails validation' do
-        original_value = provided_values['foo_demand']
+        original_value = provided_values[step_key]
         validator.valid?
         # Value should have been coerced before validation
-        expect(provided_values['foo_demand']).not_to eq(original_value)
+        expect(provided_values[step_key]).not_to eq(original_value)
       end
     end
   end
 
   describe 'enum input validation' do
-    # Find a real enum input from etsource
-    let(:enum_input) { Input.all.find { |i| i.enum? } }
-    let(:enum_key) { enum_input&.key }
-    let(:permitted_values) do
-      enum_input ? Input.cache(scenario).read(scenario, enum_input)[:min] : []
-    end
+    # Create a mock enum input
+    let(:enum_input) { FactoryBot.build(:input, key: 'test_enum_input', unit: 'enum') }
+    let(:enum_key) { enum_input.key }
+    let(:permitted_values) { ['option_a', 'option_b', 'option_c'] }
 
     before do
-      skip 'No enum inputs available in etsource' unless enum_input
+      allow(enum_input).to receive(:enum?).and_return(true)
+      allow(Input).to receive(:get).with(enum_key).and_return(enum_input)
+      allow(Input.cache(scenario)).to receive(:read)
+        .with(scenario, enum_input)
+        .and_return({
+          min: permitted_values,
+          max: nil,
+          default: 'option_a'
+        })
     end
 
     context 'with a valid enum value' do
@@ -179,12 +193,19 @@ describe ScenarioUpdater::Inputs::Validator, :etsource_fixture do
   end
 
   describe 'boolean input validation' do
-    # Find a real boolean input from etsource
-    let(:bool_input) { Input.all.find { |i| i.unit == 'bool' } }
-    let(:bool_key) { bool_input&.key }
+    # Create a mock boolean input
+    let(:bool_input) { FactoryBot.build(:input, key: 'test_bool_input', unit: 'bool') }
+    let(:bool_key) { bool_input.key }
 
     before do
-      skip 'No boolean inputs available in etsource' unless bool_input
+      allow(Input).to receive(:get).with(bool_key).and_return(bool_input)
+      allow(Input.cache(scenario)).to receive(:read)
+        .with(scenario, bool_input)
+        .and_return({
+          min: 0,
+          max: 1,
+          default: 0
+        })
     end
 
     context 'with value 0' do
