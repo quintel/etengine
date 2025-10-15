@@ -2,6 +2,7 @@
 
 module ScenarioUpdater
   module Inputs
+    # Manages the activation and deactivation of input coupling groups for scenarios.
     class CouplingsManager < Base
       TRUTHY_VALUES = Set.new([true, 'true', '1']).freeze
 

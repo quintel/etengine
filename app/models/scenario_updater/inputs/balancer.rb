@@ -2,6 +2,7 @@
 
 module ScenarioUpdater
   module Inputs
+    # Calculates balanced values for input groups to ensure they sum to 100%.
     class Balancer < Base
       def initialize(scenario, params, current_user, user_values, provided_values, couplings_manager: nil)
         super(scenario, params, current_user)

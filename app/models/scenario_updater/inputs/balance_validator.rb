@@ -2,6 +2,7 @@
 
 module ScenarioUpdater
   module Inputs
+    # Validates that input share groups sum to 100% within an acceptable tolerance.
     class BalanceValidator < Base
       validate :validate_groups_balance
 

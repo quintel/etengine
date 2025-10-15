@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 
+# Tests validation that input share groups sum to 100%.
 describe ScenarioUpdater::Inputs::BalanceValidator, :etsource_fixture do
   let(:scenario) { FactoryBot.create(:scenario, area_code: 'nl', end_year: 2050) }
   let(:user_values) { {} }
@@ -129,6 +130,7 @@ describe ScenarioUpdater::Inputs::BalanceValidator, :etsource_fixture do
       end
     end
 
+    # Tests the tolerance bounds (99.99 - 100.01)
     context 'when group sums slightly under 100 (99.995)' do
       let(:user_values) do
         {

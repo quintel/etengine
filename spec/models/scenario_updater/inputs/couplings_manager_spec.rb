@@ -2,6 +2,8 @@
 
 require 'spec_helper'
 
+# Tests activation and deactivation of input coupling groups.
+# Couplings link inputs that should be managed together.
 describe ScenarioUpdater::Inputs::CouplingsManager, :etsource_fixture do
   let(:scenario) { FactoryBot.create(:scenario, area_code: 'nl', end_year: 2050) }
   let(:params) { {} }
@@ -12,6 +14,7 @@ describe ScenarioUpdater::Inputs::CouplingsManager, :etsource_fixture do
     Rails.cache.clear
   end
 
+  # Tests automatic activation of coupling groups when their inputs are provided
   describe '#activate_from_provided_values' do
     context 'when provided values contain no coupling inputs' do
       let(:provided_values) { { 'foo_demand' => 50.0 } }
@@ -170,6 +173,7 @@ describe ScenarioUpdater::Inputs::CouplingsManager, :etsource_fixture do
     end
   end
 
+  # Tests retrieval of inputs that should be removed when uncoupling
   describe '#uncoupled_inputs' do
     context 'when uncouple parameter is not set' do
       let(:params) { {} }

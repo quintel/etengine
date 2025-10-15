@@ -2,6 +2,10 @@
 
 require 'spec_helper'
 
+# Tests the main update orchestrator that:
+# - Calculates user values (merging provided values with existing)
+# - Calculates balanced values (auto-balancing share groups)
+# - Validates all values (type, range, and balance checks)
 describe ScenarioUpdater::Inputs::Update, :etsource_fixture do
   let(:scenario) { FactoryBot.create(:scenario, area_code: 'nl', end_year: 2050) }
   let(:params) { { scenario: { user_values: provided_values } } }
@@ -46,6 +50,7 @@ describe ScenarioUpdater::Inputs::Update, :etsource_fixture do
     end
   end
 
+  # Tests the main entry point that orchestrates calculation and validation
   describe '#process' do
     context 'with no provided values' do
       let(:provided_values) { {} }
@@ -161,6 +166,7 @@ describe ScenarioUpdater::Inputs::Update, :etsource_fixture do
     end
   end
 
+  # Tests calculation of user values including merging, resetting, and uncoupling
   describe '#user_values' do
     context 'with a clean scenario' do
       let(:provided_values) { { 'foo_demand' => '50.0' } }
@@ -325,6 +331,7 @@ describe ScenarioUpdater::Inputs::Update, :etsource_fixture do
     end
   end
 
+  # Tests auto-balancing of share groups to ensure they sum to 100%
   describe '#balanced_values' do
     context 'with no autobalancing' do
       let(:params) do
@@ -516,6 +523,7 @@ describe ScenarioUpdater::Inputs::Update, :etsource_fixture do
     end
   end
 
+  # Tests combined validation from both Validator and BalanceValidator
   describe '#valid?' do
     context 'with valid input values and balanced groups' do
       let(:params) do
@@ -703,6 +711,7 @@ describe ScenarioUpdater::Inputs::Update, :etsource_fixture do
     end
   end
 
+  # Tests interaction with enum and boolean input validators
   describe 'integration with validators' do
     context 'with enum inputs' do
       let(:enum_input) { Input.all.find { |i| i.enum? } }
@@ -750,6 +759,7 @@ describe ScenarioUpdater::Inputs::Update, :etsource_fixture do
     end
   end
 
+  # Tests combinations of features (reset + uncouple, multiple groups, scaling)
   describe 'complex integration scenarios' do
     context 'with multiple groups and mixed operations' do
       let(:params) do
@@ -1039,6 +1049,7 @@ describe ScenarioUpdater::Inputs::Update, :etsource_fixture do
     end
   end
 
+  # Tests how uncoupling affects user and balanced values
   describe 'integration with CouplingsManager' do
     context 'when uncoupling affects user values' do
       let(:params) do

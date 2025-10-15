@@ -2,6 +2,9 @@
 
 require 'spec_helper'
 
+# Tests calculation of balanced values for share groups.
+# When a user sets some inputs in a group, the balancer calculates
+# values for remaining inputs so the group sums to 100%.
 describe ScenarioUpdater::Inputs::Balancer, :etsource_fixture do
   let(:scenario) { FactoryBot.create(:scenario, area_code: 'nl', end_year: 2050) }
   let(:current_user) { nil }
@@ -16,6 +19,7 @@ describe ScenarioUpdater::Inputs::Balancer, :etsource_fixture do
     Rails.cache.clear
   end
 
+  # Tests balancing behavior with various autobalance and force_balance settings
   describe '#calculate_balanced_values' do
     context 'with no user values' do
       let(:user_values) { {} }
@@ -336,6 +340,7 @@ describe ScenarioUpdater::Inputs::Balancer, :etsource_fixture do
     end
   end
 
+  # Tests interaction with the core ::Balancer service class
   describe 'integration with ::Balancer' do
     let(:params) { { autobalance: true } }
     let(:user_values) { { 'grouped_input_one' => 75.0 } }
@@ -454,6 +459,7 @@ describe ScenarioUpdater::Inputs::Balancer, :etsource_fixture do
     end
   end
 
+  # Tests uncoupling behavior when coupled inputs are missing or nil
   describe 'edge cases with coupling' do
     context 'with uncouple enabled but no coupled inputs' do
       let(:params) { { uncouple: true, autobalance: true } }
@@ -498,6 +504,7 @@ describe ScenarioUpdater::Inputs::Balancer, :etsource_fixture do
     end
   end
 
+  # Tests handling of missing or invalid share group configurations
   describe 'group identification edge cases' do
     context 'when Input.get returns nil for a key' do
       let(:params) { { autobalance: true } }

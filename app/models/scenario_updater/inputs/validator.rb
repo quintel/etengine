@@ -2,6 +2,7 @@
 
 module ScenarioUpdater
   module Inputs
+    # Validates that provided input values exist, are the correct type, and fall within allowed ranges.
     class Validator < Base
       validate :validate_user_values
 

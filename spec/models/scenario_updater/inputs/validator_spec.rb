@@ -2,6 +2,11 @@
 
 require 'spec_helper'
 
+# Tests validation of user-provided input values including:
+# - Type checking (numeric, enum, boolean)
+# - Range validation (min/max)
+# - Step value coercion
+# - Input existence checks
 describe ScenarioUpdater::Inputs::Validator, :etsource_fixture do
   let(:scenario) { FactoryBot.create(:scenario, area_code: 'nl', end_year: 2050) }
   let(:provided_values) { {} }
@@ -84,8 +89,8 @@ describe ScenarioUpdater::Inputs::Validator, :etsource_fixture do
     end
   end
 
+  # Tests that values are coerced to the nearest step boundary
   describe 'step value coercion' do
-    # Create a mock input with a step value
     let(:step_input) { FactoryBot.build(:input_with_step, key: 'test_step_input') }
     let(:step_key) { step_input.key }
     let(:step_value) { 5.0 }
@@ -145,8 +150,8 @@ describe ScenarioUpdater::Inputs::Validator, :etsource_fixture do
     end
   end
 
+  # Tests that enum inputs only accept permitted values
   describe 'enum input validation' do
-    # Create a mock enum input
     let(:enum_input) { FactoryBot.build(:input, key: 'test_enum_input', unit: 'enum') }
     let(:enum_key) { enum_input.key }
     let(:permitted_values) { ['option_a', 'option_b', 'option_c'] }
@@ -192,8 +197,8 @@ describe ScenarioUpdater::Inputs::Validator, :etsource_fixture do
     end
   end
 
+  # Tests that boolean inputs only accept 0 or 1
   describe 'boolean input validation' do
-    # Create a mock boolean input
     let(:bool_input) { FactoryBot.build(:input, key: 'test_bool_input', unit: 'bool') }
     let(:bool_key) { bool_input.key }
 
@@ -293,8 +298,8 @@ describe ScenarioUpdater::Inputs::Validator, :etsource_fixture do
     end
   end
 
+  # Tests the step coercion algorithm directly
   describe '#coerce_to_step' do
-    # Testing the private method for thoroughness
     let(:validator_instance) { described_class.new(scenario, {}, nil) }
 
     it 'returns the value unchanged when step is zero' do
