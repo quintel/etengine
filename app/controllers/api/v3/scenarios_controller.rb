@@ -147,7 +147,7 @@ module Api
           # the preset user values.
           attrs.delete(:user_values)
 
-          # Inherit the visibility if no explicity visibility is set.
+          # Inherit the visibility if no explicit visibility is set.
           attrs[:private] = parent.clone_should_be_private?(current_user) if attrs[:private].nil?
         elsif current_user && attrs[:private].nil?
           attrs[:private] = current_user.private_scenarios?
@@ -157,6 +157,7 @@ module Api
           attrs[:user_values] = attrs[:user_values].transform_values(&:to_f)
         end
 
+        # 1: Build the scenario with basic attributes ------------------------------------------------------------------
         @scenario = Scenario.new
 
         if scaler_attributes && !attrs[:descale]
@@ -169,32 +170,41 @@ module Api
           end
         end
 
-        # Check for coupling groups in the inputs and activate them
-        if attrs[:user_values]
-          scenario_updater = ScenarioUpdater.new(@scenario, attrs[:user_values], current_user)
-          scenario_updater.activate_coupling_groups
-        end
-
         # The scaler needs to be in place before assigning attributes when the
         # scenario inherits from a preset.
         @scenario.descale    = attrs[:descale]
-        @scenario.attributes = attrs
+        @scenario.attributes = attrs.except(:user_values)
 
         if current_user.present?
-          @scenario.scenario_users << ScenarioUser.new(
-            scenario: @scenario,
+          @scenario.scenario_users.build(
             user: current_user,
             role_id: User::ROLES.key(:scenario_owner)
           )
         end
 
+        # 2: Save and apply user values with full validation -----------------------------------------------------------
         Scenario.transaction do
           @scenario.save!
+
+          if attrs[:user_values].present?
+            orchestrator = ::ScenarioUpdater.new(
+              @scenario,
+              { scenario: { user_values: attrs[:user_values] } },
+              current_user
+            )
+
+            unless orchestrator.apply
+              render json: { errors: orchestrator.errors.to_hash }, status: :unprocessable_content
+              raise ActiveRecord::Rollback
+            end
+          end
         end
 
-        render json: ScenarioSerializer.new(self, @scenario)
-      rescue ActiveRecord::RecordInvalid
-        render json: { errors: @scenario.errors }, status: :unprocessable_content
+        if @scenario.persisted?
+          render json: ScenarioSerializer.new(self, @scenario)
+        end
+      rescue ActiveRecord::RecordInvalid => e
+        render json: { errors: @scenario.errors.to_hash }, status: :unprocessable_content
       end
 
       # POST /api/v3/scenarios/interpolate
@@ -262,12 +272,17 @@ module Api
           authorize!(:update, @scenario)
         end
 
-        updater    = ScenarioUpdater.new(@scenario, final_params, current_user)
         serializer = nil
 
         Scenario.transaction do
-          updater.apply
-          serializer = ScenarioUpdateSerializer.new(self, updater, final_params)
+          orchestrator = ::ScenarioUpdater.new(@scenario, final_params, current_user)
+
+          unless orchestrator.apply
+            serializer = ScenarioUpdateSerializer.new(self, orchestrator, final_params)
+            raise ActiveRecord::Rollback
+          end
+
+          serializer = ScenarioUpdateSerializer.new(self, orchestrator, final_params)
 
           raise ActiveRecord::Rollback if serializer.errors.any?
         end
@@ -477,15 +492,19 @@ module Api
       def force_uncouple
         serializer = nil
 
-        updater = ScenarioUpdater.new(
+        orchestrator = ::ScenarioUpdater.new(
           @scenario,
           { uncouple: coupling_parameters[:force], scenario: {} },
           current_user
         )
 
         Scenario.transaction do
-          updater.apply
-          serializer = ScenarioUpdateSerializer.new(self, updater, {})
+          unless orchestrator.apply
+            serializer = ScenarioUpdateSerializer.new(self, orchestrator, {})
+            raise ActiveRecord::Rollback
+          end
+
+          serializer = ScenarioUpdateSerializer.new(self, orchestrator, {})
 
           raise ActiveRecord::Rollback if serializer.errors.any?
         end

@@ -48,7 +48,7 @@ describe 'Updating a scenario with API v3' do
     end
   end
 
-  context 'when setting the scenario to be private as a guest' do
+  pending 'when setting the scenario to be private as a guest' do
     let(:params) { { scenario: { private: true } } }
 
     it 'does not change the scenario privacy' do

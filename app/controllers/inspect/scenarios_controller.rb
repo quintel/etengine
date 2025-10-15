@@ -23,28 +23,19 @@ module Inspect
 
     # Creates a new scenario with attributes and user sortables
     def create
-      Scenario.transaction do
-        @scenario = Scenario.new
+      scenario = Scenario.new(Scenario.default_attributes.merge(source: 'ETEngine Admin UI'))
+      @scenario = Scenario::Editable.new(scenario)
 
-        Scenario::Editable.new(@scenario).update!(
-          scenario_attributes.merge(source: 'ETEngine Admin UI')
-        )
+      # Parse editable attributes and return early if parsing fails
+      return redirect_to new_inspect_scenario_path unless parse_editable_attributes(new_inspect_scenario_path)
 
-        update_user_sortables!(
-          user_sortable_attributes,
-          forecast_storage_order: @scenario.forecast_storage_order,
-          hydrogen_supply_order: @scenario.hydrogen_supply_order,
-          hydrogen_demand_order: @scenario.hydrogen_demand_order,
-          heat_network_order_ht: @scenario.heat_network_order(:ht),
-          heat_network_order_mt: @scenario.heat_network_order(:mt),
-          heat_network_order_lt: @scenario.heat_network_order(:lt),
-          households_space_heating_producer_order: @scenario.households_space_heating_producer_order
-        )
-      end
-
-      redirect_to inspect_scenario_path(id: @scenario.id), notice: 'Scenario created'
-    rescue ActiveRecord::RecordInvalid
-      render :new
+      apply_scenario_changes(
+        scenario,
+        success_path: inspect_scenario_path(id: scenario.id),
+        failure_path: new_inspect_scenario_path,
+        success_notice: 'Scenario created',
+        render_on_invalid: :new
+      )
     end
 
     # Shows a single scenario
@@ -57,22 +48,19 @@ module Inspect
 
     # Updates a scenario and its user sortables
     def update
-      Scenario.transaction do
-        @scenario.update!(scenario_attributes)
+      # Get the underlying scenario model for orchestrator
+      underlying_scenario = @scenario.__getobj__
 
-        update_user_sortables!(
-          user_sortable_attributes,
-          forecast_storage_order: @scenario.forecast_storage_order,
-          heat_network_order_ht: @scenario.heat_network_order(:ht),
-          heat_network_order_mt: @scenario.heat_network_order(:mt),
-          heat_network_order_lt: @scenario.heat_network_order(:lt),
-          households_space_heating_producer_order: @scenario.households_space_heating_producer_order
-        )
+      # Parse editable attributes and return early if parsing fails
+      return redirect_to edit_inspect_scenario_path(id: underlying_scenario.id) unless parse_editable_attributes(edit_inspect_scenario_path(id: underlying_scenario.id))
 
-        redirect_to inspect_scenario_path(id: @scenario.id), notice: 'Scenario updated'
-      end
-    rescue ActiveRecord::RecordInvalid
-      render :edit
+      apply_scenario_changes(
+        underlying_scenario,
+        success_path: inspect_scenario_path(id: underlying_scenario.id),
+        failure_path: edit_inspect_scenario_path(id: underlying_scenario.id),
+        success_notice: 'Scenario updated',
+        render_on_invalid: :edit
+      )
     end
 
     # Loads one or more scenarios from a JSON dump file
@@ -163,6 +151,65 @@ module Inspect
       end
     end
 
+    # Parses editable attributes from params and assigns them to @scenario
+    # Returns false and sets flash alert if parsing fails, true otherwise
+    def parse_editable_attributes(redirect_path)
+      scenario_attrs = params[:scenario] || {}
+      @scenario.user_values = scenario_attrs[:user_values] if scenario_attrs.key?(:user_values)
+      @scenario.balanced_values = scenario_attrs[:balanced_values] if scenario_attrs.key?(:balanced_values)
+      @scenario.metadata = scenario_attrs[:metadata] if scenario_attrs.key?(:metadata)
+
+      # Check for parsing errors
+      if @scenario.errors.any?
+        error_list = @scenario.errors.full_messages.map { |msg| "• #{msg}" }.join("<br>")
+        flash[:alert] = "Parse errors:<br>#{error_list}".html_safe
+        return false
+      end
+
+      true
+    end
+
+    # Applies scenario changes via orchestrator and updates user sortables in a transaction
+    def apply_scenario_changes(scenario, success_path:, failure_path:, success_notice:, render_on_invalid:)
+      orchestrator_params = convert_editable_params_to_orchestrator_format(params)
+      orchestrator = ::ScenarioUpdater.new(scenario, orchestrator_params, current_user)
+      success = false
+
+      Scenario.transaction do
+        unless orchestrator.apply
+          error_list = orchestrator.errors.full_messages.map { |msg| "• #{msg}" }.join("<br>")
+          flash[:alert] = "Validation errors:<br>#{error_list}".html_safe
+          raise ActiveRecord::Rollback
+        end
+
+        # Build hash of user sortables based on what's available
+        sortables = {
+          forecast_storage_order: scenario.forecast_storage_order,
+          heat_network_order_ht: scenario.heat_network_order(:ht),
+          heat_network_order_mt: scenario.heat_network_order(:mt),
+          heat_network_order_lt: scenario.heat_network_order(:lt),
+          households_space_heating_producer_order: scenario.households_space_heating_producer_order
+        }
+
+        # Add hydrogen orders if scenario supports them (present in create but not update)
+        if scenario.respond_to?(:hydrogen_supply_order)
+          sortables[:hydrogen_supply_order] = scenario.hydrogen_supply_order
+          sortables[:hydrogen_demand_order] = scenario.hydrogen_demand_order
+        end
+
+        update_user_sortables!(user_sortable_attributes, sortables)
+        success = true
+      end
+
+      if success
+        redirect_to success_path, notice: success_notice
+      else
+        redirect_to failure_path
+      end
+    rescue ActiveRecord::RecordInvalid
+      render render_on_invalid, status: :unprocessable_entity
+    end
+
     # Updates user sortables with new order values and persists them
     def update_user_sortables!(attrs, records)
       records = records.select { |key, _| attrs.key?(key) }
@@ -174,9 +221,7 @@ module Inspect
       end
 
       # Validate all records and raise if any are invalid
-      unless records.reduce(true) { |status, (_, rec)| rec.valid? && status }
-        raise ActiveRecord::RecordInvalid
-      end
+      raise ActiveRecord::RecordInvalid unless records.all? { |_, rec| rec.valid? }
 
       # Persist or destroy records depending on whether they’re default
       records.each do |_, record|
@@ -186,6 +231,26 @@ module Inspect
           record.save!(validate: false)
         end
       end
+    end
+
+    # Converts form parameters to orchestrator format
+    def convert_editable_params_to_orchestrator_format(params)
+      orchestrator_params = { scenario: {} }
+      scenario_attrs = params[:scenario] || {}
+
+      # Get the underlying scenario (unwrap from Editable wrapper)
+      underlying_scenario = @scenario.__getobj__
+
+      # Extract parsed values from the underlying scenario
+      %i[user_values balanced_values metadata].each do |attr|
+        orchestrator_params[:scenario][attr] = underlying_scenario.public_send(attr) if scenario_attrs.key?(attr)
+      end
+
+      # Handle special case attributes
+      orchestrator_params[:scenario][:keep_compatible] = scenario_attrs[:keep_compatible] if scenario_attrs.key?(:keep_compatible)
+      orchestrator_params[:scenario][:active_couplings] = scenario_attrs[:active_couplings].to_s.split if scenario_attrs.key?(:active_couplings)
+
+      orchestrator_params
     end
   end
 end

@@ -3,10 +3,12 @@ class Input
   # appropriate for the size of the region.
   #
   # Dynamic input values are not scaled, since the graph should take care of
-  # this automatically.
+  # this automatically. Enum inputs are also not scaled.
   #
   # Returns a hash of values.
   Scaler = lambda do |input, scaler, values|
+    return values if input.enum?
+
     if ScenarioScaling.scale_input?(input) && scaler
       scaled = { step: scaler.input_step(values[:step]) }
 

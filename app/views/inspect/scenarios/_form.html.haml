@@ -1,6 +1,9 @@
 - if @scenario.errors.any?
   .alert.alert-danger
-    %strong Sorry, there were errors updating the scenario.
+    %strong Sorry, there were errors updating the scenario:
+    %ul
+      - @scenario.errors.full_messages.each do |message|
+        %li= message
 
 .row
   .span12
@@ -18,7 +21,7 @@
           model is updated.
         %dt Keep compatible with model updates
         %dd
-          The scenario will be migrated when the model is updated, regardless of how long hash
+          The scenario will be migrated when the model is updated, regardless of how long has
           passed since it was last updated by a user.
 
       = f.input :active_couplings, label: 'Active couplings', as: :text, input_html: { value: @scenario.active_couplings.join("\n"), data: { codemirror: 'yaml' } }
