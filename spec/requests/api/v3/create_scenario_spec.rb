@@ -631,7 +631,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
             scenario: {
               area_code: 'ameland',
               user_values: {
-                foo_demand: 100.0
+                foo_demand: 0.001
               }
             }
           }, headers: token_header
@@ -646,7 +646,8 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         end
 
         let(:json) { JSON.parse(response.body) }
-        let(:multi) { 100 / Atlas::Dataset.find(:ameland).present_number_of_residences.to_f }
+        let(:ameland_residences) { Atlas::Dataset.find(:ameland).present_number_of_residences }
+        let(:multi) { 100 / ameland_residences.to_f }
 
         it 'should be successful' do
           expect(response.status).to eql(200)

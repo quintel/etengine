@@ -123,9 +123,9 @@ module Api
         # another user_values hash. Used when generating a scenario with the
         # average values of other scenarios.
         inputs = begin
-                   params[:scenario][:user_values]['user_values']
+                  params[:scenario][:user_values]['user_values']
         rescue StandardError
-                   nil
+                  nil
         end
         params[:scenario][:user_values] = inputs if inputs
 
@@ -147,7 +147,7 @@ module Api
           # the preset user values.
           attrs.delete(:user_values)
 
-          # Inherit the visibility if no explicity visibility is set.
+          # Inherit the visibility if no explicit visibility is set.
           attrs[:private] = parent.clone_should_be_private?(current_user) if attrs[:private].nil?
         elsif current_user && attrs[:private].nil?
           attrs[:private] = current_user.private_scenarios?
@@ -157,6 +157,7 @@ module Api
           attrs[:user_values] = attrs[:user_values].transform_values(&:to_f)
         end
 
+        # Phase 1: Build the scenario with basic attributes
         @scenario = Scenario.new
 
         if scaler_attributes && !attrs[:descale]
@@ -169,32 +170,45 @@ module Api
           end
         end
 
-        # Check for coupling groups in the inputs and activate them
-        if attrs[:user_values]
-          scenario_updater = ScenarioUpdater.new(@scenario, attrs[:user_values], current_user)
-          scenario_updater.activate_coupling_groups
-        end
-
         # The scaler needs to be in place before assigning attributes when the
         # scenario inherits from a preset.
-        @scenario.descale    = attrs[:descale]
-        @scenario.attributes = attrs
+        @scenario.descale = attrs[:descale]
+        @scenario.attributes = attrs.except(:user_values)
 
         if current_user.present?
-          @scenario.scenario_users << ScenarioUser.new(
-            scenario: @scenario,
+          @scenario.scenario_users.build(
             user: current_user,
             role_id: User::ROLES.key(:scenario_owner)
           )
         end
 
+        # Phase 2: Save and apply user values with full validation
         Scenario.transaction do
+          # Save the base scenario
           @scenario.save!
+
+          # Apply user values through orchestrator if provided
+          if attrs[:user_values].present?
+            orchestrator = ::ScenarioUpdater::Orchestrator.new(
+              @scenario,
+              { scenario: { user_values: attrs[:user_values] } },
+              current_user
+            )
+
+            unless orchestrator.apply
+              render json: { errors: orchestrator.errors.to_hash }, status: :unprocessable_content
+              raise ActiveRecord::Rollback
+            end
+          end
         end
 
-        render json: ScenarioSerializer.new(self, @scenario)
-      rescue ActiveRecord::RecordInvalid
-        render json: { errors: @scenario.errors }, status: :unprocessable_content
+        # Only render success if transaction succeeded
+        # (if it rolled back, scenario won't be persisted and we already rendered error)
+        if @scenario.persisted?
+          render json: ScenarioSerializer.new(self, @scenario)
+        end
+      rescue ActiveRecord::RecordInvalid => e
+        render json: { errors: @scenario.errors.to_hash }, status: :unprocessable_content
       end
 
       # POST /api/v3/scenarios/interpolate
