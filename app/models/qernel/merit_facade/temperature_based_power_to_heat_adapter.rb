@@ -39,7 +39,11 @@ module Qernel
       # or it can be calculated based on the outside temperature and
       # the temperature cutoff
       def availability_curve
-        availability_curve_from_node || availability_curve_based_on_temperature
+        if availability_curve_from_node?
+          availability_curve_from_node
+        else
+          availability_curve_based_on_temperature
+        end
       end
 
       # Internal: the p2h pump should be fully available when temperature is
@@ -53,6 +57,10 @@ module Qernel
       # Internal: The curve of air temperatures in the region.
       def temperature_curve
         @context.curves.curve('weather/air_temperature', @node)
+      end
+
+      def availability_curve_from_node?
+        availability_curve_from_node&.any?
       end
 
       # Internal: availibity curve set on the node (user uploaded)
