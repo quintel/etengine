@@ -22,6 +22,13 @@ module Qernel
         attrs
       end
 
+      def inject!
+        super
+
+        # NOTE: is this neccessary in this case?
+        target_api.availability = availability_curve.sum / availability_curve.length
+      end
+
       private
 
       def producer_class
