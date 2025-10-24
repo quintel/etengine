@@ -50,7 +50,7 @@ module Qernel
       # above the cutoff point, and fully unavailable when it's below.
       def availability_curve_based_on_temperature
         temperature_curve.map do |temp|
-          temp < @node.config.temperature_cutoff ? 0.0 : 1.0
+          temp < @context.node_config(node).temperature_cutoff ? 0.0 : 1.0
         end
       end
 
