@@ -312,6 +312,23 @@ module Gql::Runtime
 
         curve_set ? curve_set.map(&:name) : []
       end
+
+      # Public: Loads a curve from the dataset by key.
+      #
+      # For example:
+      #   DATASET_CURVE('weather/air_temperature')  # => [12.5, 12.3, 12.1, ...]
+      #   DATASET_CURVE('total_demand')             # => [1250.0, 1300.0, ...]
+      #
+      # The key can be:
+      #   - A curve set path: 'weather/air_temperature', 'solar/pv'
+      #   - A simple profile name: 'total_demand', 'buildings_heating'
+      #   - A user-attached curve (if configured)
+      #
+      # Returns an array of 8760 numeric values.
+      def DATASET_CURVE(key)
+        curves = Qernel::Causality::Curves.new(scope.graph, rotate: 0)
+        curves.curve(key, nil).to_a
+      end
     end
   end
 end
