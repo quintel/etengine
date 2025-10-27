@@ -33,7 +33,7 @@ module Qernel
 
       def summary(name)
         @summaries ||= {}
-        @summaries[name.to_sym] ||= Summary.new(group(name))
+        @summaries[name.to_sym] ||= Summary.new(group(name), curves)
       end
 
       # Configures the Fever groups, ensuring that hot water is first since its

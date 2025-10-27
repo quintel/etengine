@@ -5,8 +5,9 @@ module Qernel
     # Receives a Fever group and summarises the total production and
     # consumption, for use in queries, CSVs, etc.
     class Summary
-      def initialize(group)
+      def initialize(group, curves = nil)
         @group  = group
+        @curves = curves || Qernel::FeverFacade::Manager.new(group.graph).curves
         @demand = @production = @surplus = @deficit = nil
       end
 
@@ -102,37 +103,29 @@ module Qernel
       # Public: returns all demand for a consumer
       def total_demand_curve_for_consumer(consumer_key)
         consumer = @group.adapter(consumer_key)
-
         return [0.0] * 8760 unless consumer
-
-        consumer.demand_curve_from_activities.to_a
+        @curves.derotate(consumer.demand_curve_from_activities.to_a)
       end
 
       # Public: returns all production for a consumer
       def total_production_curve_for_consumer(consumer_key)
         consumer = @group.adapter(consumer_key)
-
         return [0.0] * 8760 unless consumer
-
-        consumer.production_curve_from_activities.to_a
+        @curves.derotate(consumer.production_curve_from_activities.to_a)
       end
 
       # Public: returns all demand for a producer
       def total_demand_curve_for_producer(producer_key)
         producer = @group.adapter(producer_key)
-
         return [0.0] * 8760 unless producer || producer.participants.empty?
-
-        Merit::CurveTools.add_curves(producer.participants.map(&:demand_curve)).to_a
+        @curves.derotate(Merit::CurveTools.add_curves(producer.participants.map(&:demand_curve)).to_a)
       end
 
       # Public: returns all production for a producer
       def total_production_curve_for_producer(producer_key)
         producer = @group.adapter(producer_key)
-
         return [0.0] * 8760 unless producer
-
-        producer.producer.output_curve
+        @curves.derotate(producer.producer.output_curve)
       end
 
       # In the summary and export first the consumers and then the producers are shown
