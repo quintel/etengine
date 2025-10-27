@@ -327,7 +327,7 @@ module Gql::Runtime
       # Returns an array of 8760 numeric values.
       def DATASET_CURVE(key)
         curves = Qernel::Causality::Curves.new(scope.graph, rotate: 0)
-        curves.send(:load_curve, key, nil).to_a
+        curves.curve(key, nil).to_a
       end
     end
   end
