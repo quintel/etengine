@@ -2,7 +2,7 @@
 
 module Qernel
   module MeritFacade
-    # Implements behaviour specific to the power2heat (pumps) that
+    # Implements behaviour specific to the power2heat (pumps & boilers) that
     # are dependent on outside temperature.
     #
     # The participant will be fully available when the outside temperature
