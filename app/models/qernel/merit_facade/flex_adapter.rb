@@ -18,6 +18,8 @@ module Qernel
           PowerToHeatAdapter
         when :power_to_heat
           HouseholdPowerToHeatAdapter
+        when :temperature_based_p2h
+          TemperatureBasedPowerToHeatAdapter
         when :curtailment
           CurtailmentAdapter
         when :heat_storage
