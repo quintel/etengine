@@ -86,7 +86,7 @@ module Qernel
 
         return [0.0] * 8760 unless consumer && producer
 
-        consumer.production_curve_for(producer).to_a
+        @curves.derotate(consumer.production_curve_for(producer).to_a)
       end
 
       # Public: A curve describing the demand in MWh of a specific consumer
@@ -97,7 +97,7 @@ module Qernel
 
         return [0.0] * 8760 unless consumer && producer
 
-        consumer.demand_curve_for(producer).to_a
+        @curves.derotate(consumer.demand_curve_for(producer).to_a)
       end
 
       # Public: returns all demand for a consumer
