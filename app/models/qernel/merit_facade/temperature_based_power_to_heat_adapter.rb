@@ -5,9 +5,9 @@ module Qernel
     # Implements behaviour specific to the power2heat (pumps & boilers) that
     # are dependent on outside temperature.
     #
-    # The participant will be fully available when the outside temperature
+    # The participant will be fully unavailable when the outside temperature
     # is above the temperature_cutoff point (in degrees Celsius). And
-    # will have an availability of 0, when below this point.
+    # will have an availability of 1.0, when below this point.
     #
     # Users can also set their own availabilty curves on the node to overwrite
     # this behaviour.
@@ -25,7 +25,6 @@ module Qernel
       def inject!
         super
 
-        # NOTE: is this neccessary in this case?
         target_api.availability = availability_curve.sum / availability_curve.length
       end
 
@@ -46,11 +45,11 @@ module Qernel
         end
       end
 
-      # Internal: the p2h pump should be fully available when temperature is
-      # above the cutoff point, and fully unavailable when it's below.
+      # Internal: the p2h pump should be fully unavailable when temperature is
+      # above the cutoff point, and fully available when it's below.
       def availability_curve_based_on_temperature
         temperature_curve.map do |temp|
-          temp < @context.node_config(node).temperature_cutoff ? 0.0 : 1.0
+          temp > @context.node_config(node).temperature_cutoff ? 0.0 : 1.0
         end
       end
 
