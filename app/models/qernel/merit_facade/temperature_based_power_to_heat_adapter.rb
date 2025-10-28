@@ -55,7 +55,9 @@ module Qernel
 
       # Internal: The curve of air temperatures in the region.
       def temperature_curve
-        @context.curves.curve('weather/air_temperature', @node)
+        @context.curves.derotate(
+          @context.curves.curve('weather/air_temperature', @node)
+        )
       end
 
       def availability_curve_from_node?
