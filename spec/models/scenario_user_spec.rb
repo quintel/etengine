@@ -43,6 +43,60 @@ describe ScenarioUser do
     end
   end
 
+  describe '#couple_existing_user' do
+    context 'when a user with the email exists in the system' do
+      let(:existing_user) { create(:user, user_email: 'existing@test.com') }
+      let(:scenario_user) do
+        build(:scenario_user, scenario: scenario, user_email: 'existing@test.com', user_id: nil)
+      end
+
+      before { existing_user }
+
+      it 'couples the scenario_user to the existing user on create' do
+        scenario_user.save!
+        expect(scenario_user.user_id).to eq(existing_user.id)
+      end
+
+      it 'removes the user_email after coupling' do
+        scenario_user.save!
+        expect(scenario_user.user_email).to be_nil
+      end
+    end
+
+    context 'when no user with the email exists' do
+      let(:scenario_user) do
+        build(:scenario_user, scenario: scenario, user_email: 'newuser@test.com', user_id: nil)
+      end
+
+      it 'keeps the user_email' do
+        scenario_user.save!
+        expect(scenario_user.user_email).to eq('newuser@test.com')
+      end
+
+      it 'does not set a user_id' do
+        scenario_user.save!
+        expect(scenario_user.user_id).to be_nil
+      end
+    end
+
+    context 'when user_id is already set' do
+      let(:user) { create(:user) }
+      let(:scenario_user) do
+        build(:scenario_user, scenario: scenario, user_id: user.id, user_email: nil)
+      end
+
+      it 'does not change the user_id' do
+        scenario_user.save!
+        expect(scenario_user.user_id).to eq(user.id)
+      end
+
+      it 'keeps user_email nil' do
+        scenario_user.save!
+        expect(scenario_user.user_email).to be_nil
+      end
+    end
+  end
+
   it 'allows updating the role if not the last scenario owner' do
     # The first user added will automatically become the scenario owner
     scenario.user = create(:user)

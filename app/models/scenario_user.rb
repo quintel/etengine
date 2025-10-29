@@ -16,7 +16,7 @@ class ScenarioUser < ApplicationRecord
   def couple_existing_user
     return unless user_email.present? && user_id.blank?
 
-    couple_to(User.find_by(id: user_id))
+    couple_to(User.find_by(user_email: user_email))
   end
 
   # Couples the record to an existing User.
