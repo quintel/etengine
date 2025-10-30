@@ -108,7 +108,7 @@ module Api
           # It may have happened the ScenarioUser is already coupled to a User.
           # Search all users for this email, then search for the found ID.
           if scenario_user.blank?
-            user = User.find_by(email: user_params[:user_email])
+            user = User.find_by(user_email: user_params[:user_email])
 
             scenario_user = @scenario.scenario_users.find_by(user_id: user.id) if user.present?
           end

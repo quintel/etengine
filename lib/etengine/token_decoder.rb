@@ -23,14 +23,21 @@ module ETEngine
 
     # Fetches and caches the JWK from the IdP.
     def jwk
-      jwk_cache.fetch('jwk_hash') do
-        client = Faraday.new(Identity.discovery_config.jwks_uri) do |conn|
+      jwk_cache.fetch('jwk_hash', expires_in: 24.hours) do
+        client = Faraday.new(jwks_uri) do |conn|
           conn.request(:json)
           conn.response(:json)
           conn.response(:raise_error)
         end
 
         JSON::JWK.new(client.get.body['keys'].first.symbolize_keys)
+      end
+    end
+
+    # Fetches and caches the JWKS URI from the discovery config to avoid deadlocks.
+    def jwks_uri
+      jwk_cache.fetch('jwks_uri', expires_in: 24.hours) do
+        Identity.discovery_config.jwks_uri
       end
     end
 
