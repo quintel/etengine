@@ -48,7 +48,7 @@ module Inspect
 
     # Updates a scenario and its user sortables
     def update
-      # Get the underlying scenario model for orchestrator
+      # Get the underlying scenario model for updater
       underlying_scenario = @scenario.__getobj__
 
       # Parse editable attributes and return early if parsing fails
@@ -169,16 +169,35 @@ module Inspect
       true
     end
 
-    # Applies scenario changes via orchestrator and updates user sortables in a transaction
+    # Applies scenario changes via updater and updates user sortables in a transaction
     def apply_scenario_changes(scenario, success_path:, failure_path:, success_notice:, render_on_invalid:)
-      orchestrator_params = convert_editable_params_to_orchestrator_format(params)
-      orchestrator = ::ScenarioUpdater.new(scenario, orchestrator_params, current_user)
+      updater_params = convert_params_for_updater(params)
+      force_update = params[:force_update].present?
+      result = ::ScenarioUpdater.new(scenario, updater_params, current_user, skip_validation: force_update).call
       success = false
 
       Scenario.transaction do
-        unless orchestrator.apply
-          error_list = orchestrator.errors.full_messages.map { |msg| "• #{msg}" }.join("<br>")
-          flash[:alert] = "Validation errors:<br>#{error_list}".html_safe
+        if result.failure?
+          errors = result.failure
+
+          # Store errors for display in the view
+          flash.now[:validation_errors] = errors
+
+          # Preserve raw form inputs for re-rendering (prevents YAML->JSON conversion)
+          scenario_params = params[:scenario] || {}
+          @raw_user_values = scenario_params[:user_values] if scenario_params.key?(:user_values)
+          @raw_balanced_values = scenario_params[:balanced_values] if scenario_params.key?(:balanced_values)
+          @raw_metadata = scenario_params[:metadata] if scenario_params.key?(:metadata)
+
+          # If force_update is not set, give user option to force the update
+          if !force_update
+            flash.now[:show_force_update] = true
+          else
+            # If force_update was set but still failed, show error without force option
+            error_list = Array(errors).map { |msg| "• #{msg}" }.join("<br>")
+            flash.now[:alert] = "Failed to update:<br>#{error_list}".html_safe
+          end
+
           raise ActiveRecord::Rollback
         end
 
@@ -204,7 +223,12 @@ module Inspect
       if success
         redirect_to success_path, notice: success_notice
       else
-        redirect_to failure_path
+        # If there are validation errors and force_update wasn't used, render the form
+        if flash.now[:show_force_update]
+          render render_on_invalid, status: :unprocessable_entity
+        else
+          redirect_to failure_path
+        end
       end
     rescue ActiveRecord::RecordInvalid
       render render_on_invalid, status: :unprocessable_entity
@@ -233,9 +257,9 @@ module Inspect
       end
     end
 
-    # Converts form parameters to orchestrator format
-    def convert_editable_params_to_orchestrator_format(params)
-      orchestrator_params = { scenario: {} }
+    # Converts form parameters to updater format
+    def convert_params_for_updater(params)
+      updater_params = { scenario: {} }
       scenario_attrs = params[:scenario] || {}
 
       # Get the underlying scenario (unwrap from Editable wrapper)
@@ -243,14 +267,14 @@ module Inspect
 
       # Extract parsed values from the underlying scenario
       %i[user_values balanced_values metadata].each do |attr|
-        orchestrator_params[:scenario][attr] = underlying_scenario.public_send(attr) if scenario_attrs.key?(attr)
+        updater_params[:scenario][attr] = underlying_scenario.public_send(attr) if scenario_attrs.key?(attr)
       end
 
       # Handle special case attributes
-      orchestrator_params[:scenario][:keep_compatible] = scenario_attrs[:keep_compatible] if scenario_attrs.key?(:keep_compatible)
-      orchestrator_params[:scenario][:active_couplings] = scenario_attrs[:active_couplings].to_s.split if scenario_attrs.key?(:active_couplings)
+      updater_params[:scenario][:keep_compatible] = scenario_attrs[:keep_compatible] if scenario_attrs.key?(:keep_compatible)
+      updater_params[:scenario][:active_couplings] = scenario_attrs[:active_couplings].to_s.split if scenario_attrs.key?(:active_couplings)
 
-      orchestrator_params
+      updater_params
     end
   end
 end

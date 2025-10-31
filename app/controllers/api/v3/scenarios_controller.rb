@@ -187,14 +187,14 @@ module Api
           @scenario.save!
 
           if attrs[:user_values].present?
-            orchestrator = ::ScenarioUpdater.new(
+            result = ::ScenarioUpdater.new(
               @scenario,
               { scenario: { user_values: attrs[:user_values] } },
               current_user
-            )
+            ).call
 
-            unless orchestrator.apply
-              render json: { errors: orchestrator.errors.to_hash }, status: :unprocessable_content
+            if result.failure?
+              render json: { errors: { base: result.failure } }, status: :unprocessable_content
               raise ActiveRecord::Rollback
             end
           end
@@ -272,17 +272,18 @@ module Api
           authorize!(:update, @scenario)
         end
 
+        result = nil
         serializer = nil
 
         Scenario.transaction do
-          orchestrator = ::ScenarioUpdater.new(@scenario, final_params, current_user)
+          result = ::ScenarioUpdater.new(@scenario, final_params, current_user).call
 
-          unless orchestrator.apply
-            serializer = ScenarioUpdateSerializer.new(self, orchestrator, final_params)
+          if result.failure?
+            serializer = ScenarioUpdateSerializer.new(self, result, @scenario, final_params)
             raise ActiveRecord::Rollback
           end
 
-          serializer = ScenarioUpdateSerializer.new(self, orchestrator, final_params)
+          serializer = ScenarioUpdateSerializer.new(self, result, @scenario, final_params)
 
           raise ActiveRecord::Rollback if serializer.errors.any?
         end
@@ -490,21 +491,22 @@ module Api
       end
 
       def force_uncouple
+        result = nil
         serializer = nil
 
-        orchestrator = ::ScenarioUpdater.new(
-          @scenario,
-          { uncouple: coupling_parameters[:force], scenario: {} },
-          current_user
-        )
-
         Scenario.transaction do
-          unless orchestrator.apply
-            serializer = ScenarioUpdateSerializer.new(self, orchestrator, {})
+          result = ::ScenarioUpdater.new(
+            @scenario,
+            { uncouple: coupling_parameters[:force], scenario: {} },
+            current_user
+          ).call
+
+          if result.failure?
+            serializer = ScenarioUpdateSerializer.new(self, result, @scenario, {})
             raise ActiveRecord::Rollback
           end
 
-          serializer = ScenarioUpdateSerializer.new(self, orchestrator, {})
+          serializer = ScenarioUpdateSerializer.new(self, result, @scenario, {})
 
           raise ActiveRecord::Rollback if serializer.errors.any?
         end
