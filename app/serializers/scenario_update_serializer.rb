@@ -1,13 +1,14 @@
 class ScenarioUpdateSerializer
-  def initialize(controller, updater, params)
+  def initialize(controller, result, scenario, params)
     @controller = controller
-    @updater = updater
+    @result = result
+    @scenario = scenario
     @requested_queries = params[:gqueries] || []
 
     @errors  = []
     @results = {}
 
-    if @requested_queries.any? && assert_valid_gqueries! && @updater.errors.empty?
+    if @requested_queries.any? && assert_valid_gqueries! && @result.success?
       @results = perform_gqueries!
     end
   end
@@ -17,7 +18,7 @@ class ScenarioUpdateSerializer
   # @return [Hash]
   #
   def as_json(*)
-    serializer = ScenarioSerializer.new(@controller, @updater.scenario)
+    serializer = ScenarioSerializer.new(@controller, @scenario)
     { scenario: serializer, gqueries: @results }
   end
 
@@ -27,8 +28,13 @@ class ScenarioUpdateSerializer
   # @return [Array<String>]
   #
   def errors
-    updater_errors = @updater.errors.to_hash.values.flatten
-    updater_errors + @errors
+    if @result.success?
+      @errors  # Only gquery errors
+    else
+      # Convert result failure to array and combine with gquery errors
+      result_errors = Array(@result.failure)
+      result_errors + @errors
+    end
   end
 
   #######
@@ -66,7 +72,7 @@ class ScenarioUpdateSerializer
   # @return [Hash{String => Array<Numeric>}]
   #
   def perform_gqueries!
-    gql = @updater.scenario.gql
+    gql = @scenario.gql
 
     queries.each_with_object({}) do |query, results|
       unless query.api_allowed?

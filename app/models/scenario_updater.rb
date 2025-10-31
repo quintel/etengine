@@ -1,116 +1,152 @@
 # frozen_string_literal: true
 
 # Usage:
-#   updater = ScenarioUpdater.new(scenario, params, current_user)
-#   if updater.apply
-#     # scenario updated successfully
+#   result = ScenarioUpdater.new(scenario, params, current_user, skip_validation: false).call
+#   if result.success?
+#     scenario = result.value!
 #   else
-#     # check updater.errors
+#     errors = result.failure
 #   end
 class ScenarioUpdater
-  include ActiveModel::Validations
+  include Dry::Monads[:result]
+  include Dry::Monads::Do.for(:call, :validate, :process, :apply, :post_save)
 
-  attr_reader :scenario, :errors
+  attr_reader :scenario, :params, :current_user, :skip_validation
 
-    def initialize(scenario, params, current_user)
-      @scenario = scenario
-      @params = params
-      @current_user = current_user
-      @errors = ActiveModel::Errors.new(self)
+  def initialize(scenario, params, current_user, skip_validation: false)
+    @scenario = scenario
+    @params = params
+    @current_user = current_user
+    @skip_validation = skip_validation
+  end
 
-      initialize_components
-    end
+  # Returns Success(scenario) or Failure(errors).
+  def call
+    return Success(scenario) if params.empty?
 
-    def apply
-      return true if @params.empty?
+    scenario_data = extract_scenario_data
 
-      # Couplings
-      @couplings_manager.apply_active_couplings_list! #Inspect controller
-      @couplings_manager.activate_from_provided_values( # API
-        @inputs_update.provided_values_without_resets
-      )
+    validated     = yield validate(scenario_data)
+    processed     = yield process(scenario_data, validated)
+    mutated       = yield apply(scenario_data, processed)
+    finalized     = yield post_save(scenario_data, mutated)
 
-      # Inputs - calculate and validate
-      @inputs_update.process
+    Success(finalized)
+  rescue RuntimeError => e
+    Failure([e.message])
+  end
 
-      # Validate
-      return false unless valid?
+  private
 
-      # Merge attributes
-      @scenario.attributes = @scenario.attributes.except(
-        'id', 'present_updated_at', 'created_at', 'updated_at'
-      ).merge(
-        attributes_to_apply.merge(
-          user_values: @inputs_update.user_values,
-          balanced_values: @inputs_update.balanced_values
-        )
-      )
+  # Validation
+  def validate(scenario_data)
+    _validated_params = yield validate_params
+    provided_values   = yield parse_provided_values(scenario_data)
+    _valid_inputs     = yield validate_input_values(provided_values)
+    Success(provided_values)
+  end
 
-      return false unless @scenario.save(validate: false)
+  # Processing
+  def process(scenario_data, provided_values)
+    active_couplings = scenario_data[:active_couplings]
+    uncouple         = params[:uncouple]
+    reset            = params[:reset]
+    autobalance      = params[:autobalance] != 'false' && params[:autobalance] != false
+    force_balance    = params[:force_balance]
 
-      # Post Save
-      copy_preset_roles_if_requested
-      @scenario.scenario_version_tag&.update(user: @current_user)
+    coupling_state  = yield process_couplings(provided_values, active_couplings, uncouple)
+    user_values     = yield calculate_user_values(provided_values, coupling_state, reset)
+    balanced_values = yield calculate_balanced_values(
+      user_values, provided_values, coupling_state, reset, autobalance, force_balance
+    )
+    _balanced       = yield validate_balance(user_values, balanced_values, provided_values)
 
-      true
-    end
+    Success([coupling_state, user_values, balanced_values])
+  end
 
-    def valid?
-      components = [@inputs_update, @scenario]
+  # Persistance
+  def apply(scenario_data, (coupling_state, user_values, balanced_values))
+    _coupled_scenario = yield apply_couplings(coupling_state)
+    attributes        = yield prepare_attributes(user_values, balanced_values, scenario_data)
+    persisted         = yield persist_scenario(attributes)
+    Success(persisted)
+  end
 
-      all_valid = components.all?(&:valid?)
+  # Post-save
+  def post_save(scenario_data, persisted)
+    set_preset_roles = truthy?(scenario_data[:set_preset_roles])
+    _post_saved = yield post_save_operations(set_preset_roles)
+    Success(persisted)
+  end
 
-      # Aggregate errors from components
-      @inputs_update.errors.each do |error|
-        errors.add(error.attribute, error.message)
-      end
+  def truthy?(value)
+    [true, 'true', '1'].include?(value)
+  end
 
-      # Add scenario errors
-      unless @scenario.valid?
-        @scenario.errors.each do |error|
-          errors.add(:base, "Scenario #{error.attribute} #{error.message}")
-        end
-      end
+  def extract_scenario_data
+    params[:scenario] || {}
+  end
 
-      all_valid
-    rescue RuntimeError => e
-      errors.add(:base, e.message)
-      false
-    end
+  def validate_params
+    @validate_params ||= -> { service(:ValidateParams).call(scenario, params, current_user) }
+    @validate_params.call
+  end
 
-    private
+  def parse_provided_values(scenario_data)
+    service(:ParseProvidedValues).call(scenario, scenario_data)
+  end
 
-    def initialize_components
-      @couplings_manager = Inputs::CouplingsManager.new(@scenario, @params, @current_user)
-      @inputs_update = Inputs::Update.new(@scenario, @params, @current_user, couplings_manager: @couplings_manager)
-    end
+  def validate_input_values(provided_values)
+    service(:ValidateInputValues).call(scenario, provided_values, skip_validation)
+  end
 
-    # Filters and prepares scenario attributes for update
-    def attributes_to_apply
-      scenario_data = (@params[:scenario] || {}).with_indifferent_access
+  def process_couplings(provided_values, active_couplings, uncouple)
+    service(:ProcessCouplings).call(scenario, provided_values, active_couplings, uncouple)
+  end
 
-      scenario_data
-        .except(:area_code, :end_year, :set_preset_roles, :user_values)
-        .merge(metadata: metadata_to_apply)
-    end
+  def calculate_user_values(provided_values, coupling_state, reset)
+    service(:CalculateUserValues).call(
+      scenario,
+      provided_values,
+      coupling_state[:uncoupled_inputs],
+      reset
+    )
+  end
 
-    # Returns metadata to apply - either from params or duplicates existing
-    def metadata_to_apply
-      scenario_data = (@params[:scenario] || {}).with_indifferent_access
+  def calculate_balanced_values(user_values, provided_values, coupling_state, reset, autobalance, force_balance)
+    service(:CalculateBalancedValues).call(
+      scenario,
+      user_values,
+      provided_values,
+      coupling_state[:uncoupled_inputs],
+      reset,
+      autobalance,
+      force_balance
+    )
+  end
 
-      if scenario_data.key?(:metadata)
-        scenario_data[:metadata]
-      else
-        @scenario.metadata.dup
-      end
-    end
+  def validate_balance(user_values, balanced_values, provided_values)
+    service(:ValidateBalance).call(scenario, user_values, balanced_values, provided_values, skip_validation)
+  end
 
-    # Copies preset roles to scenario if requested via params
-    def copy_preset_roles_if_requested
-      truthy_values = [true, 'true', '1']
-      scenario_params = @params.dig(:scenario) || {}
-      should_copy = truthy_values.include?(scenario_params.fetch(:set_preset_roles, false))
+  def apply_couplings(coupling_state)
+    service(:ApplyCouplings).call(scenario, coupling_state)
+  end
 
-      @scenario.copy_preset_roles if should_copy
-    end
+  def prepare_attributes(user_values, balanced_values, scenario_data)
+    service(:PrepareAttributes).call(scenario, user_values, balanced_values, scenario_data)
+  end
+
+  def persist_scenario(attributes)
+    service(:PersistScenario).call(scenario, attributes, skip_validation)
+  end
+
+  def post_save_operations(set_preset_roles)
+    service(:PostSaveOperations).call(scenario, set_preset_roles, current_user)
+  end
+
+  # Helper to instantiate services
+  def service(name)
+    Services.const_get(name).new
+  end
 end

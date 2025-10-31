@@ -670,7 +670,7 @@ describe 'Updating inputs with API v3' do
 
     it 'has an error message about the scenario' do
       expect(JSON.parse(response.body)['errors'])
-        .to include('Scenario area_code is unknown or not supported')
+        .to include('Scenario: Area code is unknown or not supported')
     end
   end
 
