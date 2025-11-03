@@ -26,13 +26,9 @@ module Inspect
       scenario = Scenario.new(Scenario.default_attributes.merge(source: 'ETEngine Admin UI'))
       @scenario = Scenario::Editable.new(scenario)
 
-      # Parse editable attributes and return early if parsing fails
-      return redirect_to new_inspect_scenario_path unless parse_editable_attributes(new_inspect_scenario_path)
-
-      apply_scenario_changes(
-        scenario,
-        success_path: inspect_scenario_path(id: scenario.id),
-        failure_path: new_inspect_scenario_path,
+      process_scenario_save(
+        scenario: scenario,
+        edit_path: new_inspect_scenario_path,
         success_notice: 'Scenario created',
         render_on_invalid: :new
       )
@@ -48,16 +44,11 @@ module Inspect
 
     # Updates a scenario and its user sortables
     def update
-      # Get the underlying scenario model for updater
       underlying_scenario = @scenario.__getobj__
 
-      # Parse editable attributes and return early if parsing fails
-      return redirect_to edit_inspect_scenario_path(id: underlying_scenario.id) unless parse_editable_attributes(edit_inspect_scenario_path(id: underlying_scenario.id))
-
-      apply_scenario_changes(
-        underlying_scenario,
-        success_path: inspect_scenario_path(id: underlying_scenario.id),
-        failure_path: edit_inspect_scenario_path(id: underlying_scenario.id),
+      process_scenario_save(
+        scenario: underlying_scenario,
+        edit_path: edit_inspect_scenario_path(id: underlying_scenario.id),
         success_notice: 'Scenario updated',
         render_on_invalid: :edit
       )
@@ -115,19 +106,6 @@ module Inspect
       end
     end
 
-    # Extracts strong params for scenario attributes (excluding sortables)
-    def scenario_attributes
-      params.require(:scenario).permit!.except(
-        :forecast_storage_order,
-        :hydrogen_supply_order,
-        :hydrogen_demand_order,
-        :heat_network_order_ht,
-        :heat_network_order_mt,
-        :heat_network_order_lt,
-        :households_space_heating_producer_order
-      )
-    end
-
     # Extracts strong params for sortable order attributes
     def user_sortable_attributes
       params.require(:scenario).permit(
@@ -151,9 +129,22 @@ module Inspect
       end
     end
 
-    # Parses editable attributes from params and assigns them to @scenario
+    # Coordinates parsing and saving of scenario with sortables
+    def process_scenario_save(scenario:, edit_path:, success_notice:, render_on_invalid:)
+      return redirect_to edit_path unless assign_parsed_attributes(edit_path)
+
+      apply_scenario_changes(
+        scenario,
+        success_path: inspect_scenario_path(id: scenario.id),
+        failure_path: edit_path,
+        success_notice: success_notice,
+        render_on_invalid: render_on_invalid
+      )
+    end
+
+    # Assigns parsed editable attributes from params to @scenario
     # Returns false and sets flash alert if parsing fails, true otherwise
-    def parse_editable_attributes(redirect_path)
+    def assign_parsed_attributes(redirect_path)
       scenario_attrs = params[:scenario] || {}
       @scenario.user_values = scenario_attrs[:user_values] if scenario_attrs.key?(:user_values)
       @scenario.balanced_values = scenario_attrs[:balanced_values] if scenario_attrs.key?(:balanced_values)
@@ -171,52 +162,18 @@ module Inspect
 
     # Applies scenario changes via updater and updates user sortables in a transaction
     def apply_scenario_changes(scenario, success_path:, failure_path:, success_notice:, render_on_invalid:)
-      updater_params = convert_params_for_updater(params)
+      updater_params = build_updater_params(params)
       force_update = params[:force_update].present?
       result = ::ScenarioUpdater.new(scenario, updater_params, current_user, skip_validation: force_update).call
       success = false
 
       Scenario.transaction do
         if result.failure?
-          errors = result.failure
-
-          # Store errors for display in the view
-          flash.now[:validation_errors] = errors
-
-          # Preserve raw form inputs for re-rendering (prevents YAML->JSON conversion)
-          scenario_params = params[:scenario] || {}
-          @raw_user_values = scenario_params[:user_values] if scenario_params.key?(:user_values)
-          @raw_balanced_values = scenario_params[:balanced_values] if scenario_params.key?(:balanced_values)
-          @raw_metadata = scenario_params[:metadata] if scenario_params.key?(:metadata)
-
-          # If force_update is not set, give user option to force the update
-          if !force_update
-            flash.now[:show_force_update] = true
-          else
-            # If force_update was set but still failed, show error without force option
-            error_list = Array(errors).map { |msg| "• #{msg}" }.join("<br>")
-            flash.now[:alert] = "Failed to update:<br>#{error_list}".html_safe
-          end
-
+          handle_updater_failure(result.failure, force_update)
           raise ActiveRecord::Rollback
         end
 
-        # Build hash of user sortables based on what's available
-        sortables = {
-          forecast_storage_order: scenario.forecast_storage_order,
-          heat_network_order_ht: scenario.heat_network_order(:ht),
-          heat_network_order_mt: scenario.heat_network_order(:mt),
-          heat_network_order_lt: scenario.heat_network_order(:lt),
-          households_space_heating_producer_order: scenario.households_space_heating_producer_order
-        }
-
-        # Add hydrogen orders if scenario supports them (present in create but not update)
-        if scenario.respond_to?(:hydrogen_supply_order)
-          sortables[:hydrogen_supply_order] = scenario.hydrogen_supply_order
-          sortables[:hydrogen_demand_order] = scenario.hydrogen_demand_order
-        end
-
-        update_user_sortables!(user_sortable_attributes, sortables)
+        persist_sortables!(user_sortable_attributes, build_sortables_hash(scenario))
         success = true
       end
 
@@ -234,8 +191,27 @@ module Inspect
       render render_on_invalid, status: :unprocessable_entity
     end
 
-    # Updates user sortables with new order values and persists them
-    def update_user_sortables!(attrs, records)
+    # Builds hash of sortable associations for a scenario
+    def build_sortables_hash(scenario)
+      sortables = {
+        forecast_storage_order: scenario.forecast_storage_order,
+        heat_network_order_ht: scenario.heat_network_order(:ht),
+        heat_network_order_mt: scenario.heat_network_order(:mt),
+        heat_network_order_lt: scenario.heat_network_order(:lt),
+        households_space_heating_producer_order: scenario.households_space_heating_producer_order
+      }
+
+      # Add hydrogen orders if scenario supports them
+      if scenario.respond_to?(:hydrogen_supply_order)
+        sortables[:hydrogen_supply_order] = scenario.hydrogen_supply_order
+        sortables[:hydrogen_demand_order] = scenario.hydrogen_demand_order
+      end
+
+      sortables
+    end
+
+    # Persists user sortables with new order values
+    def persist_sortables!(attrs, records)
       records = records.select { |key, _| attrs.key?(key) }
 
       records.each do |key, record|
@@ -247,7 +223,7 @@ module Inspect
       # Validate all records and raise if any are invalid
       raise ActiveRecord::RecordInvalid unless records.all? { |_, rec| rec.valid? }
 
-      # Persist or destroy records depending on whether they’re default
+      # Persist or destroy records depending on whether they're default
       records.each do |_, record|
         if record.default?
           record.destroy unless record.new_record?
@@ -257,8 +233,29 @@ module Inspect
       end
     end
 
-    # Converts form parameters to updater format
-    def convert_params_for_updater(params)
+    # Handles updater validation failures by setting flash messages and preserving form input
+    def handle_updater_failure(errors, force_update)
+      # Store errors for display in the view
+      flash.now[:validation_errors] = errors
+
+      # Preserve raw form inputs for re-rendering (prevents YAML->JSON conversion)
+      scenario_params = params[:scenario] || {}
+      @raw_user_values = scenario_params[:user_values] if scenario_params.key?(:user_values)
+      @raw_balanced_values = scenario_params[:balanced_values] if scenario_params.key?(:balanced_values)
+      @raw_metadata = scenario_params[:metadata] if scenario_params.key?(:metadata)
+
+      # If force_update is not set, give user option to force the update
+      if !force_update
+        flash.now[:show_force_update] = true
+      else
+        # If force_update was set but still failed, show error without force option
+        error_list = Array(errors).map { |msg| "• #{msg}" }.join("<br>")
+        flash.now[:alert] = "Failed to update:<br>#{error_list}".html_safe
+      end
+    end
+
+    # Builds updater parameters from form input
+    def build_updater_params(params)
       updater_params = { scenario: {} }
       scenario_attrs = params[:scenario] || {}
 
