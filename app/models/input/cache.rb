@@ -17,6 +17,35 @@ class Input
         (warm_values_for(scenario) && Rails.cache.read(cache_key))
     end
 
+    # Public: Retrieves cached data for multiple inputs at once.
+    #
+    # Returns a hash of { input_key => cached_data }
+    def read_many(scenario, inputs)
+      # Build cache keys for all inputs
+      cache_keys = inputs.map { |input| input_cache_key(scenario, input) }
+      key_to_input = inputs.each_with_object({}) do |input, hash|
+        key = input.kind_of?(Input) ? input.key : input.to_s
+        hash[input_cache_key(scenario, input)] = key
+      end
+
+      # Batch read from cache
+      cached_values = Rails.cache.read_multi(*cache_keys)
+
+      # Missing inputs
+      missing_keys = cache_keys - cached_values.keys
+
+      if missing_keys.any?
+        missing_input_keys = missing_keys.map { |cache_key| key_to_input[cache_key] }
+        warm_specific_inputs(scenario, missing_input_keys)
+
+        # Re-read newly cached values
+        cached_values.merge!(Rails.cache.read_multi(*missing_keys))
+      end
+
+      # Convert cache keys back to input keys
+      cached_values.transform_keys { |cache_key| key_to_input[cache_key] }
+    end
+
     private
 
     # Internal: Sets the hash containing all of the input attributes.
@@ -42,6 +71,23 @@ class Input
       gql        = Scenario.new(attributes).gql
 
       Input.all.each do |input|
+        set(scenario, input, values_for(input, gql))
+      end
+    end
+
+    # Internal: Pre-calculates values for specific inputs only.
+    #
+    # Avoids calculating all 1000+ inputs when only validating a few.
+    def warm_specific_inputs(scenario, input_keys)
+      return if input_keys.empty?
+
+      attributes = scenario.attributes.slice('area_code', 'end_year')
+      gql        = Scenario.new(attributes).gql
+
+      input_keys.each do |key|
+        input = Input.get(key)
+        next unless input
+
         set(scenario, input, values_for(input, gql))
       end
     end

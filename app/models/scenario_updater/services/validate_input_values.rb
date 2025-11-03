@@ -13,9 +13,19 @@ class ScenarioUpdater
         errors = []
         provided_values_without_resets = provided_values.reject { |_, value| value == :reset }
 
+        # Batch fetch all input objects
+        input_keys = provided_values_without_resets.keys
+        inputs_by_key = input_keys.each_with_object({}) do |key, hash|
+          hash[key] = Input.get(key)
+        end
+
+        # Batch read all cache data at once
+        cache_data = Input.cache(scenario).read_many(scenario, inputs_by_key.values.compact)
+
+        # Validate each input using pre-fetched data
         provided_values_without_resets.each do |key, value|
-          input = Input.get(key)
-          input_data = Input.cache(scenario).read(scenario, input)
+          input = inputs_by_key[key]
+          input_data = input ? cache_data[input.key] : nil
 
           if input_data.blank?
             errors << "Input #{key} does not exist"
