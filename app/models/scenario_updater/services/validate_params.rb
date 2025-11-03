@@ -2,14 +2,25 @@
 
 class ScenarioUpdater
   module Services
-    # Validates request parameters
+    # Validates request parameter types
     # Returns Success with sanitized params or Failure with error hash.
     class ValidateParams
       include Dry::Monads[:result]
 
+      # Validation schema for update parameters
+      SCHEMA = Dry::Validation.Contract do
+        params do
+          optional(:scenario).hash
+          optional(:reset).filled(:bool)
+          optional(:uncouple).filled(:bool)
+          optional(:autobalance)
+          optional(:force_balance).filled(:bool)
+          optional(:gqueries).array(:string)
+        end
+      end
+
       def call(scenario, params, current_user)
-        contract = Contract.new(scenario: scenario, current_user: current_user)
-        result = contract.call(params)
+        result = SCHEMA.call(params)
 
         result.success? ? Success(result.to_h) : Failure(result.errors.to_h)
       end

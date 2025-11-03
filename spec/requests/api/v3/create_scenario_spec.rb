@@ -98,7 +98,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
   context 'when authenticated' do
     before do
-      post '/api/v3/scenarios', headers: access_token_header(user, :write), headers: token_header
+      post '/api/v3/scenarios', headers: token_header
     end
 
     let(:user) { create(:user) }
