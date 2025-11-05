@@ -140,7 +140,7 @@ module Qernel::Plugins
     def nodes(type, subtype)
       type_data = etsource_data[type.to_s]
 
-      (type_data || {}).map do |key, profile|
+      (type_data || {}).sort_by { |key, _| key }.map do |key, profile|
         node = @graph.node(key)
 
         if !subtype.nil? && @context.node_config(node).subtype != subtype
