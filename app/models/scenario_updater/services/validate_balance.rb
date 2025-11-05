@@ -6,7 +6,7 @@ class ScenarioUpdater
     class ValidateBalance
       include Dry::Monads[:result]
 
-      TOLERANCE = 0.01
+      TOLERANCE = 1.0E-12
 
       def call(scenario, user_values, balanced_values, provided_values, skip_validation = false)
         return Success(true) if skip_validation
