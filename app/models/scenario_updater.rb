@@ -116,17 +116,23 @@ class ScenarioUpdater
   def calculate_balanced_values(user_values, provided_values, coupling_state, reset, autobalance, force_balance)
     service(:CalculateBalancedValues).call(
       scenario,
-      user_values,
-      provided_values,
-      coupling_state[:uncoupled_inputs],
-      reset,
-      autobalance,
-      force_balance
+      user_values: user_values,
+      provided_values: provided_values,
+      uncoupled_inputs: coupling_state[:uncoupled_inputs],
+      reset: reset,
+      autobalance: autobalance,
+      force_balance: force_balance
     )
   end
 
   def validate_balance(user_values, balanced_values, provided_values)
-    service(:ValidateBalance).call(scenario, user_values, balanced_values, provided_values, skip_validation)
+    service(:ValidateBalance).call(
+      scenario,
+      user_values: user_values,
+      balanced_values: balanced_values,
+      provided_values: provided_values,
+      skip_validation: skip_validation
+    )
   end
 
   def apply_couplings(coupling_state)

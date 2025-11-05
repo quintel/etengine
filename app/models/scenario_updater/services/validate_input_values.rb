@@ -12,37 +12,41 @@ class ScenarioUpdater
 
         errors = []
         provided_values_without_resets = provided_values.reject { |_, value| value == :reset }
+        inputs_by_key, cache_data = fetch_input_data(scenario, provided_values_without_resets)
 
-        # Batch fetch all input objects
-        input_keys = provided_values_without_resets.keys
-        inputs_by_key = input_keys.each_with_object({}) do |key, hash|
-          hash[key] = Input.get(key)
-        end
-
-        # Batch read all cache data at once
-        cache_data = Input.cache(scenario).read_many(scenario, inputs_by_key.values.compact)
-
-        # Validate each input using pre-fetched data
         provided_values_without_resets.each do |key, value|
-          input = inputs_by_key[key]
-          input_data = input ? cache_data[input.key] : nil
-
-          if input_data.blank?
-            errors << "Input #{key} does not exist"
-          elsif input.enum?
-            validate_enum_input(key, input_data, value, errors)
-          elsif input.unit == 'bool'
-            validate_bool_input(key, value, errors)
-          else
-            # Skip range validation for share group inputs - they'll be validated after balancing
-            validate_numeric_input(key, input, input_data, value, errors)
-          end
+          validate_single_input(key, value, inputs_by_key, cache_data, errors)
         end
 
         errors.empty? ? Success(provided_values) : Failure(errors)
       end
 
       private
+
+      def fetch_input_data(scenario, provided_values_without_resets)
+        input_keys = provided_values_without_resets.keys
+        inputs_by_key = input_keys.each_with_object({}) do |key, hash|
+          hash[key] = Input.get(key)
+        end
+        cache_data = Input.cache(scenario).read_many(scenario, inputs_by_key.values.compact)
+
+        [inputs_by_key, cache_data]
+      end
+
+      def validate_single_input(key, value, inputs_by_key, cache_data, errors)
+        input = inputs_by_key[key]
+        input_data = input ? cache_data[input.key] : nil
+
+        if input_data.blank?
+          errors << "Input #{key} does not exist"
+        elsif input.enum?
+          validate_enum_input(key, input_data, value, errors)
+        elsif input.unit == 'bool'
+          validate_bool_input(key, value, errors)
+        else
+          validate_numeric_input(key, input, input_data, value, errors)
+        end
+      end
 
       def validate_enum_input(key, input, value, errors)
         return if input[:min].include?(value)
@@ -65,10 +69,10 @@ class ScenarioUpdater
         # and will be validated after balancing
         return if input.share_group.present?
 
-        min = input_data[:min]
-        max = input_data[:max]
+        validate_min_max(key, value, input_data[:min], input_data[:max], errors)
+      end
 
-        # Validate min/max on actual value
+      def validate_min_max(key, value, min, max, errors)
         if value < min
           errors << "Input #{key} cannot be less than #{min}"
         elsif value > max
