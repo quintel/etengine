@@ -71,6 +71,7 @@ describe 'Updating inputs with API v3' do
     )
 
     allow(Input).to receive(:all).and_return(Input.records.values)
+    Input.instance_variable_set(:@inputs_grouped, nil)
   end
 
   def put_scenario(values: {}, params: {}, headers: token_header)

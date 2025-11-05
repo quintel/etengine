@@ -7,7 +7,13 @@ RSpec.describe ScenarioUpdater::Services::ValidateBalance do
   let(:service) { described_class.new }
 
   it 'returns Success if skip_validation is true' do
-    result = service.call(scenario, {}, {}, {}, true)
+    result = service.call(
+      scenario,
+      user_values: {},
+      balanced_values: {},
+      provided_values: {},
+      skip_validation: true
+    )
     expect(result).to be_success
   end
 
@@ -16,7 +22,12 @@ RSpec.describe ScenarioUpdater::Services::ValidateBalance do
     allow(Input).to receive(:get).and_return(input)
     allow(Input).to receive(:in_share_group).and_return([input])
     allow(Input).to receive(:cache).and_return(double(read: { disabled: false }))
-    result = service.call(scenario, { 'a' => 100 }, {}, { 'a' => 100 })
+    result = service.call(
+      scenario,
+      user_values: { 'a' => 100 },
+      balanced_values: {},
+      provided_values: { 'a' => 100 }
+    )
     expect(result).to be_success
   end
 end
