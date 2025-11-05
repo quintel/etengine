@@ -64,7 +64,15 @@ module Etsource
       #
       # Returns nothing.
       def expire_all!
-        Pathname.glob(@directory.join('*.pack')).each(&:delete) if @directory.directory?
+        return unless @directory.directory?
+
+        Pathname.glob(@directory.join('*.pack')).each do |path|
+          begin
+            path.delete
+          rescue => e
+            warn "Failed to delete #{path}: #{e.message}"
+          end
+        end
       end
 
       private
