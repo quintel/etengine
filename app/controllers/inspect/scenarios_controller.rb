@@ -166,14 +166,25 @@ module Inspect
       force_update = params[:force_update].present?
       result = ::ScenarioUpdater.new(scenario, updater_params, current_user, skip_validation: force_update).call
       success = false
+      sortable_attrs = user_sortable_attributes
+      sortable_records = build_sortables_hash(scenario)
 
       Scenario.transaction do
+        prepared_sortables, sortable_errors = prepare_sortables(sortable_records, sortable_attrs, force_update: force_update)
+        formatted_sortable_errors = format_sortable_errors(sortable_errors)
+
         if result.failure?
-          handle_updater_failure(result.failure, force_update)
+          combined_errors = Array(result.failure) + formatted_sortable_errors
+          handle_updater_failure(combined_errors, force_update)
           raise ActiveRecord::Rollback
         end
 
-        persist_sortables!(user_sortable_attributes, build_sortables_hash(scenario))
+        if sortable_errors.any?
+          handle_updater_failure(formatted_sortable_errors, force_update)
+          raise ActiveRecord::Rollback
+        end
+
+        persist_sortables!(prepared_sortables)
         success = true
       end
 
@@ -210,20 +221,36 @@ module Inspect
       sortables
     end
 
-    # Persists user sortables with new order values
-    def persist_sortables!(attrs, records)
-      records = records.select { |key, _| attrs.key?(key) }
+    # Applies user input to sortable records, returning the mutated records and any validation errors
+    def prepare_sortables(records, attrs, force_update:)
+      selected_records = {}
+      errors = {}
 
       records.each do |key, record|
+        attributes = attrs[key] || attrs[key.to_s]
+        next unless attributes
+
+        selected_records[key] = record
+
         # Assign the sortable to the scenario explicitly, so we can preserve the object (and errors)
         record.scenario.public_send("#{key}=", record) if record.scenario.respond_to?("#{key}=")
-        record.order = attrs[key][:order].to_s.split
+        record.order = attributes[:order].to_s.split
+
+        next if record.valid?
+
+        if force_update
+          record.order = record.useable_order
+          record.errors.clear
+        else
+          errors[key] = record.errors.full_messages
+        end
       end
 
-      # Validate all records and raise if any are invalid
-      raise ActiveRecord::RecordInvalid unless records.all? { |_, rec| rec.valid? }
+      [selected_records, errors]
+    end
 
-      # Persist or destroy records depending on whether they're default
+    # Persists user sortables with new order values
+    def persist_sortables!(records)
       records.each do |_, record|
         if record.default?
           record.destroy unless record.new_record?
@@ -233,10 +260,29 @@ module Inspect
       end
     end
 
+    SORTABLE_LABELS = {
+      forecast_storage_order: 'Forecast storage order',
+      hydrogen_supply_order: 'Hydrogen producer order',
+      hydrogen_demand_order: 'Hydrogen flex demand order',
+      heat_network_order_ht: 'Heat network (HT) dispatchables order',
+      heat_network_order_mt: 'Heat network (MT) dispatchables order',
+      heat_network_order_lt: 'Heat network (LT) dispatchables order',
+      households_space_heating_producer_order: 'Households space heating producer order'
+    }.freeze
+    private_constant :SORTABLE_LABELS
+
+    def format_sortable_errors(errors)
+      errors.flat_map do |key, messages|
+        label = SORTABLE_LABELS[key] || key.to_s.humanize
+        Array(messages).compact.map { |message| "#{label}: #{message}" }
+      end
+    end
+
     # Handles updater validation failures by setting flash messages and preserving form input
     def handle_updater_failure(errors, force_update)
+      error_array = Array(errors).flatten
       # Store errors for display in the view
-      flash.now[:validation_errors] = errors
+      flash.now[:validation_errors] = error_array
 
       # Preserve raw form inputs for re-rendering (prevents YAML->JSON conversion)
       scenario_params = params[:scenario] || {}
@@ -246,10 +292,10 @@ module Inspect
 
       # If force_update is not set, give user option to force the update
       if !force_update
-        flash.now[:show_force_update] = true
-      else
+        flash.now[:show_force_update] = error_array.present?
+      elsif error_array.present?
         # If force_update was set but still failed, show error without force option
-        error_list = Array(errors).map { |msg| "• #{msg}" }.join("<br>")
+        error_list = error_array.map { |msg| "• #{msg}" }.join("<br>")
         flash.now[:alert] = "Failed to update:<br>#{error_list}".html_safe
       end
     end

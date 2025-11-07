@@ -1,16 +1,17 @@
-- if flash[:show_force_update]
+- if flash[:validation_errors].present?
   .alert.alert-warning
-    %strong Validation errors occurred:
+    %strong= flash[:show_force_update] ? 'Validation errors occurred:' : 'Sorry, there were validation errors:'
     %ul
       - Array(flash[:validation_errors]).each do |error|
         %li= error
-    %p
-      You can choose to:
-      %ul
-        %li
-          %strong Edit the values above to fix the errors, then submit normally
-        %li
-          %strong Force update anyway (click the "Force Update" button below to bypass validation)
+    - if flash[:show_force_update]
+      %p
+        You can choose to:
+        %ul
+          %li
+            %strong Edit the values above to fix the errors, then submit normally
+          %li
+            %strong Force update anyway (click the "Force Update" button below to bypass validation)
 - elsif @scenario.errors.any?
   .alert.alert-danger
     %strong Sorry, there were errors updating the scenario:
