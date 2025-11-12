@@ -1,4 +1,4 @@
-# Energy Transition Engine (ETE)
+# Energy Transition Engine
 
 This is the source code for the Calculation Engine that is used by the
 [Energy Transition Model](http://energytransitionmodel.com) and its various
