@@ -45,11 +45,11 @@ ev_demand:
     - electric_vehicle_profile_2
     - electric_vehicle_profile_3
 
-solar_pv:
+solar_pv_dummy:
   type: interpolate
   curves:
-    - solar_pv_profile_1
-    - solar_pv_profile_2
+    - solar_pv_profile_dummy_1
+    - solar_pv_profile_dummy_2
 
 detached_houses_heat:
   type: interpolate
