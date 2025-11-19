@@ -24,11 +24,7 @@ module Api
       def index
         query = { page: params[:page], limit: params[:limit] }.compact.to_query
         response = my_etm_client.get("/api/v1/collections?#{query}")
-
-        render json: response.body.to_h.merge(
-          'data'  => response.body['data'],
-          'links' => update_pagination_links(response.body['links'])
-        )
+        render json: response.body
       end
 
       def show
@@ -43,8 +39,7 @@ module Api
           endpoint_path: '/api/v1/collections',
           method: :post
         ).call(
-          params: params.permit!.to_h.merge(version: Settings.version_tag),
-          ability: current_ability,
+          params: collection_params({ version: Settings.version_tag, interpolation: false }),
           client: my_etm_client
         ).either(
           ->((data, *)) { render json: data },
@@ -57,8 +52,7 @@ module Api
           endpoint_path: "/api/v1/collections/#{params.require(:id).to_i}",
           method: :put
         ).call(
-          params: params.permit!.to_h,
-          ability: current_ability,
+          params: collection_params(),
           client: my_etm_client
         ).either(
           ->((data, *)) { render json: data },
@@ -75,20 +69,13 @@ module Api
 
       private
 
-      def update_pagination_links(links)
-        return {} unless links.is_a?(Hash)
-
-        request_uri = URI.parse(request.url)
-
-        links.transform_values do |link|
-          next unless link
-
-          parsed = URI.parse(link)
-
-          new_uri = request_uri.dup
-          new_uri.query = parsed.query
-          new_uri.to_s
-        end
+      def collection_params(defaults = {})
+        # Support both flat and nested collection params
+        coll_params = params[:collection].present? ? params.require(:collection) : params
+        coll_params = coll_params.permit(:title, :area_code, :end_year, :version, :interpolation, :discarded, saved_scenario_ids: [], scenario_ids: [])
+        
+        # Only add the default params if they are not already in the request
+        { collection: coll_params.to_h.merge(defaults) {|_, req_val, _| req_val} }
       end
 
       def service_error_response(failure)
