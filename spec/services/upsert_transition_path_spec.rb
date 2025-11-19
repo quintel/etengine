@@ -7,6 +7,9 @@ RSpec.describe UpsertTransitionPath do
   let!(:scenario2) { create(:scenario, end_year: 2050, user: user) }
 
   let(:params)  { { scenario_ids: [scenario1.id, scenario2.id], title: 'My transition path' } }
+  let(:url_base) { Collection.version.collections_url }
+  let(:url_slug)  { "#{params[:scenario_ids].join(',')},10" }
+  let(:url_query)  { "locale=#{I18n.locale}&title=#{ERB::Util.url_encode(params[:title])}" }
 
   let(:client) do
     Faraday.new do |builder|
@@ -18,15 +21,17 @@ RSpec.describe UpsertTransitionPath do
             {
               'id'                  => 123,
               'title'               => params[:title],
+              'version'             => 'latest', 
               'scenario_ids'        => params[:scenario_ids],
               'saved_scenario_ids'  => [1],
+              'collections_app_url' => "#{:url_base}/#{:url_slug}?#{:url_query}",
               'created_at'          => '2022-12-21T19:45:09Z',
               'updated_at'          => '2022-12-22T12:34:50Z',
               'discarded_at'        => nil,
               'discarded'           => false,
               'interpolation'       => true,
               'interpolation_params'=> { 'area_code' => scenario2.area_code, 'end_years' => [2030, 2040, scenario2.end_year] },
-              'user'                => { 'id' => user.id, 'name' => user.name }
+              'owner'               => { 'id' => user.id, 'name' => user.name }
             }
           ]
         end
@@ -49,16 +54,18 @@ RSpec.describe UpsertTransitionPath do
     it 'returns the transition path data' do
       expect(result.value!).to eq({
         'id'                  => 123,
+        'title'               => 'My transition path',
+        'version'             => 'latest', 
         'scenario_ids'        => [scenario1.id, scenario2.id],
         'saved_scenario_ids'  => [1],
-        'title'               => 'My transition path',
+        'collections_app_url' => "#{:url_base}/#{:url_slug}?#{:url_query}",
         'created_at'          => '2022-12-21T19:45:09Z',
         'updated_at'          => '2022-12-22T12:34:50Z',
         'discarded_at'        => nil,
         'discarded'           => false,
         'interpolation'       => true,
         'interpolation_params'=> { 'area_code' => scenario2.area_code, 'end_years' => [2030, 2040, scenario2.end_year] },
-        'user'                => { 'id' => user.id, 'name' => user.name }
+        'owner'               => { 'id' => user.id, 'name' => user.name }
       })
     end
   end
