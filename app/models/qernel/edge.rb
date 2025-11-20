@@ -5,7 +5,7 @@ module Qernel
 
     # Dataset ------------------------------------------------------------------
 
-    DATASET_ATTRIBUTES = %i[calculated country_specific share value].freeze
+    DATASET_ATTRIBUTES = %i[calculated country_specific share value treat_as_loss].freeze
     dataset_accessors DATASET_ATTRIBUTES
 
     # Accessors ----------------------------------------------------------------
@@ -128,6 +128,10 @@ module Qernel
 
     def energetic?
       ! lft_node.non_energetic_use?
+    end
+
+    def treat_as_loss?
+      !!dataset_get(:treat_as_loss)
     end
 
     # Calculation --------------------------------------------------------------

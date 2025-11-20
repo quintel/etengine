@@ -327,4 +327,95 @@ RSpec.describe Qernel::RecursiveFactor::PrimaryDemand do
       expect(graph.node(:far_left)).to have_query_value(:primary_demand_of_natural_gas, 100)
     end
   end
+
+  context 'when the middle node has an edge flagged as treat-as-loss' do
+    # When an edge is flagged as treat-as-loss, it is excluded from primary demand
+    # calculations, similar to how loss edges are handled.
+    before do
+      builder.add(:treated_sink)
+      builder.connect(:middle, :treated_sink, :natural_gas, parent_share: 0.2)
+      builder.edge(:middle, :left).set(:parent_share, 0.8)
+    end
+
+    # Without treat_as_loss flag, normal sibling behavior applies (80% to left)
+    it { expect(left).to have_query_value(:primary_demand, 80) }
+    it { expect(middle).to have_query_value(:primary_demand, 100) }
+    it { expect(right).to have_query_value(:primary_demand, 100) }
+
+    context 'with treat_as_loss set on the edge' do
+      before do
+        edge = graph.node(:middle).output_edges.detect { |e| e.lft_node.key == :treated_sink }
+        edge.dataset_set(:treat_as_loss, true)
+      end
+
+      # treat_as_loss_output_conversion = 1.0 * 0.2 = 0.2
+      # treat_as_loss_compensation_factor = 1.0 / (1.0 - 0.2) = 1.25
+      # Left primary demand = 0.8 * 1.25 = 1.0 (100%)
+      it { expect(left).to have_query_value(:primary_demand, 100) }
+      it { expect(middle).to have_query_value(:primary_demand, 100) }
+      it { expect(right).to have_query_value(:primary_demand, 100) }
+
+      it 'calculates treat_as_loss_output_conversion' do
+        expect(middle.treat_as_loss_output_conversion).to eq(0.2)
+      end
+
+      it 'calculates treat_as_loss_compensation_factor' do
+        expect(middle.query.treat_as_loss_compensation_factor).to be_within(1e-6).of(1.25)
+      end
+
+      # The treated_sink node receives no primary demand (excluded from recursion)
+      it 'excludes the treat-as-loss edge from primary demand' do
+        expect(graph.node(:treated_sink)).to have_query_value(:primary_demand, 0)
+      end
+    end
+  end
+
+  context 'when a node has both loss output and treat-as-loss edge' do
+    # Tests the interaction between loss compensation and treat-as-loss exclusion.
+    before do
+      builder.add(:treated_sink)
+
+      # Middle node: 80% gas output, 20% loss
+      builder.node(:middle).slots.out(:natural_gas).set(:share, 0.8)
+      builder.node(:middle).slots.out.add(:loss, share: 0.2)
+
+      # Of the 80% gas output, split between left (75%) and treated_sink (25%)
+      builder.connect(:middle, :treated_sink, :natural_gas, parent_share: 0.25)
+      builder.edge(:middle, :left).set(:parent_share, 0.75)
+    end
+
+    context 'with treat_as_loss set on the edge' do
+      before do
+        edge = graph.node(:middle).output_edges.detect { |e| e.lft_node.key == :treated_sink }
+        edge.dataset_set(:treat_as_loss, true)
+      end
+
+      it 'calculates loss_compensation_factor for the loss slot' do
+        # 20% loss -> 1.0 / (1.0 - 0.2) = 1.25
+        expect(middle.query.loss_compensation_factor).to be_within(1e-6).of(1.25)
+      end
+
+      it 'calculates treat_as_loss_compensation_factor for the flagged edge' do
+        # treat_as_loss_output_conversion = 0.8 * 0.25 = 0.2
+        # treat_as_loss_compensation_factor = 1.0 / (1.0 - 0.2) = 1.25
+        expect(middle.query.treat_as_loss_compensation_factor).to be_within(1e-6).of(1.25)
+      end
+
+      it 'combines both exclusions in output_compensation_factor' do
+        # Total excluded = 0.2 (loss) + 0.2 (treat-as-loss) = 0.4
+        # Compensation = 1.0 / (1.0 - 0.4) = 1.667
+        expect(middle.query.output_compensation_factor).to be_within(1e-6).of(1.0 / 0.6)
+      end
+
+      # Left's demanding share = 0.6 (60% of middle's demand reaches left)
+      # Output compensation = 1.667
+      # Primary demand = 0.6 * 1.667 * 100 = 100
+      it { expect(left).to have_query_value(:primary_demand, 100) }
+      it { expect(middle).to have_query_value(:primary_demand, 100) }
+
+      it 'excludes the treat-as-loss edge from primary demand' do
+        expect(graph.node(:treated_sink)).to have_query_value(:primary_demand, 0)
+      end
+    end
+  end
 end

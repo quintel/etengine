@@ -254,10 +254,12 @@ module Qernel::RecursiveFactor::Base
     @domestic_dead_end
   end
 
-  # Public: A combination of output and loss output compensation factors.
+  # Public: A combination of loss, treat-as-loss, and output efficiency compensation factors.
   #
-  # Allows the adjustment of recursivelly calculated values for loss outputs, and nodes where the
-  # sum of outputs exceed 1.
+  # Adjusts recursively calculated values for:
+  # - Loss outputs (explicit loss carrier)
+  # - Treat-as-loss edges (flagged edges excluded from primary demand)
+  # - Output efficiencies > 1.0
   #
   # This is used in `recursive_factor`, but not `recursive_factor_without_losses`.
   #
@@ -268,11 +270,14 @@ module Qernel::RecursiveFactor::Base
   # know how much energy was needed on the supplier to provide 100 to the consumer. Losses are
   # therefore _included_ in the resulting value: the supplier has 200 primary demand.
   #
-  # See Base#loss_compensation_factor
   # See Base#output_efficiency_compensation_factor
   def output_compensation_factor
     fetch(:output_compensation_factor) do
-      loss_compensation_factor * output_efficiency_compensation_factor
+      total_loss = loss_output_conversion + node.treat_as_loss_output_conversion
+
+      combined_loss_factor = total_loss >= 1.0 ? 0.0 : 1.0 / (1.0 - total_loss)
+
+      combined_loss_factor * output_efficiency_compensation_factor
     end
   end
 
@@ -304,6 +309,26 @@ module Qernel::RecursiveFactor::Base
   def loss_compensation_factor
     loss_conversion = loss_output_conversion
     loss_conversion == 1.0 ? 0.0 : (1.0 / (1.0 - loss_conversion))
+  end
+
+  # Public: The factor applied to compensate for edges flagged as treat-as-loss.
+  #
+  # Similar to loss_compensation_factor, this scales up the remaining edges to account for the
+  # share that is excluded from primary demand recursion.
+  #
+  # Returns a float.
+  def treat_as_loss_compensation_factor
+    fetch(:treat_as_loss_compensation_factor) do
+      conversion = node.treat_as_loss_output_conversion
+
+      if conversion.zero?
+        1.0
+      elsif conversion >= 1.0
+        0.0
+      else
+        1.0 / (1.0 - conversion)
+      end
+    end
   end
 
   # Internal: Factor which compensates for output efficiencies greater than zero.
@@ -349,12 +374,12 @@ module Qernel::RecursiveFactor::Base
 
   # Public: The parent share of the edge.
   #
-  # Always returns 0.0 when the edge represents loss (preventing further recursion) or if the share
-  # is incalculable.
+  # Always returns 0.0 when the edge represents loss or is flagged as treat-as-loss (preventing
+  # further recursion) or if the share is incalculable.
   #
   # Returns a float.
   def demanding_share(edge)
-    return 0.0 if edge.loss?
+    return 0.0 if edge.loss? || edge.treat_as_loss?
 
     demanding_share = (edge.net_demand || 0.0) / (demand || 0.0)
     demanding_share.nan? || demanding_share.infinite? ? 0.0 : demanding_share

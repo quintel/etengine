@@ -465,6 +465,32 @@ public
     end
   end
 
+  # Public: Share of outputs from edges flagged as treat-as-loss.
+  #
+  # Calculates the portion of output going to edges marked as treat-as-loss by combining:
+  # - Slot conversion (carrier share of total output)
+  # - Edge share within that slot
+  #
+  # Returns a Float between 0.0 and 1.0.
+  def treat_as_loss_output_conversion
+    fetch(:treat_as_loss_output_conversion) do
+      outputs.sum do |slot|
+        next 0.0 if slot.carrier.loss?
+
+        conversion = slot.net_conversion || slot.conversion || 0.0
+        next 0.0 if conversion.zero?
+
+        treated_share = slot.edges.sum do |edge|
+          next 0.0 unless edge.treat_as_loss?
+
+          share = edge.parent_share || edge.share || 0.0
+          share.negative? ? 0.0 : share
+        end
+
+        conversion * treated_share.clamp(0.0, 1.0)
+      end
+    end
+  end
 
   # --------- API -------------------------------------------------------------
 
