@@ -380,6 +380,22 @@ module Api
         render json: ScenarioSerializer.new(self, ScenarioPacker::Load.new(params.permit!).scenario)
       end
 
+      # POST /api/v3/scenarios/stream
+      def stream
+        # Tell the client we’re sending line-delimited JSON
+        response.headers['Content-Type'] = 'application/x-ndjson'
+        response.headers['Cache-Control'] = 'no-cache'
+
+        ndjson = ScenarioPacker::StreamNdjson.new(params, current_ability)
+
+        # Stream NDJSON
+        self.response_body = Enumerator.new do |yielder|
+          ndjson.each do |line|
+            yielder << line.to_json + "\n"
+          end
+        end
+      end
+
       private
 
       def find_preset_or_scenario
