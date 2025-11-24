@@ -37,6 +37,8 @@
                                 .more-info Reversed
                               - if output_edge.circular?
                                 .more-info Circular
+                              - if output_edge.treat_as_loss?
+                                .more-info Treated as loss
                   %td.centered{ title: output_slot.carrier.key.to_s.humanize }
                     .carrier-name{ title: output_slot.class.name }
                       = link_to output_slot.carrier.key.to_s.humanize, inspect_carrier_path(id: output_slot.carrier.key)
@@ -85,6 +87,8 @@
                                 .more-info Reversed
                               - if input_edge.circular?
                                 .more-info Circular
+                              - if input_edge.treat_as_loss?
+                                .more-info Treated as loss
                             %td.share{:title => input_edge.share}= "#{(100 * input_edge.share).round(2)} %" unless input_edge.share.nil?
                             %td.value{:title => input_edge.value}= auto_number input_edge.value
                             %td
