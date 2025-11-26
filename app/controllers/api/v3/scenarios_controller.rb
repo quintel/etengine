@@ -377,7 +377,10 @@ module Api
           return
         end
 
-        render json: ScenarioSerializer.new(self, ScenarioPacker::Load.new(params.permit!).scenario)
+        render json: ScenarioSerializer.new(
+          self,
+          ScenarioPacker::Load.new(params.permit!, user_id: current_user.id).scenario
+        )
       end
 
       # POST /api/v3/scenarios/stream

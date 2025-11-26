@@ -5,8 +5,11 @@ module ScenarioPacker
     # Creates a new Scenario API loader.
     #
     # Loading through here will skip a lot of validations
-    def initialize(json_data)
+    # json_data - Hash containing scenario data
+    # user_id   - Optional ID of user to assign as owner
+    def initialize(json_data, user_id: nil)
       @data = json_data
+      @user_id = user_id
       @scenario = Scenario.new(
         @data.slice(*scenario_attributes)
       )
@@ -16,9 +19,8 @@ module ScenarioPacker
     def scenario
       create_sortables
       create_curves
-
+      build_owner if @user_id
       @scenario.save!
-
       @scenario
     end
 
@@ -43,6 +45,21 @@ module ScenarioPacker
       @data['user_curves'].each do |key, curve|
         @scenario.user_curves << UserCurve.new(key:, curve:)
       end
+    end
+
+    def build_owner
+
+
+      user = User.find_by(id: @user_id)
+      unless user
+        Rails.logger.warn("ScenarioPacker::Load: User with id #{@user_id} not found. Owner assignment skipped.")
+        return
+      end
+
+      @scenario.scenario_users.build(
+        user: user,
+        role_id: User::ROLES.key(:scenario_owner)
+      )
     end
   end
 end
