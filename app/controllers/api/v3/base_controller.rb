@@ -48,11 +48,19 @@ module Api
       # Returns the contents of the current token, if an Authorization header is set.
       def token
         return @token if @token
-        return nil if request.authorization.blank?
+        return nil if request.authorization.blank? && access_token_from_query.blank?
 
-        request.authorization.to_s.match(/\ABearer (.+)\z/) do |match|
-          return @token = ETEngine::TokenDecoder.decode(match[1])
+        @token = if request.authorization
+          request.authorization.to_s.match(/\ABearer (.+)\z/) do |match|
+            ETEngine::TokenDecoder.decode(match[1])
+          end
+        else
+          ETEngine::TokenDecoder.decode(access_token_from_query)
         end
+      end
+
+      def access_token_from_query
+        params.permit(:access_token)[:access_token]
       end
 
       # Returns the current user, if a token is set and is valid.
