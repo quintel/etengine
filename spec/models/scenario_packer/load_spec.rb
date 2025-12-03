@@ -45,15 +45,19 @@ RSpec.describe ScenarioPacker::Load, type: :model do
   end
 
   describe '#create_sortables' do
-    before { loader.send(:create_sortables) }
-
     it 'builds one HeatNetworkOrder' do
+      result = loader.send(:create_sortables, scenario_instance)
+      expect(result).to be_success
+
       heat_orders = scenario_instance.heat_network_orders
       expect(heat_orders.first.temperature).to eq('ht')
       expect(heat_orders.first.order).to eq(HeatNetworkOrder.default_order)
     end
 
     it 'builds one ForecastStorageOrder' do
+      result = loader.send(:create_sortables, scenario_instance)
+      expect(result).to be_success
+
       forecast_order = scenario_instance.forecast_storage_order
       expect(forecast_order).to be_a(ForecastStorageOrder)
       expect(forecast_order.order).to eq(ForecastStorageOrder.default_order)
@@ -61,9 +65,10 @@ RSpec.describe ScenarioPacker::Load, type: :model do
   end
 
   describe '#create_curves' do
-    before { loader.send(:create_curves) }
-
     it 'builds UserCurve records with correct keys and data' do
+      result = loader.send(:create_curves, scenario_instance)
+      expect(result).to be_success
+
       curve_keys = scenario_instance.user_curves.map(&:key)
       expect(curve_keys).to match_array(%w[curve_one curve_two])
 
@@ -72,13 +77,15 @@ RSpec.describe ScenarioPacker::Load, type: :model do
     end
   end
 
-  describe '#scenario' do
+  describe '#call' do
     it 'creates associations and persists the Scenario' do
       allow(scenario_instance).to receive(:save!).and_return(true)
 
-      result = loader.scenario
+      result = loader.call
+      expect(result).to be_success
 
-      expect(result).to be(scenario_instance)
+      saved_scenario = result.value!
+      expect(saved_scenario).to be(scenario_instance)
       expect(scenario_instance).to have_received(:save!)
       expect(scenario_instance.heat_network_orders.size).to eq(1)
       expect(scenario_instance.user_curves.size).to eq(2)

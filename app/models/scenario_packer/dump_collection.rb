@@ -2,6 +2,9 @@
 
 module ScenarioPacker
   class DumpCollection
+    extend Dry::Monads[:result]
+    include Dry::Monads[:result]
+
     class InvalidParamsError < StandardError; end
 
     attr_reader :dump_type, :user_name
@@ -9,25 +12,36 @@ module ScenarioPacker
     # Build DumpCollection from params and user context.
     # @param params [Hash] request parameters
     # @param user   [User] current_user for user-specific dumps
-    # @return [DumpCollection]
+    # @return [Dry::Monads::Result]
     def self.from_params(params, user)
       dump_type = extract_dump_type(params)
-      packer    = build_packer(dump_type, params, user)
-      tag_packer(packer, dump_type, user)
+
+      build_packer(dump_type, params, user)
+        .fmap { |packer| tag_packer(packer, dump_type, user) }
     end
 
     # Instantiate a collection by an explicit list of IDs.
     # @param ids [Array<Integer>] scenario IDs
-    # @return [DumpCollection]
+    # @return [Dry::Monads::Result]
     def self.from_ids(ids)
-      new(Scenario.where(id: ids))
+      scenarios = Scenario.where(id: ids)
+
+      if scenarios.any?
+        Success(new(scenarios))
+      else
+        Failure("No scenarios found with IDs: #{ids.join(', ')}")
+      end
     end
 
     # Instantiate a collection from an ActiveRecord::Relation scope
     # @param scope [ActiveRecord::Relation] scenarios scope
-    # @return [DumpCollection]
+    # @return [Dry::Monads::Result]
     def self.from_scope(scope)
-      new(scope)
+      if scope.any?
+        Success(new(scope))
+      else
+        Failure('No scenarios found matching criteria')
+      end
     end
 
     # Determine dump_type from params (defaults to 'ids')
@@ -45,16 +59,20 @@ module ScenarioPacker
       when 'my_scenarios'
         build_my_scenarios(user)
       else
-        raise InvalidParamsError, "Unknown dump type: #{type.inspect}"
+        Failure("Unknown dump type: #{type.inspect}")
       end
     end
 
     # Parse and validate ID list, then delegate to from_ids
     def self.build_from_ids(raw_ids)
-      ids = parse_ids(raw_ids)
-      raise InvalidParamsError, 'Please enter at least one scenario ID.' if ids.empty?
+      contract = Contracts::IdsContract.new
+      result = contract.call(ids: raw_ids)
 
-      from_ids(ids)
+      if result.success?
+        from_ids(result.to_h[:parsed_ids])
+      else
+        Failure(result.errors.to_h)
+      end
     end
 
     # Build packer for featured scenarios with metadata
@@ -62,14 +80,17 @@ module ScenarioPacker
       featured_scenarios = ::MyEtm::FeaturedScenario.cached_scenarios
       ids = featured_scenarios.map(&:id)
 
-      packer = from_ids(ids)
-      # Store the featured scenario metadata for use in dumps
-      packer.instance_variable_set(:@title_metadata, featured_scenarios)
-      packer
+      from_ids(ids).fmap do |packer|
+        # Store the featured scenario metadata for use in dumps
+        packer.instance_variable_set(:@title_metadata, featured_scenarios)
+        packer
+      end
     end
 
     # Build packer for current user's recent scenarios
     def self.build_my_scenarios(user)
+      return Failure('User is required') unless user
+
       scope = user.scenarios.where('scenarios.updated_at >= ?', 1.month.ago)
       from_scope(scope)
     end
@@ -80,18 +101,6 @@ module ScenarioPacker
       packer.instance_variable_set(:@user_name, user.name) if user
       packer
     end
-
-    # Convert comma-separated ID string into unique integer array
-    # @param raw [String,Array] raw input representing IDs
-    # @return [Array<Integer>]
-    def self.parse_ids(raw)
-      Array(raw.to_s)
-        .flat_map { |s| s.split(/\s*,\s*/) }
-        .map(&:to_i)
-        .reject(&:zero?)
-        .uniq
-    end
-    private_class_method :parse_ids
 
     # Initialize with a collection of Scenario records
     # @param scope [ActiveRecord::Relation] scenarios to dump
@@ -105,32 +114,47 @@ module ScenarioPacker
     end
 
     # Build array of JSON-ready hashes, preserving original ID order
-    # @return [Array<Hash>]
-    def as_json(*)
-      @ids.filter_map do |id|
+    # @return [Dry::Monads::Result]
+    def call
+      results = @ids.map do |id|
         rec = @records_by_id[id]
-        next unless rec
+        next Success(nil) unless rec
 
-        dump_json = Dump.new(rec).as_json
-
-        # Add Title to metadata if available
-        if @title_metadata
-          scenario = @title_metadata.find { |fs| fs.id == id }
-          if scenario && scenario.title
-            dump_json['metadata'] ||= {}
-            dump_json['metadata']['title'] = scenario.title
-          end
+        Dump.new(rec).call.fmap do |dump_json|
+          add_title_metadata(dump_json, id)
         end
-
-        dump_json
       end
+
+      # Collect all results, fail if any failed
+      failures = results.select(&:failure?)
+      return Failure(failures.map(&:failure)) if failures.any?
+
+      # Extract successful values, filtering out nils
+      Success(results.map(&:value!).compact)
     end
 
     # Generate pretty-printed JSON string of the entire collection.
-    # @return [String]
-    def to_json(*)
-      JSON.pretty_generate(as_json(*))
+    # @return [Dry::Monads::Result]
+    def to_json
+      call.fmap { |json_array| JSON.pretty_generate(json_array) }
     end
+
+    private
+
+    def add_title_metadata(dump_json, id)
+      # Add Title to metadata if available
+      if @title_metadata
+        scenario = @title_metadata.find { |fs| fs.id == id }
+        if scenario && scenario.title
+          dump_json['metadata'] ||= {}
+          dump_json['metadata']['title'] = scenario.title
+        end
+      end
+
+      dump_json
+    end
+
+    public
 
     # Determine filename based on dump type
     # @return [String]

@@ -123,9 +123,9 @@ module Api
         # another user_values hash. Used when generating a scenario with the
         # average values of other scenarios.
         inputs = begin
-                   params[:scenario][:user_values]['user_values']
+          params[:scenario][:user_values]['user_values']
         rescue StandardError
-                   nil
+          nil
         end
         params[:scenario][:user_values] = inputs if inputs
 
@@ -200,9 +200,7 @@ module Api
           end
         end
 
-        if @scenario.persisted?
-          render json: ScenarioSerializer.new(self, @scenario)
-        end
+        render json: ScenarioSerializer.new(self, @scenario) if @scenario.persisted?
       rescue ActiveRecord::RecordInvalid => e
         render json: { errors: @scenario.errors.to_hash }, status: :unprocessable_content
       end
@@ -379,24 +377,31 @@ module Api
 
         render json: ScenarioSerializer.new(
           self,
-          ScenarioPacker::Load.new(params.permit!, user_id: current_user.id).scenario
+          ScenarioPacker::Load.new(params.permit!.to_h, user_id: current_user.id).call.value!
         )
       end
 
-      # POST /api/v3/scenarios/stream
-      def stream
-        # Tell the client we’re sending line-delimited JSON
+      # POST /api/v3/scenarios/export
+      def export
+        # Tell the client we're sending line-delimited JSON
         response.headers['Content-Type'] = 'application/x-ndjson'
         response.headers['Cache-Control'] = 'no-cache'
 
-        ndjson = ScenarioPacker::StreamNdjson.new(params, current_ability)
+        result = ScenarioPacker::StreamNdjson.new(params, current_ability).call
 
-        # Stream NDJSON
-        self.response_body = Enumerator.new do |yielder|
-          ndjson.each do |line|
-            yielder << line.to_json + "\n"
-          end
-        end
+        result.either(
+          lambda { |ndjson|
+            # Stream NDJSON
+            self.response_body = Enumerator.new do |yielder|
+              ndjson.each do |line|
+                yielder << ("#{line.to_json}\n")
+              end
+            end
+          },
+          lambda { |error|
+            render json: { errors: [error] }, status: :unprocessable_entity
+          }
+        )
       end
 
       private

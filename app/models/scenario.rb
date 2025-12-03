@@ -12,6 +12,7 @@ class Scenario < ApplicationRecord
   include Scenario::InputGroups
   include Scenario::Copies
   include Scenario::Couplings
+  include ScenarioJsonSerialization
 
   serialize  :user_values, type: Hash, coder: MessagePack
   serialize  :balanced_values, type: Hash, coder: MessagePack
