@@ -34,7 +34,7 @@ RSpec.describe ScenarioPacker::Dump, type: :model do
 
     scenario
   end
-  let(:json_data)  { dumper.as_json }
+  let(:json_data)  { dumper.call.value! }
   let(:data)       { json_data.with_indifferent_access }
 
   it 'exposes the basic scenario attributes' do
@@ -83,7 +83,8 @@ RSpec.describe ScenarioPacker::Dump, type: :model do
 
     serialized_orders = described_class
       .new(scenario)
-      .as_json
+      .call
+      .value!
       .with_indifferent_access
       .dig(:user_sortables, HeatNetworkOrder) || []
 

@@ -2,44 +2,65 @@
 
 module ScenarioPacker
   class Dump
+    include Dry::Monads[:result]
+
     # Creates a new Scenario API dumper.
     #
     # @param [Scenario] scenario
     #   The scenarios for which we want JSON.
     #
     def initialize(scenario)
-      @resource = scenario
+      @scenario = scenario
     end
 
-    # Creates a Hash suitable for conversion to JSON by Rails.
+    # Dumps the scenario to a hash with validation.
     #
-    # @return [Hash{Symbol=>Object}]
-    #   The Hash containing the scenario attributes.
+    # @return [Dry::Monads::Result]
+    #   Success with hash or Failure with error message.
     #
-    def as_json(*)
-      json = @resource.as_json(
+    def call
+      validate_scenario
+        .bind { |_| build_json }
+        .bind { |json| add_sortables(json) }
+        .bind { |json| add_curves(json) }
+    end
+
+    private
+
+    def validate_scenario
+      return Failure('scenario is required') if @scenario.nil?
+      return Failure('scenario must be persisted') unless @scenario.persisted?
+
+      Success(@scenario)
+    end
+
+    def build_json
+      json = @scenario.as_json(
         only: %i[
           area_code end_year private keep_compatible
           user_values balanced_values active_couplings
           user_curves
         ]
       )
-      json[:user_sortables] = @resource.user_sortables.each_with_object({}) do |sortable, hash|
-        next unless sortable.persisted?
+      Success(json)
+    rescue StandardError => e
+      Failure("Failed to build JSON: #{e.message}")
+    end
 
-        if sortable.is_a?(HeatNetworkOrder)
-          hash[sortable.class] = [] unless hash.key?(sortable.class)
-          hash[sortable.class] << sortable.as_json.merge(temperature: sortable.temperature)
-        else
-          hash[sortable.class] = sortable.as_json
-        end
-      end
+    def add_sortables(json)
+      json[:user_sortables] = @scenario.serialize_sortables
 
-      json[:user_curves] = @resource.user_curves.each_with_object({}) do |curve, hash|
-        hash[curve.key] = curve.curve.to_a
-      end
+      Success(json)
+    rescue StandardError => e
+      Failure("Failed to add sortables: #{e.message}")
+    end
 
-      json
+    def add_curves(json)
+      json[:user_curves] = @scenario.serialize_curves
+
+      Success(json)
+    rescue StandardError => e
+      Failure("Failed to add curves: #{e.message}")
     end
   end
 end
