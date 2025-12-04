@@ -24,21 +24,20 @@ module ScenarioPacker
     # @param ids [Array<Integer>] scenario IDs
     # @return [Dry::Monads::Result]
     def self.from_ids(ids)
-      scenarios = Scenario.where(id: ids)
-
-      if scenarios.any?
-        Success(new(scenarios))
-      else
-        Failure("No scenarios found with IDs: #{ids.join(', ')}")
-      end
+      Contracts::ScenarioCollectionValidator
+        .validate_existence(ids)
+        .fmap { |scenarios| new(scenarios) }
     end
 
     # Instantiate a collection from an ActiveRecord::Relation scope
     # @param scope [ActiveRecord::Relation] scenarios scope
     # @return [Dry::Monads::Result]
     def self.from_scope(scope)
-      if scope.any?
-        Success(new(scope))
+      # Eager load associations to prevent N+1 queries
+      scenarios = scope.includes(*Contracts::ScenarioCollectionValidator::SCENARIO_INCLUDES)
+
+      if scenarios.any?
+        Success(new(scenarios))
       else
         Failure('No scenarios found matching criteria')
       end
@@ -106,8 +105,8 @@ module ScenarioPacker
     # @param scope [ActiveRecord::Relation] scenarios to dump
     def initialize(scope)
       @scope         = scope
-      @ids           = scope.pluck(:id)
       @records_by_id = scope.index_by(&:id)
+      @ids           = @records_by_id.keys
       @dump_type     = 'ids'
       @user_name     = nil
       @title_metadata = nil
@@ -130,12 +129,12 @@ module ScenarioPacker
       return Failure(failures.map(&:failure)) if failures.any?
 
       # Extract successful values, filtering out nils
-      Success(results.map(&:value!).compact)
+      Success(results.filter_map(&:value!))
     end
 
     # Generate pretty-printed JSON string of the entire collection.
     # @return [Dry::Monads::Result]
-    def to_json
+    def to_json(*_args)
       call.fmap { |json_array| JSON.pretty_generate(json_array) }
     end
 
@@ -145,7 +144,7 @@ module ScenarioPacker
       # Add Title to metadata if available
       if @title_metadata
         scenario = @title_metadata.find { |fs| fs.id == id }
-        if scenario && scenario.title
+        if scenario&.title
           dump_json['metadata'] ||= {}
           dump_json['metadata']['title'] = scenario.title
         end
@@ -173,10 +172,10 @@ module ScenarioPacker
                     'featured'
                   when 'my_scenarios'
                     name = user_name.to_s.parameterize.presence || 'user'
-                    "#{name}"
+                    name.to_s
                   else
-                    "#{@ids.join('-')}"
-                  end
+                    @ids.join('-').to_s
+      end
 
       "#{base_name}_#{environment}_#{date_suffix}.json"
     end
