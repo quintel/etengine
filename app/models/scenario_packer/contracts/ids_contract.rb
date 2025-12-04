@@ -10,12 +10,9 @@ module ScenarioPacker
 
       rule(:ids) do
         parsed = parse_ids(value)
+        next key.failure('at least one valid ID required') if parsed.empty?
 
-        if parsed.empty?
-          key.failure('at least one valid ID required')
-        else
-          values[:parsed_ids] = parsed
-        end
+        values[:parsed_ids] = parsed
       end
 
       def parse_ids(ids)

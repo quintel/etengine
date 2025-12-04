@@ -39,7 +39,7 @@ module ScenarioPacker
 
     def validate_file(file)
       contract = Contracts::FileUploadContract.new
-      result = contract.call(file: file)
+      result = contract.call(file:)
 
       if result.success?
         Success(file)
@@ -52,7 +52,10 @@ module ScenarioPacker
       file_size = File.size(file.path)
 
       return Failure('file is empty') if file_size.zero?
-      return Failure("file too large (max #{MAX_FILE_SIZE / 1.megabyte}MB)") if file_size > MAX_FILE_SIZE
+
+      if file_size > MAX_FILE_SIZE
+        return Failure("file too large (max #{MAX_FILE_SIZE / 1.megabyte}MB)")
+      end
 
       content = File.read(file.path)
       JsonParser.parse(content)
@@ -80,9 +83,7 @@ module ScenarioPacker
         scenarios.one?
       end
 
-      def count
-        scenarios.count
-      end
+      delegate :count, to: :scenarios
     end
   end
 end

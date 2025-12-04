@@ -10,22 +10,16 @@ module ScenarioPacker
       end
 
       rule(:file) do
-        unless value.respond_to?(:path)
-          key.failure('must be an uploaded file with a path')
-        else
-          unless File.exist?(value.path)
-            key.failure('file does not exist')
-          end
-        end
+        next key.failure('must be an uploaded file with a path') unless value.respond_to?(:path)
+        next key.failure('file does not exist') unless File.exist?(value.path)
       end
 
       rule(:file, :extension) do
-        if values[:extension] && values[:file].respond_to?(:path)
-          path = values[:file].path
-          unless path.end_with?(values[:extension])
-            key.failure("must be a #{values[:extension]} file")
-          end
-        end
+        next unless values[:extension]
+        next unless values[:file].respond_to?(:path)
+
+        path = values[:file].path
+        key.failure("must be a #{values[:extension]} file") unless path.end_with?(values[:extension])
       end
     end
   end

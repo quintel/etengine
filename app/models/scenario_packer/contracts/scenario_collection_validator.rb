@@ -6,29 +6,36 @@ module ScenarioPacker
     module ScenarioCollectionValidator
       extend Dry::Monads[:result]
 
+      SCENARIO_INCLUDES = %i[
+        user_curves
+        heat_network_orders
+        forecast_storage_order
+        hydrogen_supply_order
+        hydrogen_demand_order
+        households_space_heating_producer_order
+      ].freeze
+
       def self.validate_existence(ids)
-        return Failure('no IDs provided') if ids.nil? || ids.empty?
-
-        scenarios = Scenario.where(id: ids)
-
-        if scenarios.empty?
-          Failure("no scenarios found with IDs: #{ids.join(', ')}")
-        else
-          Success(scenarios)
-        end
+        validate_scenarios(ids, Scenario.all, 'no scenarios found')
       end
 
       def self.validate_with_ability(ids, ability)
-        return Failure('no IDs provided') if ids.nil? || ids.empty?
+        validate_scenarios(ids, Scenario.accessible_by(ability), 'no accessible scenarios found')
+      end
 
-        scenarios = Scenario.accessible_by(ability).where(id: ids)
+      def self.validate_scenarios(ids, scope, error_prefix)
+        return Failure('no IDs provided') if ids.blank?
+
+        scenarios = scope.where(id: ids).includes(*SCENARIO_INCLUDES)
 
         if scenarios.empty?
-          Failure("no accessible scenarios found with IDs: #{ids.join(', ')}")
+          Failure("#{error_prefix} with IDs: #{ids.join(', ')}")
         else
           Success(scenarios)
         end
       end
+
+      private_class_method :validate_scenarios
     end
   end
 end

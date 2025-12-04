@@ -15,12 +15,19 @@ RSpec.describe ScenarioPacker::DumpCollection do
       allow(rel).to receive(:pluck).with(:id).and_return(ids)
       allow(rel).to receive(:index_by).and_return(records.index_by(&:id))
       allow(rel).to receive(:any?).and_return(true)
+      allow(rel).to receive(:empty?).and_return(false)
+      allow(rel).to receive(:count).and_return(ids.count)
+      # Support chaining .includes()
+      allow(rel).to receive(:includes).and_return(rel)
     end
   end
 
   before do
     # Stub Scenario.where(id: ids) to return our relation
     allow(Scenario).to receive(:where).with(id: ids).and_return(relation)
+    # Also stub Scenario.all and Scenario.accessible_by for validator
+    allow(Scenario).to receive(:all).and_return(Scenario)
+    allow(Scenario).to receive(:accessible_by).and_return(Scenario)
 
     # Stub the Dump wrapper
     records.each_with_index do |rec, idx|
@@ -60,9 +67,14 @@ RSpec.describe ScenarioPacker::DumpCollection do
     # For the my_scenarios case, user.scenarios.where(...) must return our relation
     let(:user_scenarios) do
       instance_double(ActiveRecord::Relation).tap do |usr|
+        # Create a separate relation for the where clause that also supports includes
+        where_relation = instance_double(ActiveRecord::Relation).tap do |wr|
+          allow(wr).to receive(:includes).and_return(relation)
+          allow(wr).to receive(:any?).and_return(true)
+        end
         allow(usr).to receive(:where)
           .with('scenarios.updated_at >= ?', kind_of(ActiveSupport::TimeWithZone))
-          .and_return(relation)
+          .and_return(where_relation)
       end
     end
 
@@ -148,6 +160,9 @@ RSpec.describe ScenarioPacker::DumpCollection do
         allow(rel).to receive(:pluck).with(:id).and_return(sparse_ids)
         allow(rel).to receive(:index_by).and_return(available.index_by(&:id))
         allow(rel).to receive(:any?).and_return(true)
+        allow(rel).to receive(:empty?).and_return(false)
+        allow(rel).to receive(:count).and_return(available.count)
+        allow(rel).to receive(:includes).and_return(rel)
       end
       allow(Scenario).to receive(:where).with(id: sparse_ids).and_return(rel2)
 
