@@ -56,32 +56,47 @@ module Inspect
 
     # Loads one or more scenarios from a JSON dump file
     def load_dump
-      loader = ScenarioPacker::LoadCollection.from_file(dump_file_param)
-      if loader.single?
-        redirect_to inspect_scenario_path(
-          id: loader.first_id,
-          api_scenario_id: loader.first_id
-        ), notice: 'Scenario created'
-      else
-        @api_scenario = Scenario.find(loader.first_id)
-        @scenario     = Scenario::Editable.new(@api_scenario)
-        @scenarios    = loader.scenarios
-        render :load_results
-      end
-    rescue ArgumentError
-      redirect_back(fallback_location: root_path, alert: 'No file provided')
+      result = ScenarioPacker::LoadCollection.from_file(dump_file_param)
+
+      result.either(
+        ->(load_result) {
+          if load_result.single?
+            redirect_to inspect_scenario_path(
+              id: load_result.first_id,
+              api_scenario_id: load_result.first_id
+            ), notice: 'Scenario created'
+          else
+            @api_scenario = Scenario.find(load_result.first_id)
+            @scenario     = Scenario::Editable.new(@api_scenario)
+            @scenarios    = load_result.scenarios
+            render :load_results
+          end
+        },
+        ->(error) {
+          error_message = format_error_message(error)
+          redirect_back(fallback_location: root_path, alert: error_message)
+        }
+      )
     end
 
     # Dump a set of scenarios according to the parameters
     def dump
-      packer = ScenarioPacker::DumpCollection.from_params(dump_params.to_h, current_user)
-      send_data(packer.to_json,
-        filename:    packer.filename,
-        type:        'application/json',
-        disposition: 'attachment')
-    rescue ScenarioPacker::DumpCollection::InvalidParamsError => e
-      flash[:alert] = e.message
-      redirect_back(fallback_location: inspect_scenarios_path)
+      result = ScenarioPacker::DumpCollection.from_params(dump_params.to_h, current_user)
+        .bind { |packer| packer.to_json.fmap { |json| [packer, json] } }
+
+      result.either(
+        ->((packer, json)) {
+          send_data(json,
+            filename:    packer.filename,
+            type:        'application/json',
+            disposition: 'attachment')
+        },
+        ->(error) {
+          error_message = format_error_message(error)
+          flash[:alert] = error_message
+          redirect_back(fallback_location: inspect_scenarios_path)
+        }
+      )
     end
 
     private
@@ -90,10 +105,20 @@ module Inspect
       params.permit(:dump_type, :scenario_ids)
     end
 
-    # Returns the uploaded file for scenario loading or raises error if invalid
+    # Returns the uploaded file for scenario loading
     def dump_file_param
-      params.require(:dump).tap do |f|
-        raise ArgumentError, 'No file provided' unless f.respond_to?(:path)
+      params.require(:dump)
+    end
+
+    # Formats error messages from Result failures
+    def format_error_message(error)
+      case error
+      when Hash
+        error.map { |k, v| "#{k}: #{Array(v).join(', ')}" }.join('; ')
+      when Array
+        error.join('; ')
+      else
+        error.to_s
       end
     end
 
