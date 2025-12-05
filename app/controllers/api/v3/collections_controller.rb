@@ -28,7 +28,7 @@ module Api
       end
 
       def show
-        response = my_etm_client.get("/api/v1/collections/#{params.require(:id).to_i}")
+        response = my_etm_client.get("/api/v1/collections/#{params.require(:id)}")
         render json: response.body
       rescue Faraday::ResourceNotFound
         render_not_found
@@ -39,7 +39,8 @@ module Api
           endpoint_path: '/api/v1/collections',
           method: :post
         ).call(
-          params: collection_params({ version: Settings.version_tag, interpolation: false }),
+          params: collection_params({ interpolation: false }),
+          ability: current_ability,
           client: my_etm_client
         ).either(
           ->((data, *)) { render json: data },
@@ -52,7 +53,8 @@ module Api
           endpoint_path: "/api/v1/collections/#{params.require(:id).to_i}",
           method: :put
         ).call(
-          params: collection_params(),
+          params: collection_params,
+          ability: current_ability,
           client: my_etm_client
         ).either(
           ->((data, *)) { render json: data },
@@ -72,10 +74,14 @@ module Api
       def collection_params(defaults = {})
         # Support both flat and nested collection params
         coll_params = params[:collection].present? ? params.require(:collection) : params
-        coll_params = coll_params.permit(:title, :area_code, :end_year, :version, :interpolation, :discarded, saved_scenario_ids: [], scenario_ids: [])
-        
+        coll_params = coll_params.permit(
+          :title, :area_code, :end_year,
+          :interpolation, :discarded,
+          saved_scenario_ids: [], scenario_ids: []
+        )
+
         # Only add the default params if they are not already in the request
-        { collection: coll_params.to_h.merge(defaults) {|_, req_val, _| req_val} }
+        { collection: coll_params.to_h.merge(defaults) { |_, req_val, _| req_val } }
       end
 
       def service_error_response(failure)
