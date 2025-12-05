@@ -22,13 +22,12 @@ class UpsertTransitionPath
   #
   # Returns the collection data from MyETM.
   def call(params:, ability:, client:)
-    params = params.slice(:scenario_ids, :title).symbolize_keys
     scenarios = find_scenarios(ability, params[:scenario_ids])
-
     yield validate_scenario_ids(params[:scenario_ids], scenarios)
-    transition_path = yield upsert_transition_path(client, full_params(params, scenarios))
 
-    Success(transition_path)
+    result = yield upsert_transition_path(client, full_params(params))
+
+    Success(result)
   end
 
   private
@@ -60,12 +59,7 @@ class UpsertTransitionPath
     Failure(ServiceResponse.not_found)
   end
 
-  # # Decorates the params with the scenario's area code and end year when a scenario_id is set.
-  def full_params(params, scenarios)
-    return params if scenarios.blank?
-
-    # The highest end year is always the last scenario.
-    latest_scenario = scenarios.last
-    params.merge(area_code: latest_scenario.area_code, end_year: latest_scenario.end_year)
+  def full_params(params)
+    params.merge(version: Settings.version_tag)
   end
 end
