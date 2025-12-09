@@ -33,11 +33,17 @@ module Api
       # Downloads the hourly price of electricity according to the merit order.
       #
       # GET /api/v3/scenarios/:scenario_id/curves/electricity_price.csv
+      # GET /api/v3/scenarios/:scenario_id/curves/electricity_price.json 
       def electricity_price
-        render_csv CarrierPriceCSVSerializer.new(
+        result = CarrierPriceCSVSerializer.new(
           @scenario.gql.future_graph.carrier(:electricity),
           @scenario.gql.future_graph.year
         )
+
+        respond_to do |format|
+          format.csv  { render_csv result }
+          format.json { render json: result.as_json } # Meant to upload custom curves generated from a saved scenario via interconnectors
+        end
       end
 
       # Downloads the load on each participant in the heat merit orders as a CSV.
