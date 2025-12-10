@@ -3,8 +3,10 @@
 require 'spec_helper'
 
 describe ScenarioUpdater, :etsource_fixture do
-  let(:current_user) { FactoryBot.create(:user) }
-  let(:scenario) { FactoryBot.create(:scenario, area_code: 'nl', end_year: 2050, user: current_user) }
+  let(:current_user) { create(:user) }
+  let(:scenario) do
+    create(:scenario, area_code: 'nl', end_year: 2050, user: current_user)
+  end
   let(:params) { {} }
   let(:updater) { described_class.new(scenario, params, current_user) }
   let(:result) { updater.call }
@@ -58,8 +60,8 @@ describe ScenarioUpdater, :etsource_fixture do
     end
 
     context 'with a current user' do
-      let(:current_user) { FactoryBot.create(:user) }
-      let(:scenario) { FactoryBot.create(:scenario, area_code: 'nl', end_year: 2050) }
+      let(:current_user) { create(:user) }
+      let(:scenario) { create(:scenario, area_code: 'nl', end_year: 2050) }
 
       it 'stores the current_user' do
         expect(updater.current_user).to eq(current_user)
@@ -131,12 +133,12 @@ describe ScenarioUpdater, :etsource_fixture do
 
       it 'updates scenario private flag' do
         result
-        expect(scenario.reload.private).to be true
+        expect(scenario.reload.private).to be(true)
       end
 
       it 'updates scenario keep_compatible flag' do
         result
-        expect(scenario.reload.keep_compatible).to be true
+        expect(scenario.reload.keep_compatible).to be(true)
       end
 
       it 'updates scenario source' do
@@ -160,7 +162,7 @@ describe ScenarioUpdater, :etsource_fixture do
       it 'updates both private flag and user_values' do
         result
         scenario.reload
-        expect(scenario.private).to be true
+        expect(scenario.private).to be(true)
         expect(scenario.user_values['foo_demand']).to eq(75.0)
       end
     end
@@ -236,7 +238,8 @@ describe ScenarioUpdater, :etsource_fixture do
 
     context 'without metadata in params' do
       let(:scenario) do
-        FactoryBot.create(:scenario, area_code: 'nl', end_year: 2050, user: current_user, metadata: { 'existing' => 'data' })
+        create(:scenario, area_code: 'nl', end_year: 2050, user: current_user,
+          metadata: { 'existing' => 'data' })
       end
 
       let(:params) do
@@ -263,8 +266,9 @@ describe ScenarioUpdater, :etsource_fixture do
       end
 
       it 'calls copy_preset_roles on the scenario' do
-        expect(scenario).to receive(:copy_preset_roles).and_call_original
+        allow(scenario).to receive(:copy_preset_roles).and_call_original
         result
+        expect(scenario).to have_received(:copy_preset_roles)
       end
     end
 
@@ -278,8 +282,9 @@ describe ScenarioUpdater, :etsource_fixture do
       end
 
       it 'calls copy_preset_roles on the scenario' do
-        expect(scenario).to receive(:copy_preset_roles).and_call_original
+        allow(scenario).to receive(:copy_preset_roles).and_call_original
         result
+        expect(scenario).to have_received(:copy_preset_roles)
       end
     end
 
@@ -293,8 +298,9 @@ describe ScenarioUpdater, :etsource_fixture do
       end
 
       it 'calls copy_preset_roles on the scenario' do
-        expect(scenario).to receive(:copy_preset_roles).and_call_original
+        allow(scenario).to receive(:copy_preset_roles).and_call_original
         result
+        expect(scenario).to have_received(:copy_preset_roles)
       end
     end
 
@@ -308,8 +314,9 @@ describe ScenarioUpdater, :etsource_fixture do
       end
 
       it 'does not call copy_preset_roles' do
-        expect(scenario).not_to receive(:copy_preset_roles)
+        allow(scenario).to receive(:copy_preset_roles)
         result
+        expect(scenario).not_to have_received(:copy_preset_roles)
       end
     end
 
@@ -323,20 +330,13 @@ describe ScenarioUpdater, :etsource_fixture do
       end
 
       it 'does not call copy_preset_roles' do
-        expect(scenario).not_to receive(:copy_preset_roles)
+        allow(scenario).to receive(:copy_preset_roles)
         result
+        expect(scenario).not_to have_received(:copy_preset_roles)
       end
     end
 
     context 'with a scenario_version_tag present' do
-      let(:current_user) { FactoryBot.create(:user, id: 123, email: "test@example.com") }
-      let(:scenario) { FactoryBot.create(:scenario, area_code: 'nl', end_year: 2050) }
-      let(:version_tag) { double('version', update: true) }
-
-      before do
-        allow(scenario).to receive(:scenario_version_tag).and_return(version_tag)
-      end
-
       let(:params) do
         {
           scenario: {
@@ -346,8 +346,12 @@ describe ScenarioUpdater, :etsource_fixture do
       end
 
       it 'updates the version tag with current user' do
-        expect(version_tag).to receive(:update).with(user: current_user)
+        version_tag = instance_double(ScenarioVersionTag)
+        allow(version_tag).to receive(:update)
+        allow(scenario).to receive(:scenario_version_tag).and_return(version_tag)
+
         result
+        expect(version_tag).to have_received(:update).with(user: current_user)
       end
     end
 
@@ -396,7 +400,7 @@ describe ScenarioUpdater, :etsource_fixture do
 
       it 'updates allowed attributes' do
         result
-        expect(scenario.reload.private).to be true
+        expect(scenario.reload.private).to be(true)
       end
     end
 
@@ -412,7 +416,7 @@ describe ScenarioUpdater, :etsource_fixture do
 
       it 'processes user_values correctly' do
         result
-        expect(scenario.reload.private).to be true
+        expect(scenario.reload.private).to be(true)
       end
 
       it 'still processes user_values through services' do
@@ -422,9 +426,8 @@ describe ScenarioUpdater, :etsource_fixture do
     end
   end
 
-
   describe 'complete update workflow' do
-    context 'updating a scenario with multiple changes' do
+    context 'when updating a scenario with multiple changes' do
       let(:params) do
         {
           scenario: {
@@ -447,8 +450,8 @@ describe ScenarioUpdater, :etsource_fixture do
         expect(result).to be_success
 
         scenario.reload
-        expect(scenario.private).to be true
-        expect(scenario.keep_compatible).to be true
+        expect(scenario.private).to be(true)
+        expect(scenario.keep_compatible).to be(true)
         expect(scenario.source).to eq('testing')
         expect(scenario.user_values['foo_demand']).to eq(60.0)
         expect(scenario.user_values['input_2']).to eq(80.0)
@@ -457,9 +460,9 @@ describe ScenarioUpdater, :etsource_fixture do
       end
     end
 
-    context 'partial update with existing values' do
+    context 'with partial update and existing values' do
       let(:scenario) do
-        FactoryBot.create(
+        create(
           :scenario,
           area_code: 'nl',
           end_year: 2050,
@@ -483,16 +486,16 @@ describe ScenarioUpdater, :etsource_fixture do
         result
         scenario.reload
 
-        expect(scenario.private).to be true
+        expect(scenario.private).to be(true)
         expect(scenario.user_values['foo_demand']).to eq(30.0)
         expect(scenario.user_values['input_2']).to eq(90.0)
         expect(scenario.metadata['existing_key']).to eq('existing_value')
       end
     end
 
-    context 'resetting input values' do
+    context 'when resetting input values' do
       let(:scenario) do
-        FactoryBot.create(
+        create(
           :scenario_with_user_values,
           area_code: 'nl',
           end_year: 2050
@@ -561,12 +564,14 @@ describe ScenarioUpdater, :etsource_fixture do
 
       it 'handles string keys correctly' do
         expect(result).to be_success
-        expect(scenario.reload.private).to be true
+        expect(scenario.reload.private).to be(true)
       end
     end
 
     context 'when scenario is not yet persisted' do
-      let(:scenario) { FactoryBot.build(:scenario, area_code: 'nl', end_year: 2050, user: current_user) }
+      let(:scenario) do
+        build(:scenario, area_code: 'nl', end_year: 2050, user: current_user)
+      end
       let(:params) do
         {
           scenario: {
@@ -576,7 +581,7 @@ describe ScenarioUpdater, :etsource_fixture do
       end
 
       it 'saves the new scenario' do
-        expect { result }.to change { Scenario.count }.by(1)
+        expect { result }.to change(Scenario, :count).by(1)
       end
     end
 
@@ -591,12 +596,12 @@ describe ScenarioUpdater, :etsource_fixture do
 
       before do
         # Simulate another process updating the scenario
-        scenario.update_column(:source, 'Updated by another process')
+        scenario.update!(source: 'Updated by another process')
       end
 
       it 'overwrites with the new values' do
         result
-        expect(scenario.reload.private).to be true
+        expect(scenario.reload.private).to be(true)
       end
     end
   end
@@ -660,7 +665,137 @@ describe ScenarioUpdater, :etsource_fixture do
 
       it 'still processes successfully' do
         expect(result).to be_success
-        expect(scenario.reload.private).to be true
+        expect(scenario.reload.private).to be(true)
+      end
+    end
+  end
+
+  describe 'scaled scenarios' do
+    before do
+      scenario.create_scaler!(
+        area_attribute: 'present_number_of_residences',
+        value: 500_000
+      )
+      Rails.cache.clear
+    end
+
+    context 'with single input update' do
+      let(:params) do
+        {
+          scenario: {
+            user_values: {
+              'foo_demand' => '5'
+            }
+          }
+        }
+      end
+
+      it 'updates the scaled scenario successfully' do
+        expect(result).to be_success
+      end
+
+      it 'persists the input value' do
+        result
+        expect(scenario.reload.user_values['foo_demand']).to eq(5.0)
+      end
+
+      it 'uses Input::ScaledInputs for validation' do
+        cache = Input.cache(scenario)
+        expect(cache).to be_a(Input::ScaledInputs)
+      end
+    end
+
+    context 'with multiple input updates' do
+      let(:params) do
+        {
+          scenario: {
+            user_values: {
+              'foo_demand' => '5',
+              'lft_demand' => '5'
+            }
+          }
+        }
+      end
+
+      it 'updates all inputs successfully' do
+        expect(result).to be_success
+      end
+
+      it 'persists all input values' do
+        result
+        reloaded = scenario.reload
+        expect(reloaded.user_values['foo_demand']).to eq(5.0)
+        expect(reloaded.user_values['lft_demand']).to eq(5.0)
+      end
+
+      it 'calls read_many on Input::ScaledInputs' do
+        scaled_cache = Input.cache(scenario)
+        allow(scaled_cache).to receive(:read_many).and_call_original
+        allow(Input).to receive(:cache).with(scenario).and_return(scaled_cache)
+
+        result
+        expect(scaled_cache).to have_received(:read_many)
+      end
+    end
+
+    context 'with invalid input values' do
+      let(:params) do
+        {
+          scenario: {
+            user_values: {
+              'nonexistent_input' => '100'
+            }
+          }
+        }
+      end
+
+      it 'returns failure' do
+        expect(result).to be_failure
+      end
+
+      it 'does not modify the scenario' do
+        original_updated_at = scenario.updated_at
+        result
+        expect(scenario.reload.updated_at).to eq(original_updated_at)
+      end
+    end
+
+    context 'with balanced groups' do
+      let(:params) do
+        {
+          scenario: {
+            user_values: {
+              'grouped_input_one' => '50.0',
+              'grouped_input_two' => '50.0'
+            }
+          }
+        }
+      end
+
+      it 'processes balanced groups with scaled inputs' do
+        expect(result).to be_success
+      end
+    end
+
+    context 'with metadata changes' do
+      let(:params) do
+        {
+          scenario: {
+            metadata: {
+              'title' => 'Updated Scaled Scenario'
+            },
+            user_values: {
+              'foo_demand' => '5'
+            }
+          }
+        }
+      end
+
+      it 'updates both metadata and inputs' do
+        expect(result).to be_success
+        reloaded = scenario.reload
+        expect(reloaded.metadata['title']).to eq('Updated Scaled Scenario')
+        expect(reloaded.user_values['foo_demand']).to eq(5.0)
       end
     end
   end
