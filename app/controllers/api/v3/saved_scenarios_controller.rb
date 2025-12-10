@@ -7,8 +7,12 @@ module Api
         authorize!(:read, Scenario)
       end
 
-      before_action(only: %i[create update]) do
-        authorize!(:write, Scenario)
+      before_action(only: %i[create]) do
+        authorize!(:create, Scenario)
+      end
+
+      before_action(only: %i[update]) do
+        authorize!(:update, Scenario)
       end
 
       def index
