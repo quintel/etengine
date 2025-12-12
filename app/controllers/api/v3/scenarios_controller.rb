@@ -173,7 +173,7 @@ module Api
         # The scaler needs to be in place before assigning attributes when the
         # scenario inherits from a preset.
         @scenario.descale    = attrs[:descale]
-        @scenario.attributes = attrs.except(:user_values)
+        @scenario.attributes = attrs.except(:user_values, :set_preset_roles)
 
         if current_user.present?
           @scenario.scenario_users.build(
@@ -186,10 +186,12 @@ module Api
         Scenario.transaction do
           @scenario.save!
 
-          if attrs[:user_values].present?
+          updater_scenario_params = attrs.slice(:user_values, :set_preset_roles).compact_blank
+
+          if updater_scenario_params.any?
             result = ::ScenarioUpdater.new(
               @scenario,
-              { scenario: { user_values: attrs[:user_values] } },
+              { scenario: updater_scenario_params },
               current_user
             ).call
 
