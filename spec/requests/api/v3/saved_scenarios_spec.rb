@@ -72,10 +72,12 @@ describe Api::V3::SavedScenariosController, type: :controller do
   describe 'POST #create' do
     let(:params) do
       {
-        scenario_id: scenario.id,
-        title: 'New Saved Scenario',
-        description: 'A test scenario',
-        private: false
+        saved_scenario: {
+          scenario_id: scenario.id,
+          title: 'New Saved Scenario',
+          description: 'A test scenario',
+          private: false
+        }
       }
     end
 
@@ -90,7 +92,7 @@ describe Api::V3::SavedScenariosController, type: :controller do
 
       before do
         allow(create_service).to receive(:call)
-          .with(params: hash_including(:scenario_id),
+          .with(params: hash_including('scenario_id'),
                 ability: instance_of(Ability),
                 client: idp_client)
           .and_return(Dry::Monads::Success([created_data, nil]))
@@ -128,7 +130,7 @@ describe Api::V3::SavedScenariosController, type: :controller do
   end
 
   describe 'PUT #update' do
-    let(:params) { { id: 1, title: 'Updated Saved Scenario' } }
+    let(:params) { { id: 1, saved_scenario: { title: 'Updated Saved Scenario' } } }
     let(:update_service) { instance_double(UpdateSavedScenario) }
 
     before do
@@ -140,7 +142,7 @@ describe Api::V3::SavedScenariosController, type: :controller do
 
       before do
         allow(update_service).to receive(:call)
-          .with(id: '1', params: hash_including(:title), ability: instance_of(Ability), client: idp_client)
+          .with(id: '1', params: hash_including('title'), ability: instance_of(Ability), client: idp_client)
           .and_return(Dry::Monads::Success([updated_data, nil]))
 
         put :update, params: params
