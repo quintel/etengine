@@ -36,7 +36,7 @@ module Api
 
       def create
         CreateSavedScenario.new.call(
-          params: params.permit!.to_h,
+          params: saved_scenario_params.to_h,
           ability: current_ability,
           client: my_etm_client
         ).either(
@@ -50,7 +50,7 @@ module Api
       def update
         UpdateSavedScenario.new.call(
           id: params.require(:id),
-          params: params.permit!.to_h,
+          params: saved_scenario_params.to_h,
           ability: current_ability,
           client: my_etm_client
         ).either(
@@ -114,7 +114,7 @@ module Api
       end
 
       def saved_scenario_params
-        params.permit(:scenario_id, :title, :description, :private)
+        params.require(:saved_scenario).permit(:scenario_id, :title, :description, :private)
       end
 
       def service_error_response(failure)
