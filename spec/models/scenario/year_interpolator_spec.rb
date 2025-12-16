@@ -209,4 +209,38 @@ RSpec.describe Scenario::YearInterpolator do
       expect(interpolated.heat_network_orders.first.order).to eq(techs)
     end
   end
+
+  context 'when passing a start scenario' do
+    let(:source) do
+      FactoryBot.create(:scenario, {
+        id:          99999, # Avoid a collision with a preset ID
+        end_year:    2050,
+        user_values: { 'grouped_input_one' => 75.0 }
+      })
+    end
+
+    let(:start_scenario) do
+      FactoryBot.create(:scenario, {
+        id:          88888, # Avoid a collision with a preset ID
+        end_year:    2030,
+        user_values: { 'grouped_input_one' => 50.0 }
+      })
+    end
+
+    let(:interpolated) { described_class.call(source, 2040, start_scenario) }
+
+    it 'interpolates based on the start scenario values' do
+      # 50 -> 75 in 20 years
+      # = 62.5 in 10 years
+      expect(interpolated.user_values['grouped_input_one'])
+        .to be_within(1e-2).of(62.5)
+    end
+
+    it 'fails if the start scenario end year > source scenario end year' do
+      # 50 -> 75 in 20 years
+      # = 62.5 in 10 years
+      expect(interpolated.user_values['grouped_input_one'])
+        .to be_within(1e-2).of(62.5)
+    end
+  end
 end
