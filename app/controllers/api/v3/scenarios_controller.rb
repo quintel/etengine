@@ -210,7 +210,7 @@ module Api
       # POST /api/v3/scenarios/interpolate
       def interpolate
         @interpolated = Scenario::YearInterpolator.call(
-          @scenario, params.require(:end_year).to_i, current_user
+          @scenario, params.require(:end_year).to_i, start_scenario, current_user
         )
 
         Scenario.transaction do
@@ -219,10 +219,9 @@ module Api
 
         render json: ScenarioSerializer.new(self, @interpolated)
       rescue ActionController::ParameterMissing
-        render(
-          status: :bad_request,
-          json: { errors: ['Interpolated scenario must have an end year'] }
-        )
+        render json: { errors: ['Interpolated scenario must have an end year'] }, status: :bad_request
+      rescue Scenario::YearInterpolator::InterpolationError => e
+        render json: { errors: [e.message] }, status: :unprocessable_entity
       end
 
       # PUT-PATCH /api/v3/scenarios/:id
@@ -407,17 +406,22 @@ module Api
       end
 
       private
+      
+      # Internal: Finds the start scenario for interpolation, if any.
+      #
+      # Returns a Scenario, nil, or raises InterpolationError.
+      def start_scenario
+        return unless params[:start_scenario_id]
 
-      def find_preset_or_scenario
-        @scenario =
-          Preset.get(params[:id]).try(:to_scenario) ||
-          Scenario.find_for_calculation(params[:id])
+        scenario = Scenario.find_by(id: params[:start_scenario_id])
 
-        render_not_found(errors: ['Scenario not found']) unless @scenario
-      end
+        raise Scenario::YearInterpolator::InterpolationError,
+          'Start scenario not found' unless scenario
 
-      def find_scenario
-        @scenario = Scenario.find_for_calculation(params[:id])
+        raise Scenario::YearInterpolator::InterpolationError, 
+          'Start scenario not accessible' unless can?(:read, scenario)
+
+        scenario
       end
 
       # Internal: All the request parameters, filtered.
