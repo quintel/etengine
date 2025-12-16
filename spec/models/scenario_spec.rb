@@ -1,13 +1,16 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe Scenario do
-  before { @scenario = Scenario.new }
   subject { @scenario }
+
+  before { @scenario = described_class.new }
 
   describe '.find_for_calculation' do
     context 'when the scenario exists' do
       it 'returns the scenario' do
-        scenario = FactoryBot.create(:scenario)
+        scenario = create(:scenario)
         expect(described_class.find_for_calculation(scenario.id)).to eq(scenario)
       end
     end
@@ -27,21 +30,24 @@ describe Scenario do
     end
   end
 
-  describe "#default" do
-    subject { Scenario.default }
+  describe '#default' do
+    subject { described_class.default }
 
     describe '#area_code' do
       subject { super().area_code }
-      it { is_expected.to eq('nl')}
+
+      it { is_expected.to eq('nl') }
     end
 
     describe '#user_values' do
       subject { super().user_values }
+
       it { is_expected.to eq({}) }
     end
 
     describe '#end_year' do
       subject { super().end_year }
+
       it { is_expected.to eq(2050) }
 
       context 'when it not provided' do
@@ -58,7 +64,7 @@ describe Scenario do
           scenario = described_class.default(end_year: 2019.5)
           scenario.valid?
 
-          expect(scenario.errors[:end_year]).to include("must be an integer")
+          expect(scenario.errors[:end_year]).to include('must be an integer')
         end
       end
 
@@ -95,7 +101,7 @@ describe Scenario do
 
       describe 'when the dataset does not exist' do
         let(:scenario) do
-          described_class.default.tap { |s| s.area_code = 'invalid'}
+          described_class.default.tap { |s| s.area_code = 'invalid' }
         end
 
         it 'returns 2019' do
@@ -104,9 +110,10 @@ describe Scenario do
       end
     end
 
-    describe "#years" do
+    describe '#years' do
       describe '#years' do
         subject { super().years }
+
         it { is_expected.to eq(39) }
       end
     end
@@ -129,41 +136,41 @@ describe Scenario do
     let(:since) { 1.month.ago }
 
     let!(:scenario) do
-      FactoryBot.create(
+      create(
         :scenario,
         user_values: { a: 1 },
-        source: 'ETM',
+        source: 'ETM'
       )
     end
 
     context 'with a writeable scenarios' do
       it 'includes recent scenarios' do
-        is_expected.to include(scenario)
+        expect(subject).to include(scenario)
       end
 
       it 'includes scenarios with no source' do
         scenario.update_attribute(:source, nil)
-        is_expected.to include(scenario)
+        expect(subject).to include(scenario)
       end
 
       it 'omits recent scenarios where source="Mechanical Turk"' do
         scenario.update_attribute(:source, 'Mechanical Turk')
-        is_expected.not_to include(scenario)
+        expect(subject).not_to include(scenario)
       end
 
       it 'omits scenarios updated prior to the "since" date' do
         scenario.update_attribute(:updated_at, since - 1.hour)
-        is_expected.not_to include(scenario)
+        expect(subject).not_to include(scenario)
       end
 
       it 'omits scenarios with NULL user_values' do
         scenario.update_attribute(:user_values, nil)
-        is_expected.not_to include(scenario)
+        expect(subject).not_to include(scenario)
       end
 
       it 'omits scenarios with empty user_values' do
         scenario.update_attribute(:user_values, {})
-        is_expected.not_to include(scenario)
+        expect(subject).not_to include(scenario)
       end
     end
 
@@ -171,46 +178,46 @@ describe Scenario do
       before { scenario.update(keep_compatible: true) }
 
       it 'includes recent scenarios' do
-        is_expected.to include(scenario)
+        expect(subject).to include(scenario)
       end
 
       it 'includes scenarios with no source' do
         scenario.update_attribute(:source, nil)
-        is_expected.to include(scenario)
+        expect(subject).to include(scenario)
       end
 
       it 'omits recent scenarios where source="Mechanical Turk"' do
         scenario.update_attribute(:source, 'Mechanical Turk')
-        is_expected.not_to include(scenario)
+        expect(subject).not_to include(scenario)
       end
 
       it 'incudes scenarios updated prior to the "since" date' do
         scenario.update_attribute(:updated_at, since - 1.hour)
-        is_expected.to include(scenario)
+        expect(subject).to include(scenario)
       end
 
       it 'omits scenarios with NULL user_values' do
         scenario.update_attribute(:user_values, nil)
-        is_expected.not_to include(scenario)
+        expect(subject).not_to include(scenario)
       end
 
       it 'omits scenarios with empty user_values' do
         scenario.update_attribute(:user_values, {})
-        is_expected.not_to include(scenario)
+        expect(subject).not_to include(scenario)
       end
     end
   end
 
-  describe "user supplied parameters" do
-    it "should not allow a bad area code" do
-      s = Scenario.new(:area_code => '{}')
-      expect(s).to_not be_valid
+  describe 'user supplied parameters' do
+    it 'does not allow a bad area code' do
+      s = described_class.new(area_code: '{}')
+      expect(s).not_to(be_valid)
       expect(s.errors[:area_code])
     end
 
-    it "should not allow a bad year format" do
-      s = Scenario.new(:end_year => 'abc')
-      expect(s).to_not be_valid
+    it 'does not allow a bad year format' do
+      s = described_class.new(end_year: 'abc')
+      expect(s).not_to(be_valid)
       expect(s.errors[:end_year])
     end
   end
@@ -229,6 +236,7 @@ describe Scenario do
 
       describe '#user_values' do
         subject { super().user_values }
+
         it { is_expected.to eq({}) }
       end
     end
@@ -237,6 +245,7 @@ describe Scenario do
 
       describe '#user_values' do
         subject { super().user_values }
+
         it { is_expected.to eq({}) }
       end
     end
@@ -246,50 +255,53 @@ describe Scenario do
     let(:input) { Input.new(key: 'my-input', start_value: 99.0) }
 
     before { allow(Input).to receive(:all).and_return([input]) }
+
     before { Rails.cache.clear }
 
     context 'with a user value present' do
       let(:scenario) do
-        FactoryBot.create(:scenario, {
+        create(:scenario, {
           user_values:     { 'my-input' => 20.0 },
           balanced_values: { 'my-input' => 50.0 }
         })
       end
 
       it 'returns the user value' do
-        expect(scenario.input_value(input)).to eql(20.0)
+        expect(scenario.input_value(input)).to be(20.0)
       end
     end
 
     context 'with a balanced value present' do
       let(:scenario) do
-        FactoryBot.create(:scenario, balanced_values: { 'my-input' => 50.0 })
+        create(:scenario, balanced_values: { 'my-input' => 50.0 })
       end
 
       it 'returns the balanced value' do
-        expect(scenario.input_value(input)).to eql(50.0)
+        expect(scenario.input_value(input)).to be(50.0)
       end
     end
 
     context 'with no user or balanced value' do
-      let(:scenario) { FactoryBot.create(:scenario) }
+      let(:scenario) { create(:scenario) }
 
       it "returns the input's default value" do
-        expect(scenario.input_value(input)).to eql(99.0)
+        expect(scenario.input_value(input)).to be(99.0)
       end
     end
 
     context 'given nil' do
       it 'raises an error' do
-        expect { FactoryBot.create(:scenario).input_value(nil) }.
-          to raise_error(/nil is not an input/)
+        expect { create(:scenario).input_value(nil) }
+          .to raise_error(/nil is not an input/)
       end
     end
   end
 
-  describe "#used_groups_add_up?" do
+  describe '#used_groups_add_up?' do
+    subject { @scenario }
+
     before do
-      @scenario = Scenario.default
+      @scenario = described_class.default
       allow(Input).to receive(:inputs_grouped).and_return({
         'share_group' => [
           double('Input', id: 1, share_group: 'share_group'),
@@ -302,47 +314,52 @@ describe Scenario do
         ]
       })
     end
-    subject { @scenario }
 
-    describe "#used_groups" do
-      context "no user_values" do
+    describe '#used_groups' do
+      context 'no user_values' do
         describe '#used_groups' do
           subject { super().used_groups }
+
           it { is_expected.to be_empty }
         end
       end
-      context "with 1 user_values" do
-        before { @scenario.user_values = {1 => 2}}
+
+      context 'with 1 user_values' do
+        before { @scenario.user_values = { 1 => 2 } }
 
         describe '#used_groups' do
           subject { super().used_groups }
+
           it { is_expected.not_to be_empty }
         end
       end
     end
 
-    describe "#used_groups_add_up?" do
-      context "no user_values" do
+    describe '#used_groups_add_up?' do
+      context 'no user_values' do
         describe '#used_groups_add_up?' do
           subject { super().used_groups_add_up? }
+
           it { is_expected.to be_truthy }
         end
       end
 
-      context "user_values but without groups" do
-        before { @scenario.user_values = {10 => 2}}
+      context 'user_values but without groups' do
+        before { @scenario.user_values = { 10 => 2 } }
 
         describe '#used_groups_add_up?' do
           subject { super().used_groups_add_up? }
+
           it { is_expected.to be_truthy }
         end
       end
 
       context "user_values that don't add up to 100" do
-        before { @scenario.user_values = {1 => 50}}
+        before { @scenario.user_values = { 1 => 50 } }
 
         describe '#used_groups_add_up?' do
           subject { super().used_groups_add_up? }
+
           it { is_expected.to be_falsey }
         end
 
@@ -355,28 +372,30 @@ describe Scenario do
         end
       end
 
-      context "user_values that add up to 100" do
-        before { @scenario.user_values = {1 => 50, 2 => 30, 3 => 20}}
+      context 'user_values that add up to 100' do
+        before { @scenario.user_values = { 1 => 50, 2 => 30, 3 => 20 } }
 
         describe '#used_groups_add_up?' do
           subject { super().used_groups_add_up? }
+
           it { is_expected.to be_truthy }
         end
       end
 
-      context "with balanced values which add up to 100" do
+      context 'with balanced values which add up to 100' do
         before do
-          @scenario.user_values     = { 1 => 50}
+          @scenario.user_values     = { 1 => 50 }
           @scenario.balanced_values = { 2 => 20, 3 => 30 }
         end
 
         describe '#used_groups_add_up?' do
           subject { super().used_groups_add_up? }
+
           it { is_expected.to be_truthy }
         end
       end
 
-      context "with balanced values which do not add up to 100" do
+      context 'with balanced values which do not add up to 100' do
         before do
           @scenario.user_values     = { 1 => 40 }
           @scenario.balanced_values = { 2 => 20, 3 => 30 }
@@ -384,6 +403,7 @@ describe Scenario do
 
         describe '#used_groups_add_up?' do
           subject { super().used_groups_add_up? }
+
           it { is_expected.to be_falsey }
         end
 
@@ -396,7 +416,7 @@ describe Scenario do
         end
       end
 
-      context "with only balanced values which add up to 100" do
+      context 'with only balanced values which add up to 100' do
         before do
           @scenario.user_values     = {}
           @scenario.balanced_values = { 1 => 50, 2 => 20, 3 => 30 }
@@ -404,18 +424,18 @@ describe Scenario do
 
         describe '#used_groups_add_up?' do
           subject { super().used_groups_add_up? }
+
           it { is_expected.to be_truthy }
         end
       end
-
     end
   end
 
-  describe "#coupled?" do
+  describe '#coupled?' do
     subject { @scenario.coupled? }
 
     before do
-      @scenario = Scenario.default
+      @scenario = described_class.default
       allow(Input).to receive(:coupling_inputs_keys).and_return(
         ['coupled_slider_1']
       )
@@ -444,38 +464,38 @@ describe Scenario do
 
   describe 'with a preset scenario' do
     let(:preset) do
-      FactoryBot.create(:scenario, {
-        id:              99999, # Avoid a collision with a preset ID
+      create(:scenario, {
+        id:              99_999, # Avoid a collision with a preset ID
         user_values:     { 'grouped_input_one' => 1 },
         balanced_values: { 'grouped_input_two' => 2 }
       })
     end
 
     let(:scenario) do
-      Scenario.new(scenario_id: preset.id)
+      described_class.new(scenario_id: preset.id)
     end
 
-    it 'should retrieve the parent' do
+    it 'retrieves the parent' do
       expect(scenario.parent).to eq(preset)
     end
 
-    it 'should copy the user values' do
+    it 'copies the user values' do
       expect(scenario.user_values).to eql(preset.user_values)
     end
 
-    it 'should copy the balanced values' do
+    it 'copies the balanced values' do
       expect(scenario.balanced_values).to eql(preset.balanced_values)
     end
 
-    it 'should copy the scaler attributes' do
+    it 'copies the scaler attributes' do
       ScenarioScaling.create!(
         scenario:       preset,
         area_attribute: 'present_number_of_residences',
         value:          1000
       )
 
-      expect(scenario.scaler).to_not be_nil
-      expect(scenario.scaler.id).to_not eq(preset.scaler.id)
+      expect(scenario.scaler).not_to(be_nil)
+      expect(scenario.scaler.id).not_to(eq(preset.scaler.id))
 
       expect(scenario.scaler.area_attribute).to eq('present_number_of_residences')
       expect(scenario.scaler.value).to eq(1000)
@@ -483,7 +503,7 @@ describe Scenario do
     end
 
     context 'with no preset heat network order' do
-      it 'should create no heat network order' do
+      it 'creates no heat network order' do
         expect(scenario[:heat_network_order]).to be_nil
       end
     end
@@ -566,8 +586,8 @@ describe Scenario do
       end
 
       it 'copies the flexibility order attributes' do
-        expect(scenario.heat_network_order).to_not be_nil
-        expect(scenario.heat_network_order.id).to_not eq(preset.heat_network_order.id)
+        expect(scenario.heat_network_order).not_to(be_nil)
+        expect(scenario.heat_network_order.id).not_to(eq(preset.heat_network_order.id))
         scenario.save!
         expect(scenario.heat_network_order.order).to eq(techs)
         expect(scenario.heat_network_order.scenario).to eq(scenario) # Not `preset`.
@@ -577,8 +597,8 @@ describe Scenario do
 
   describe 'cloning a scaled scenario to an unscaled scenario' do
     let(:preset) do
-      FactoryBot.create(:scenario, {
-        id:              99999, # Avoid a collision with a preset ID
+      create(:scenario, {
+        id:              99_999, # Avoid a collision with a preset ID
         user_values:     { 'grouped_input_one' => 2 },
         balanced_values: { 'grouped_input_two' => 8 },
 
@@ -590,7 +610,7 @@ describe Scenario do
     end
 
     let(:scenario) do
-      scenario = Scenario.new
+      scenario = described_class.new
       scenario.descale     = true
       scenario.scenario_id = preset.id
       scenario.save!
@@ -601,7 +621,7 @@ describe Scenario do
     let(:multiplier) { Atlas::Dataset.find(:nl).present_number_of_residences / 1000 }
 
     it 'creates the scenario' do
-      expect(scenario).to_not be_new_record
+      expect(scenario).not_to(be_new_record)
     end
 
     it 'sets no scaler' do
@@ -609,13 +629,13 @@ describe Scenario do
     end
 
     it 'adjusts the input values to fit the full-size region' do
-      expect(scenario.user_values).
-        to eq({'grouped_input_one' => 2 * multiplier})
+      expect(scenario.user_values)
+        .to eq({ 'grouped_input_one' => multiplier * 2 })
     end
 
     it 'adjusts the balanced values to fit the full-size region' do
-      expect(scenario.balanced_values).
-        to eq({'grouped_input_two' => 8 * multiplier})
+      expect(scenario.balanced_values)
+        .to eq({ 'grouped_input_two' => multiplier * 8 })
     end
 
     context 'with a non-existent input' do
@@ -625,34 +645,33 @@ describe Scenario do
       end
 
       it 'does not raise an error' do
-        expect { scenario }.to_not raise_error
+        expect { scenario }.not_to(raise_error)
       end
 
       it 'skips the input' do
-        expect(scenario.user_values.keys).to_not include('invalid')
+        expect(scenario.user_values.keys).not_to(include('invalid'))
       end
     end
   end
 
   describe 'dup' do
     let(:scenario) do
-      Scenario.create!(
+      described_class.create!(
         end_year:        2030,
         area_code:       'nl',
         user_values:     { 1 => 2, 3 => 4 },
         balanced_values: { 5 => 6 }
       )
     end
+    let(:dup) { scenario.dup }
 
-    before(:each) do
+    before do
       scenario.inputs
       scenario.gql
     end
 
-    let(:dup) { scenario.dup }
-
     it 'clones the end year' do
-      expect(dup.end_year).to eql(2030)
+      expect(dup.end_year).to be(2030)
     end
 
     it 'clones the area' do
@@ -827,8 +846,8 @@ describe Scenario do
     let(:preset_collaborator) { create(:user) }
 
     let(:preset) do
-      FactoryBot.create(:scenario, {
-        id:              99999, # Avoid a collision with a preset ID
+      create(:scenario, {
+        id:              99_999, # Avoid a collision with a preset ID
         user_values:     { 'grouped_input_one' => 1 },
         balanced_values: { 'grouped_input_two' => 2 },
         user: preset_owner
@@ -849,7 +868,7 @@ describe Scenario do
 
     it 'sets the owner of the preset' do
       subject
-      expect(scenario.owner?(preset_owner)).to be_truthy
+      expect(scenario).to be_owner(preset_owner)
     end
 
     it 'sets the collaborator of the preset' do
