@@ -3,10 +3,6 @@
 module Api
   module V3
     class ScenariosController < BaseController
-      rescue_from Scenario::YearInterpolator::InterpolationError do |ex|
-        render json: { errors: [ex.message] }, status: :bad_request
-      end
-
       load_resource except: %i[show create destroy dump]
       load_and_authorize_resource class: Scenario, only: %i[index show destroy dump]
 
@@ -209,19 +205,23 @@ module Api
 
       # POST /api/v3/scenarios/interpolate
       def interpolate
-        @interpolated = Scenario::YearInterpolator.call(
-          @scenario, params.require(:end_year).to_i, start_scenario, current_user
+        result = Scenario::YearInterpolator.call(
+          @scenario,
+          params.require(:end_year).to_i,
+          params[:start_scenario_id]&.to_i,
+          current_user,
+          current_ability
         )
 
-        Scenario.transaction do
-          @interpolated.save!
+        case result
+        in Dry::Monads::Success(scenario)
+          Scenario.transaction { scenario.save! }
+          render json: ScenarioSerializer.new(self, scenario)
+        in Dry::Monads::Failure(errors)
+          render json: { errors: errors.values.flatten }, status: :unprocessable_content
         end
-
-        render json: ScenarioSerializer.new(self, @interpolated)
       rescue ActionController::ParameterMissing
         render json: { errors: ['Interpolated scenario must have an end year'] }, status: :bad_request
-      rescue Scenario::YearInterpolator::InterpolationError => e
-        render json: { errors: [e.message] }, status: :unprocessable_entity
       end
 
       # PUT-PATCH /api/v3/scenarios/:id
@@ -406,23 +406,6 @@ module Api
       end
 
       private
-      
-      # Internal: Finds the start scenario for interpolation, if any.
-      #
-      # Returns a Scenario, nil, or raises InterpolationError.
-      def start_scenario
-        return unless params[:start_scenario_id]
-
-        scenario = Scenario.find_by(id: params[:start_scenario_id])
-
-        raise Scenario::YearInterpolator::InterpolationError,
-          'Start scenario not found' unless scenario
-
-        raise Scenario::YearInterpolator::InterpolationError, 
-          'Start scenario not accessible' unless can?(:read, scenario)
-
-        scenario
-      end
 
       # Internal: All the request parameters, filtered.
       #
