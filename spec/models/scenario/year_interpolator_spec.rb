@@ -11,7 +11,7 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2030) }
+    let(:interpolated) { described_class.call(source, 2030).value! }
 
     it 'returns a new scenario' do
       expect(interpolated).to be_a(Scenario)
@@ -54,7 +54,7 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2030) }
+    let(:interpolated) { described_class.call(source, 2030).value! }
 
     it 'keeps valid inputs' do
       expect(interpolated.user_values.keys).to include('grouped_input_one')
@@ -77,7 +77,7 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2030) }
+    let(:interpolated) { described_class.call(source, 2030).value! }
 
     it 'sets the inputs' do
       expect(interpolated.user_values.keys.sort)
@@ -106,7 +106,7 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2030) }
+    let(:interpolated) { described_class.call(source, 2030).value! }
 
     it 'sets the inputs' do
       expect(interpolated.user_values.keys.sort)
@@ -132,11 +132,14 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2010) }
+    let(:result) { described_class.call(source, 2010) }
 
-    it 'raises an exception' do
-      expect { interpolated }
-        .to raise_error(/prior to the dataset analysis year/i)
+    it 'returns a failure' do
+      expect(result).to be_failure
+    end
+
+    it 'includes an error about the analysis year' do
+      expect(result.failure.values.flatten.first).to match(/must be posterior to the dataset analysis year/i)
     end
   end
 
@@ -149,10 +152,14 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2051) }
+    let(:result) { described_class.call(source, 2051) }
 
-    it 'raises an exception' do
-      expect { interpolated }.to raise_error(/prior to the original scenario/i)
+    it 'returns a failure' do
+      expect(result).to be_failure
+    end
+
+    it 'includes an error about the original scenario' do
+      expect(result.failure.values.flatten.first).to match(/must be prior to the original scenario end year/i)
     end
   end
 
@@ -166,14 +173,14 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2050) }
+    let(:result) { described_class.call(source, 2050) }
 
-    it 'sets user_values inputs' do
-      expect(interpolated.user_values).to eq(source.user_values)
+    it 'returns a failure' do
+      expect(result).to be_failure
     end
 
-    it 'sets balanced_values inputs' do
-      expect(interpolated.balanced_values).to eq(source.balanced_values)
+    it 'includes an error about the original scenario' do
+      expect(result.failure.values.flatten.first).to match(/must be prior to the original scenario end year/i)
     end
   end
 
@@ -190,7 +197,7 @@ RSpec.describe Scenario::YearInterpolator do
       HeatNetworkOrder.default_order.reverse
     end
 
-    let(:interpolated) { described_class.call(source, 2040) }
+    let(:interpolated) { described_class.call(source, 2040).value! }
 
     before do
       HeatNetworkOrder.create!(scenario: source, order: techs)
@@ -215,7 +222,8 @@ RSpec.describe Scenario::YearInterpolator do
       FactoryBot.create(:scenario, {
         id:          99999, # Avoid a collision with a preset ID
         end_year:    2050,
-        user_values: { 'grouped_input_one' => 75.0 }
+        user_values:      { 'grouped_input_one' => 75.0 },
+        balanced_values:  { 'grouped_input_two' => 50 }
       })
     end
 
@@ -227,7 +235,7 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2040, start_scenario) }
+    let(:interpolated) { described_class.call(source, 2040, start_scenario.id).value! }
 
     it 'interpolates based on the start scenario values' do
       # 50 -> 75 in 20 years
@@ -236,11 +244,11 @@ RSpec.describe Scenario::YearInterpolator do
         .to be_within(1e-2).of(62.5)
     end
 
-    it 'fails if the start scenario end year > source scenario end year' do
-      # 50 -> 75 in 20 years
-      # = 62.5 in 10 years
-      expect(interpolated.user_values['grouped_input_one'])
-        .to be_within(1e-2).of(62.5)
+    it 'interpolates inputs even if not set in start scenario' do
+      # 0 -> 50 in 20 years
+      # = 25 in 10 years
+      expect(interpolated.balanced_values['grouped_input_two'])
+        .to be_within(1e-2).of(25)
     end
   end
 end

@@ -225,7 +225,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sends back an error message' do
-      expect(response_data).to include('errors' => ["Start scenario not found"])
+      expect(response_data).to include('errors' => ['start scenario not found'])
     end
   end
 
@@ -247,7 +247,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sends back an error message' do
-      expect(response_data).to include('errors' => ["Start scenario not accessible"])
+      expect(response_data).to include('errors' => ['start scenario not accessible'])
     end
   end
 
@@ -266,12 +266,11 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sends back an error message' do
-      expect(response_data).to include(
-        'errors' => ['Start scenario must not be the same as the original scenario'])
+      expect(response_data['errors']).to include('start scenario must not be the same as the original scenario')
     end
   end
 
-  context 'with an invalid interpolation year (earlier than start scenario)' do
+  context 'with an invalid start scenario end year (after source scenario)' do
     let(:send_data) do
       post "/api/v3/scenarios/#{source.id}/interpolate",
         params: { end_year: 2040, start_scenario_id: start_scenario.id },
@@ -288,8 +287,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sends back an error message' do
-      expect(response_data).to include('errors' => ['Start scenario must have an end ' \
-        "year equal or prior to the original scenario (#{source.start_year})"])
+      expect(response_data['errors']).to include(
+        "start scenario must have an end year prior to the original scenario (#{source.end_year})"
+      )
     end
   end
 
@@ -310,8 +310,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sends back an error message' do
-      expect(response_data).to include('errors' => ['Interpolated scenario must have an ' \
-        "end year equal or posterior to the start scenario (#{start_scenario.end_year})"])
+      expect(response_data['errors']).to include(
+        "must be posterior to the start scenario end year (#{start_scenario.end_year})"
+      )
     end
   end
 
@@ -332,8 +333,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sends back an error message' do
-      expect(response_data).to include('errors' => ['Start scenario must have the same ' \
-        "area code as the original scenario (#{source.area_code})"])
+      expect(response_data['errors']).to include(
+        "start scenario must have the same area code as the original scenario (#{source.area_code})"
+      )
     end
   end
 
