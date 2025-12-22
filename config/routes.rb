@@ -112,7 +112,16 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :saved_scenarios, except: %i[new edit]
+      resources :saved_scenarios, except: %i[new edit] do
+        resources :users, only: %i[index create update destroy], controller: 'saved_scenario_users' do
+          collection do
+            post :create
+            put :update
+            delete :destroy
+          end
+        end
+      end
+
       resources :collections, except: %i[new edit]
 
       # Redirecting old transition paths routes to collections
