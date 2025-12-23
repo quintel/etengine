@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe Scenario::YearInterpolator do
   context 'with a scenario' do
     let(:source) do
-      FactoryBot.create(:scenario, {
+      create(:scenario, {
         id:              99999, # Avoid a collision with a preset ID
         end_year:        2050,
         user_values:     { 'grouped_input_one' => 75 },
@@ -44,12 +46,12 @@ RSpec.describe Scenario::YearInterpolator do
 
   context 'with a scenario containing a non-existant input' do
     let(:source) do
-      FactoryBot.create(:scenario, {
+      create(:scenario, {
         id:          99999, # Avoid a collision with a preset ID
         end_year:    2050,
         user_values: {
           'grouped_input_one' => 75,
-          'nope'              => 100,
+          'nope'              => 100
         }
       })
     end
@@ -67,7 +69,7 @@ RSpec.describe Scenario::YearInterpolator do
 
   context 'with a scenario containing an enum input' do
     let(:source) do
-      FactoryBot.create(:scenario, {
+      create(:scenario, {
         id: 99999,
         end_year: 2050,
         user_values: {
@@ -96,7 +98,7 @@ RSpec.describe Scenario::YearInterpolator do
 
   context 'with a scenario containing a boolean input' do
     let(:source) do
-      FactoryBot.create(:scenario, {
+      create(:scenario, {
         id: 99999,
         end_year: 2050,
         user_values: {
@@ -125,7 +127,7 @@ RSpec.describe Scenario::YearInterpolator do
 
   context 'with a year older than the analysis year' do
     let(:source) do
-      FactoryBot.create(:scenario, {
+      create(:scenario, {
         id:          99999, # Avoid a collision with a preset ID
         end_year:    2050,
         user_values: { 'grouped_input_one' => 75 }
@@ -145,7 +147,7 @@ RSpec.describe Scenario::YearInterpolator do
 
   context 'with a year after the source scenario end year' do
     let(:source) do
-      FactoryBot.create(:scenario, {
+      create(:scenario, {
         id:          99999, # Avoid a collision with a preset ID
         end_year:    2050,
         user_values: { 'grouped_input_one' => 75 }
@@ -165,7 +167,7 @@ RSpec.describe Scenario::YearInterpolator do
 
   context 'with a year the same as the source scenario end year' do
     let(:source) do
-      FactoryBot.create(:scenario, {
+      create(:scenario, {
         id:              99999, # Avoid a collision with a preset ID
         end_year:        2050,
         user_values:     { 'grouped_input_one' => 75 },
@@ -186,7 +188,7 @@ RSpec.describe Scenario::YearInterpolator do
 
   context 'when the scenario has a heat network order' do
     let(:source) do
-      FactoryBot.create(:scenario, {
+      create(:scenario, {
         id:          99999, # Avoid a collision with a preset ID
         end_year:    2050,
         user_values: { 'grouped_input_one' => 75 }
@@ -219,7 +221,7 @@ RSpec.describe Scenario::YearInterpolator do
 
   context 'with a scaled scenario' do
     let(:scaled_source) do
-      scenario = FactoryBot.create(:scenario, {
+      scenario = create(:scenario, {
         id: 99993,
         end_year: 2050,
         user_values: { 'grouped_input_one' => 100.0 },
@@ -243,7 +245,7 @@ RSpec.describe Scenario::YearInterpolator do
 
   context 'when passing a start scenario' do
     let(:source) do
-      FactoryBot.create(:scenario, {
+      create(:scenario, {
         id:          99999, # Avoid a collision with a preset ID
         end_year:    2050,
         user_values:      { 'grouped_input_one' => 75.0 },
@@ -252,7 +254,7 @@ RSpec.describe Scenario::YearInterpolator do
     end
 
     let(:start_scenario) do
-      FactoryBot.create(:scenario, {
+      create(:scenario, {
         id:          88888, # Avoid a collision with a preset ID
         end_year:    2030,
         user_values: { 'grouped_input_one' => 50.0 }

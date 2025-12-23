@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe Scenario::BatchYearInterpolator do
   let(:scenario_2030) do
-    FactoryBot.create(:scenario, {
+    create(:scenario, {
       id: 99990,
       end_year: 2030,
       user_values: { 'grouped_input_one' => 50.0 }
@@ -10,7 +12,7 @@ RSpec.describe Scenario::BatchYearInterpolator do
   end
 
   let(:scenario_2040) do
-    FactoryBot.create(:scenario, {
+    create(:scenario, {
       id: 99991,
       end_year: 2040,
       user_values: { 'grouped_input_one' => 75.0 }
@@ -18,7 +20,7 @@ RSpec.describe Scenario::BatchYearInterpolator do
   end
 
   let(:scenario_2050) do
-    FactoryBot.create(:scenario, {
+    create(:scenario, {
       id: 99992,
       end_year: 2050,
       user_values: { 'grouped_input_one' => 100.0 }
@@ -164,7 +166,8 @@ RSpec.describe Scenario::BatchYearInterpolator do
     end
 
     it 'includes an error about the target year' do
-      expect(result.failure[:end_years].first).to match(/must be posterior to the first scenario start year/)
+      expect(result.failure[:end_years].first)
+        .to match(/must be posterior to the first scenario start year/)
     end
   end
 
@@ -181,17 +184,18 @@ RSpec.describe Scenario::BatchYearInterpolator do
     end
 
     it 'includes an error about the target year' do
-      expect(result.failure[:end_years].first).to match(/must be prior to the latest scenario end year/)
+      expect(result.failure[:end_years].first)
+        .to match(/must be prior to the latest scenario end year/)
     end
   end
 
   context 'with scenarios having different area codes' do
     let(:scenario_nl) do
-      FactoryBot.create(:scenario, { id: 99990, end_year: 2030, area_code: 'nl' })
+      create(:scenario, { id: 99990, end_year: 2030, area_code: 'nl' })
     end
 
     let(:scenario_de) do
-      FactoryBot.create(:scenario, { id: 99991, end_year: 2050, area_code: 'de' })
+      create(:scenario, { id: 99991, end_year: 2050, area_code: 'de' })
     end
 
     let(:result) do
@@ -229,7 +233,7 @@ RSpec.describe Scenario::BatchYearInterpolator do
 
   context 'with a scaled scenario' do
     let(:scenario_scaled) do
-      scenario = FactoryBot.create(:scenario, {
+      create(:scenario, {
         id: 99993,
         end_year: 2050,
         user_values: { 'grouped_input_one' => 100.0 },
@@ -252,7 +256,7 @@ RSpec.describe Scenario::BatchYearInterpolator do
     end
 
     it 'includes an error about scaled scenarios' do
-      expect(result.failure[:scenario_ids].first).to match(/cannot interpolate scaled scenarios/)
+      expect(result.failure[:scenario_ids].first).to match(/cannot interpolate scaled scenario/)
     end
   end
 end

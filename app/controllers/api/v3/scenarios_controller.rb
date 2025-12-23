@@ -221,7 +221,8 @@ module Api
           render json: { errors: errors.values.flatten }, status: :unprocessable_content
         end
       rescue ActionController::ParameterMissing
-        render json: { errors: ['Interpolated scenario must have an end year'] }, status: :bad_request
+        render json: { errors: ['Interpolated scenario must have an end year'] },
+          status: :bad_request
       end
 
       # POST /api/v3/scenarios/interpolate
@@ -254,7 +255,7 @@ module Api
       rescue ActionController::ParameterMissing => e
         render json: { errors: [e.message] }, status: :bad_request
       end
-      
+
       # PUT-PATCH /api/v3/scenarios/:id
       #
       # This is the main scenario interaction method

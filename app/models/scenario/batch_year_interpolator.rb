@@ -8,6 +8,7 @@ class Scenario::BatchYearInterpolator
   include Dry::Monads[:result]
   include Dry::Monads::Do.for(:call)
 
+  # Validates input for batch year interpolation
   class Contract < Dry::Validation::Contract
     params do
       required(:scenario_ids).filled(:array).each(:integer)
@@ -59,7 +60,8 @@ class Scenario::BatchYearInterpolator
     if @ability
       inaccessible = @scenarios.reject { |s| @ability.can?(:read, s) }
       if inaccessible.any?
-        return Failure(scenario_ids: ["scenarios not accessible: #{inaccessible.map(&:id).join(', ')}"])
+        ids = inaccessible.map(&:id).join(', ')
+        return Failure(scenario_ids: ["scenarios not accessible: #{ids}"])
       end
     end
 
@@ -70,13 +72,13 @@ class Scenario::BatchYearInterpolator
     first = @scenarios.first
     @scenarios.each do |scenario|
       if scenario.scaler
-        return Failure(scenario_ids: ["cannot interpolate scaled scenarios (scenario #{scenario.id} is scaled)"])
+        return Failure(scenario_ids: ["cannot interpolate scaled scenario #{scenario.id}"])
       end
       if scenario.start_year != first.start_year
-        return Failure(scenario_ids: ["all scenarios must have the same start year (found #{scenario.start_year} and #{first.start_year})"])
+        return Failure(scenario_ids: ['all scenarios must have the same start year'])
       end
       if scenario.area_code != first.area_code
-        return Failure(scenario_ids: ["all scenarios must have the same area code (found #{scenario.area_code} and #{first.area_code})"])
+        return Failure(scenario_ids: ['all scenarios must have the same area code'])
       end
     end
 
@@ -84,15 +86,12 @@ class Scenario::BatchYearInterpolator
   end
 
   def validate_target_years
-    start_year = @scenarios.first.start_year
-    max_year = @scenarios.last.end_year
-
     @end_years.each do |year|
-      if year <= start_year
-        return Failure(end_years: ["target year #{year} must be posterior to the first scenario start year (#{start_year})"])
+      if year <= @scenarios.first.start_year
+        return Failure(end_years: ["#{year} must be posterior to the first scenario start year"])
       end
-      if year >= max_year
-        return Failure(end_years: ["target year #{year} must be prior to the latest scenario end year (#{max_year})"])
+      if year >= @scenarios.last.end_year
+        return Failure(end_years: ["#{year} must be prior to the latest scenario end year"])
       end
     end
 
@@ -124,7 +123,8 @@ class Scenario::BatchYearInterpolator
       in Dry::Monads::Success(scenario)
         results << scenario
       in Dry::Monads::Failure(errors)
-        return Failure(interpolation: ["failed to interpolate year #{target_year}: #{errors.values.flatten.join(', ')}"])
+        msg = "failed to interpolate year #{target_year}: #{errors.values.flatten.join(', ')}"
+        return Failure(interpolation: [msg])
       end
     end
 
