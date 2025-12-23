@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe 'APIv3 Scenarios', :etsource_fixture do
@@ -14,7 +16,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
   let(:token_header) { access_token_header(user, :write) }
 
   let(:source) do
-    FactoryBot.create(:scenario, user: user, end_year: 2050)
+    create(:scenario, user:, end_year: 2050)
   end
 
   context 'with valid parameters' do
@@ -61,7 +63,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sends back an error message' do
-      expect(response_data).to include('errors' => ["No such scenario: 999999"])
+      expect(response_data).to include('errors' => ['No such scenario: 999999'])
     end
   end
 
@@ -115,7 +117,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     it 'sets the scenario owner' do
       scenario = Scenario.last
       expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
+      expect(scenario.scenario_users.find_by(user:).role_id).to eq(3)
     end
   end
 
@@ -149,7 +151,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     it 'sets the scenario owner' do
       scenario = Scenario.last
       expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
+      expect(scenario.scenario_users.find_by(user:).role_id).to eq(3)
     end
   end
 
@@ -181,7 +183,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         headers: access_token_header(user, :write)
     end
 
-    let(:start_scenario) { create(:scenario, end_year: 2030, user: user) }
+    let(:start_scenario) { create(:scenario, end_year: 2030, user:) }
 
     before do
       source
@@ -266,7 +268,8 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sends back an error message' do
-      expect(response_data['errors']).to include('start scenario must not be the same as the original scenario')
+      expect(response_data['errors'])
+        .to include('start scenario must not be the same as the original scenario')
     end
   end
 
@@ -277,7 +280,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         headers: token_header
     end
 
-    let(:start_scenario) { create(:scenario, end_year: 2055, user: user) }
+    let(:start_scenario) { create(:scenario, end_year: 2055, user:) }
 
     before { source }
 
@@ -288,7 +291,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     it 'sends back an error message' do
       expect(response_data['errors']).to include(
-        "start scenario must have an end year prior to the original scenario (#{source.end_year})"
+        'must be posterior to the start scenario end year'
       )
     end
   end
@@ -300,7 +303,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         headers: token_header
     end
 
-    let(:start_scenario) { create(:scenario, end_year: 2045, user: user) }
+    let(:start_scenario) { create(:scenario, end_year: 2045, user:) }
 
     before { source }
 
@@ -311,7 +314,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     it 'sends back an error message' do
       expect(response_data['errors']).to include(
-        "must be posterior to the start scenario end year (#{start_scenario.end_year})"
+        'must be posterior to the start scenario end year'
       )
     end
   end
@@ -323,7 +326,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         headers: token_header
     end
 
-    let(:start_scenario) { create(:scenario, end_year: 2030, user: user, area_code: 'de') }
+    let(:start_scenario) { create(:scenario, end_year: 2030, user:, area_code: 'de') }
 
     before { source }
 
@@ -334,9 +337,8 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     it 'sends back an error message' do
       expect(response_data['errors']).to include(
-        "start scenario must have the same area code as the original scenario (#{source.area_code})"
+        'start scenario area code must match original scenario area code'
       )
     end
   end
-
 end

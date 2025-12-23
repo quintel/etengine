@@ -6,6 +6,7 @@ class Scenario::YearInterpolator
   include Dry::Monads[:result]
   include Dry::Monads::Do.for(:call)
 
+  # Validates input for year interpolation
   class Contract < Dry::Validation::Contract
     option :scenario
     option :start_scenario_id, optional: true
@@ -21,9 +22,15 @@ class Scenario::YearInterpolator
     end
 
     rule(:year) do
-      key.failure("must be prior to the original scenario end year (#{scenario.end_year})") if value >= scenario.end_year
-      key.failure("must be posterior to the dataset analysis year (#{scenario.start_year})") if value <= scenario.start_year
-      key.failure("must be posterior to the start scenario end year (#{start_scenario.end_year})") if start_scenario && value <= start_scenario.end_year
+      if value >= scenario.end_year
+        key.failure('must be prior to the original scenario end year')
+      end
+      if value <= scenario.start_year
+        key.failure('must be posterior to the dataset analysis year')
+      end
+      if start_scenario && value <= start_scenario.end_year
+        key.failure('must be posterior to the start scenario end year')
+      end
     end
 
     rule do
@@ -31,10 +38,18 @@ class Scenario::YearInterpolator
       next unless start_scenario
       next base.failure('start scenario not accessible') if ability && !ability.can?(:read, start_scenario)
 
-      base.failure('start scenario must not be the same as the original scenario') if start_scenario.id == scenario.id
-      base.failure("start scenario must have an end year prior to the original scenario (#{scenario.end_year})") if start_scenario.end_year >= scenario.end_year
-      base.failure("start scenario must have the same start year as the original scenario (#{scenario.start_year})") if start_scenario.start_year != scenario.start_year
-      base.failure("start scenario must have the same area code as the original scenario (#{scenario.area_code})") if start_scenario.area_code != scenario.area_code
+      if start_scenario.id == scenario.id
+        base.failure('start scenario must not be the same as the original scenario')
+      end
+      if start_scenario.end_year >= scenario.end_year
+        base.failure('start scenario end year must be prior to original scenario end year')
+      end
+      if start_scenario.start_year != scenario.start_year
+        base.failure('start scenario start year must match original scenario start year')
+      end
+      if start_scenario.area_code != scenario.area_code
+        base.failure('start scenario area code must match original scenario area code')
+      end
     end
   end
 
