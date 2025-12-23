@@ -217,6 +217,30 @@ RSpec.describe Scenario::YearInterpolator do
     end
   end
 
+  context 'with a scaled scenario' do
+    let(:scaled_source) do
+      scenario = FactoryBot.create(:scenario, {
+        id: 99993,
+        end_year: 2050,
+        user_values: { 'grouped_input_one' => 100.0 },
+        scaler: ScenarioScaling.new(
+          area_attribute: 'present_number_of_residences',
+          value:          1000
+        )
+      })
+    end
+
+    let(:result) { described_class.call(scaled_source, 2040) }
+
+    it 'returns failure' do
+      expect(result).to be_failure
+    end
+
+    it 'includes an error about scaled scenarios' do
+      expect(result.failure.values.flatten.first).to match(/cannot interpolate scaled scenarios/)
+    end
+  end
+
   context 'when passing a start scenario' do
     let(:source) do
       FactoryBot.create(:scenario, {
