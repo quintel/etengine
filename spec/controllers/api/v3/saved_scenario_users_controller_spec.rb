@@ -94,7 +94,7 @@ describe Api::V3::SavedScenarioUsersController, type: :controller do
       end
     end
 
-    context 'when MyETM returns validation errors' do
+    context 'when MyEtm returns validation errors' do
       let(:error_response) do
         {
           body: { 'errors' => { 'viewer@test.com' => ['user_email'] } },

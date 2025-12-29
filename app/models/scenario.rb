@@ -24,7 +24,7 @@ class Scenario < ApplicationRecord
 
   belongs_to :parent, class_name: 'Scenario', foreign_key: :preset_scenario_id, optional: true
 
-  has_one    :preset_scenario, :foreign_key => 'preset_scenario_id', :class_name => 'Scenario'
+  has_one    :preset_scenario, foreign_key: 'preset_scenario_id', class_name: 'Scenario'
   has_one    :scaler, class_name: 'ScenarioScaling', dependent: :delete
   has_one    :scenario_version_tag, dependent: :destroy
   has_many   :heat_network_orders, dependent: :destroy
@@ -34,7 +34,6 @@ class Scenario < ApplicationRecord
   has_one    :households_space_heating_producer_order, dependent: :destroy
   has_many   :attachments, dependent: :destroy, class_name: 'ScenarioAttachment'
   has_many   :user_curves, dependent: :destroy
-
 
   has_many :source_attachments,
     dependent: :nullify,
@@ -62,11 +61,11 @@ class Scenario < ApplicationRecord
 
   validates_associated :scaler, on: :create
 
-  scope :by_id,         ->(q) { where(id: q)}
+  scope :by_id,         ->(q) { where(id: q) }
 
   # Expired ApiScenario will be deleted by rake task :clean_expired_api_scenarios
   scope :expired,       -> { where(['updated_at < ?', Date.today - 14]) }
-  scope :recent,        -> { order("created_at DESC").limit(30) }
+  scope :recent,        -> { order('created_at DESC').limit(30) }
   scope :recent_first,  -> { order('created_at DESC') }
 
   scope :with_attachments, -> { includes(attachments: { file_attachment: :blob }) }
@@ -88,14 +87,12 @@ class Scenario < ApplicationRecord
   attr_accessor :input_errors, :ordering, :display_group, :descale
 
   before_create do |scenario|
-    if preset = scenario.preset_scenario
+    if (preset = scenario.preset_scenario)
       scenario.copy_scenario_state(preset)
     end
   end
 
-  def test_scenario=(flag)
-    @test_scenario = flag
-  end
+  attr_writer :test_scenario
 
   def test_scenario?
     @test_scenario == true
@@ -107,9 +104,9 @@ class Scenario < ApplicationRecord
 
   def self.default_attributes
     {
-      :area_code => Etsource::Config.default_dataset_key,
-      :user_values => {},
-      :end_year => 2050
+      area_code: Etsource::Config.default_dataset_key,
+      user_values: {},
+      end_year: 2050
     }.with_indifferent_access
   end
 
@@ -119,7 +116,7 @@ class Scenario < ApplicationRecord
     out = attributes.merge(settings)
     # strip invalid attributes
     valid_attributes = [column_names, 'scenario_id'].flatten
-    out.delete_if{|key,v| !valid_attributes.include?(key.to_s)}
+    out.delete_if { |key, _v| valid_attributes.exclude?(key.to_s) }
     out
   end
 
@@ -133,14 +130,14 @@ class Scenario < ApplicationRecord
     id_attr = type_for_attribute(:id)
     id = id_attr.cast(id)
 
-    if id.to_i >= 1 << (id_attr.limit * 8 - 1)
+    if id.to_i >= 1 << ((id_attr.limit * 8) - 1)
       raise(
         ActiveRecord::RecordNotFound,
         "Couldn't find Scenario with an out of range value for 'id'"
       )
     end
 
-    where(id: id).with_attachments.first!
+    where(id:).with_attachments.first!
   end
 
   def self.owned_by?(user)
@@ -175,7 +172,6 @@ class Scenario < ApplicationRecord
     scaler.present? || Area.derived?(area_code)
   end
 
-
   # Public: The year on which the analysis for the scenario's area is based.
   #
   # Returns an integer.
@@ -192,7 +188,7 @@ class Scenario < ApplicationRecord
 
   # Creates a scenario from a yml_file. Used by mech turk.
   def self.create_from_file(yml_file)
-    settings = YAML::load(File.read(yml_file))['settings']
+    settings = YAML.load(File.read(yml_file))['settings']
     Scenario.default(settings)
   end
 
@@ -220,7 +216,7 @@ class Scenario < ApplicationRecord
   def gql(options = {}, &block)
     unless @gql
 
-      if block_given?
+      if block
         @gql = Gql::Gql.new(self, &block)
       else
         @gql = Gql::Gql.new(self)
@@ -248,7 +244,7 @@ class Scenario < ApplicationRecord
   # a identifier for the scenario selector drop down in data.
   # => "#32341 - nl 2040 (2011-01-11)"
   def identifier
-    "##{id} - #{area_code} #{end_year} (#{created_at.strftime("%m-%d %H:%M")})"
+    "##{id} - #{area_code} #{end_year} (#{created_at.strftime('%m-%d %H:%M')})"
   end
 
   # shortcut to run GQL queries
@@ -285,9 +281,7 @@ class Scenario < ApplicationRecord
   #
   # Returns a float.
   def input_value(input)
-    unless input.respond_to?(:key)
-      raise ArgumentError, "#{ input.inspect } is not an input"
-    end
+    raise ArgumentError, "#{input.inspect} is not an input" unless input.respond_to?(:key)
 
     user_values[input.key] ||
       balanced_values[input.key] ||
@@ -295,8 +289,8 @@ class Scenario < ApplicationRecord
   end
 
   def heat_network_order(temperature = :mt)
-    heat_network_orders.find_by(temperature: temperature) ||
-      HeatNetworkOrder.default(scenario_id: id, temperature: temperature)
+    heat_network_orders.find_by(temperature:) ||
+      HeatNetworkOrder.default(scenario_id: id, temperature:)
   end
 
   def forecast_storage_order
@@ -341,11 +335,11 @@ class Scenario < ApplicationRecord
   end
 
   def owner?(user)
-    scenario_users.find_by(user: user, role_id: User::ROLES.key(:scenario_owner))
+    scenario_users.find_by(user:, role_id: User::ROLES.key(:scenario_owner))
   end
 
   def collaborator?(user)
-    scenario_users.find_by(user: user, role_id: User::ROLES.key(:scenario_collaborator)..)
+    scenario_users.find_by(user:, role_id: User::ROLES.key(:scenario_collaborator)..)
   end
 
   # Convenience method to quickly set the owner for a scenario, e.g. when creating it as
@@ -357,7 +351,7 @@ class Scenario < ApplicationRecord
 
     ScenarioUser.create(
       scenario: self,
-      user: user,
+      user:,
       role_id: User::ROLES.key(:scenario_owner)
     )
   end
@@ -371,6 +365,7 @@ class Scenario < ApplicationRecord
 
   def copy_preset_roles
     return unless parent
+    return if copy_roles_from_saved_scenario
 
     parent.scenario_users.each do |preset_user|
       if (existing_user = scenario_users.find_by(user: preset_user.user))
@@ -383,6 +378,40 @@ class Scenario < ApplicationRecord
   end
 
   private
+
+  def copy_roles_from_saved_scenario
+    saved_scenario_id = fetch_saved_scenario_id_for(parent.id)
+    return false unless saved_scenario_id
+
+    users_data = fetch_saved_scenario_users(saved_scenario_id)
+    return false unless users_data
+
+    users_data.each do |user_data|
+      scenario_users.create(
+        user_id: user_data['user_id'],
+        user_email: user_data['user_email'],
+        role_id: user_data['role_id']
+      )
+    end
+
+    true
+  rescue StandardError
+    false
+  end
+
+  def fetch_saved_scenario_id_for(scenario_id)
+    response = ETEngine::MyEtm.client.get("/api/v1/saved_scenarios/by_scenario/#{scenario_id}")
+    response.success? ? response.body['id'] : nil
+  rescue Faraday::Error
+    nil
+  end
+
+  def fetch_saved_scenario_users(saved_scenario_id)
+    response = ETEngine::MyEtm.client.get("/api/v1/saved_scenarios/#{saved_scenario_id}/users")
+    response.success? ? response.body : nil
+  rescue Faraday::Error
+    nil
+  end
 
   # Validation method for when a user sets their metadata.
   def validate_metadata_size

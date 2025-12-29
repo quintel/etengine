@@ -29,6 +29,7 @@ Rails.application.routes.draw do
           get :merit
           get :dump
           put :dashboard
+          put :couple_users
           post :interpolate
           post :uncouple
           post :couple
@@ -93,6 +94,7 @@ Rails.application.routes.draw do
             post :create
             put :update
             delete :destroy
+            delete :destroy_all
           end
         end
 

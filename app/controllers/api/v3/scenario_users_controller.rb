@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     # NOTE: a lot of logic in this controller should not be here. One day this
@@ -61,6 +63,12 @@ module Api
         end
 
         json_response
+      end
+
+      # DELETE /api/v3/scenarios/:scenario_id/users
+      def destroy_all
+        @scenario.scenario_users.destroy_all
+        head :no_content
       end
 
       private
