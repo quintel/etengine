@@ -94,40 +94,6 @@ RSpec.describe Scenario::BatchYearInterpolator do
     end
   end
 
-  context 'with fewer than 2 scenarios' do
-    let(:result) do
-      described_class.call(
-        scenario_ids: [scenario_2050.id],
-        end_years: [2035]
-      )
-    end
-
-    it 'returns failure' do
-      expect(result).to be_failure
-    end
-
-    it 'includes an error about minimum scenarios' do
-      expect(result.failure[:scenario_ids]).to include('must contain at least 2 scenarios')
-    end
-  end
-
-  context 'with empty end_years' do
-    let(:result) do
-      described_class.call(
-        scenario_ids: [scenario_2030.id, scenario_2050.id],
-        end_years: []
-      )
-    end
-
-    it 'returns failure' do
-      expect(result).to be_failure
-    end
-
-    it 'includes an error about end_years' do
-      expect(result.failure[:end_years]).to include('must be filled')
-    end
-  end
-
   context 'with a target year before the earliest scenario end_year but after start_year' do
     let(:result) do
       described_class.call(
@@ -150,6 +116,105 @@ RSpec.describe Scenario::BatchYearInterpolator do
       # At year 2020 (9 years elapsed): 100 + ((50-100)/19)*9 = 100 - 23.68 = 76.32
       expect(interpolated[0].user_values['grouped_input_one'])
         .to be_within(1e-2).of(76.32)
+    end
+  end
+
+  context 'with a single scenario and a single end_year' do
+    let(:result) do
+      described_class.call(
+        scenario_ids: [scenario_2040.id],
+        end_years: [2035]
+      )
+    end
+
+    it 'returns success' do
+      expect(result).to be_success
+    end
+
+    it 'returns one interpolated scenario' do
+      expect(interpolated.length).to eq(1)
+    end
+
+    it 'creates a scenario for year 2035' do
+      expect(interpolated[0].end_year).to eq(2035)
+    end
+
+    it 'interpolates between start_year and end_year of the single scenario' do
+      # start_year is 2011, end_year is 2040
+      # grouped_input_one: start=100, target=75 over 29 years
+      # At year 2035 (24 years elapsed): 100 + ((75-100)/29)*24 = 100 - 20.69 = 79.31
+      expect(interpolated[0].user_values['grouped_input_one'])
+        .to be_within(1e-2).of(79.31)
+    end
+  end
+
+  context 'with a single scenario and multiple end_years' do
+    let(:result) do
+      described_class.call(
+        scenario_ids: [scenario_2040.id],
+        end_years: [2020, 2030, 2035]
+      )
+    end
+
+    it 'returns success' do
+      expect(result).to be_success
+    end
+
+    it 'returns three interpolated scenarios' do
+      expect(interpolated.length).to eq(3)
+    end
+
+    it 'creates a scenario for year 2020' do
+      expect(interpolated[0].end_year).to eq(2020)
+    end
+
+    it 'creates a scenario for year 2030' do
+      expect(interpolated[1].end_year).to eq(2030)
+    end
+
+    it 'creates a scenario for year 2035' do
+      expect(interpolated[2].end_year).to eq(2035)
+    end
+
+    it 'interpolates 2020 between start_year and end_year of the single scenario' do
+      # start_year is 2011, end_year is 2040
+      # grouped_input_one: start=100, target=75 over 29 years
+      # At year 2020 (9 years elapsed): 100 + ((75-100)/29)*9 = 100 - 7.76 = 92.24
+      expect(interpolated[0].user_values['grouped_input_one'])
+        .to be_within(1e-2).of(92.24)
+    end
+
+    it 'interpolates 2030 between start_year and end_year of the single scenario' do
+      # start_year is 2011, end_year is 2040
+      # grouped_input_one: start=100, target=75 over 29 years
+      # At year 2030 (19 years elapsed): 100 + ((75-100)/29)*19 = 100 - 16.38 = 83.62
+      expect(interpolated[1].user_values['grouped_input_one'])
+        .to be_within(1e-2).of(83.62)
+    end
+
+    it 'interpolates 2035 between start_year and end_year of the single scenario' do
+      # start_year is 2011, end_year is 2040
+      # grouped_input_one: start=100, target=75 over 29 years
+      # At year 2035 (24 years elapsed): 100 + ((75-100)/29)*24 = 100 - 20.69 = 79.31
+      expect(interpolated[2].user_values['grouped_input_one'])
+        .to be_within(1e-2).of(79.31)
+    end
+  end
+
+  context 'with empty end_years' do
+    let(:result) do
+      described_class.call(
+        scenario_ids: [scenario_2030.id, scenario_2050.id],
+        end_years: []
+      )
+    end
+
+    it 'returns failure' do
+      expect(result).to be_failure
+    end
+
+    it 'includes an error about end_years' do
+      expect(result.failure[:end_years]).to include('must be filled')
     end
   end
 
