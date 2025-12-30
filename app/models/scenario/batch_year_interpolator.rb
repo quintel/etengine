@@ -14,10 +14,6 @@ class Scenario::BatchYearInterpolator
       required(:scenario_ids).filled(:array).each(:integer)
       required(:end_years).filled(:array).each(:integer)
     end
-
-    rule(:scenario_ids) do
-      key.failure('must contain at least 2 scenarios') if value.length < 2
-    end
   end
 
   def self.call(scenario_ids:, end_years:, user: nil, ability: nil)

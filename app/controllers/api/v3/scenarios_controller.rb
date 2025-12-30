@@ -213,13 +213,15 @@ module Api
           current_ability
         )
 
-        case result
-        in Dry::Monads::Success(scenario)
-          Scenario.transaction { scenario.save! }
-          render json: ScenarioSerializer.new(self, scenario)
-        in Dry::Monads::Failure(errors)
-          render json: { errors: errors.values.flatten }, status: :unprocessable_content
-        end
+        result.either(  
+          lambda { |scenario|  
+            Scenario.transaction { scenario.save! } 
+            render json: ScenarioSerializer.new(self, scenario)
+          },  
+          lambda { |errors|  
+            render json: { errors: errors.values.flatten }, status: :unprocessable_content  
+          }  
+        )
       rescue ActionController::ParameterMissing
         render json: { errors: ['Interpolated scenario must have an end year'] },
           status: :bad_request
@@ -245,13 +247,15 @@ module Api
           ability: current_ability
         )
 
-        case result
-        in Dry::Monads::Success(scenarios)
-          Scenario.transaction { scenarios.each(&:save!) }
-          render json: scenarios.map { |s| ScenarioSerializer.new(self, s) }
-        in Dry::Monads::Failure(errors)
-          render json: { errors: }, status: :unprocessable_content
-        end
+        result.either(  
+          lambda { |scenarios|  
+            Scenario.transaction { scenarios.each(&:save!) }  
+            render json: scenarios.map { |s| ScenarioSerializer.new(self, s) }  
+          },  
+          lambda { |errors|  
+            render json: { errors: }, status: :unprocessable_content  
+          }  
+        )
       rescue ActionController::ParameterMissing => e
         render json: { errors: [e.message] }, status: :bad_request
       end
