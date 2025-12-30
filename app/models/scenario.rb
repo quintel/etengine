@@ -400,10 +400,8 @@ class Scenario < ApplicationRecord
   end
 
   def fetch_saved_scenario_id_for(scenario_id)
-    response = ETEngine::MyEtm.client.get("/api/v1/saved_scenarios/by_scenario/#{scenario_id}")
-    response.success? ? response.body['id'] : nil
-  rescue Faraday::Error
-    nil
+    scenario = Scenario.find_by(id: scenario_id)
+    scenario&.metadata&.dig('saved_scenario_id')
   end
 
   def fetch_saved_scenario_users(saved_scenario_id)

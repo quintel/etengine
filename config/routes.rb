@@ -29,7 +29,6 @@ Rails.application.routes.draw do
           get :merit
           get :dump
           put :dashboard
-          put :couple_users
           post :interpolate
           post :uncouple
           post :couple

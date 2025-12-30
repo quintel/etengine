@@ -406,26 +406,6 @@ module Api
         )
       end
 
-      # PUT /api/v3/scenarios/:id/couple_users
-      def couple_users
-        @scenario = Scenario.find(params[:id])
-        authorize!(:update, @scenario)
-
-        users_data = params.require(:users)
-
-        users_data.each do |user_data|
-          scenario_user = @scenario.scenario_users.find_by(user_email: user_data[:user_email])
-          next unless scenario_user
-
-          user = User.find_by(id: user_data[:user_id])
-          next unless user
-
-          scenario_user.update(user:, user_email: nil)
-        end
-
-        head :ok
-      end
-
       private
 
       def find_preset_or_scenario
