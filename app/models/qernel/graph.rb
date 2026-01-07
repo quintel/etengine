@@ -62,7 +62,7 @@ class Graph
                 :finished_nodes,
                 :area
 
-  delegate :insulation_costs, :weather_properties, to: :area
+  delegate :weather_properties, to: :area
 
   def self.dataset_group_with_name(name)
     :"#{name}_graph"
