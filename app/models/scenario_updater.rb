@@ -59,7 +59,7 @@ class ScenarioUpdater
     balanced_values = yield calculate_balanced_values(
       user_values, provided_values, coupling_state, reset, autobalance, force_balance
     )
-    _balanced       = yield validate_balance(user_values, balanced_values, provided_values)
+    _balanced = yield validate_balance(user_values, balanced_values, provided_values)
 
     Success([coupling_state, user_values, balanced_values])
   end
@@ -75,7 +75,8 @@ class ScenarioUpdater
   # Post-save
   def post_save(scenario_data, persisted)
     set_preset_roles = truthy?(scenario_data[:set_preset_roles])
-    _post_saved = yield post_save_operations(set_preset_roles)
+    preset_scenario_users = scenario_data[:preset_scenario_users]
+    _post_saved = yield post_save_operations(set_preset_roles, preset_scenario_users)
     Success(persisted)
   end
 
@@ -113,25 +114,26 @@ class ScenarioUpdater
     )
   end
 
-  def calculate_balanced_values(user_values, provided_values, coupling_state, reset, autobalance, force_balance)
+  def calculate_balanced_values(user_values, provided_values, coupling_state, reset, autobalance,
+    force_balance)
     service(:CalculateBalancedValues).call(
       scenario,
-      user_values: user_values,
-      provided_values: provided_values,
+      user_values:,
+      provided_values:,
       uncoupled_inputs: coupling_state[:uncoupled_inputs],
-      reset: reset,
-      autobalance: autobalance,
-      force_balance: force_balance
+      reset:,
+      autobalance:,
+      force_balance:
     )
   end
 
   def validate_balance(user_values, balanced_values, provided_values)
     service(:ValidateBalance).call(
       scenario,
-      user_values: user_values,
-      balanced_values: balanced_values,
-      provided_values: provided_values,
-      skip_validation: skip_validation
+      user_values:,
+      balanced_values:,
+      provided_values:,
+      skip_validation:
     )
   end
 
@@ -147,8 +149,9 @@ class ScenarioUpdater
     service(:PersistScenario).call(scenario, attributes, skip_validation)
   end
 
-  def post_save_operations(set_preset_roles)
-    service(:PostSaveOperations).call(scenario, set_preset_roles, current_user)
+  def post_save_operations(set_preset_roles, preset_scenario_users)
+    service(:PostSaveOperations).call(scenario, set_preset_roles, preset_scenario_users,
+      current_user)
   end
 
   # Helper to instantiate services

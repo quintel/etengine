@@ -8,8 +8,8 @@ class ScenarioUpdater
 
       TRUTHY_VALUES = Set.new([true, 'true', '1']).freeze
 
-      def call(scenario, set_preset_roles, current_user)
-        copy_preset_roles_if_requested(scenario, set_preset_roles)
+      def call(scenario, set_preset_roles, preset_scenario_users, current_user)
+        copy_preset_roles_if_requested(scenario, set_preset_roles, preset_scenario_users)
         update_version_tag(scenario, current_user)
 
         Success(scenario)
@@ -17,9 +17,9 @@ class ScenarioUpdater
 
       private
 
-      def copy_preset_roles_if_requested(scenario, set_preset_roles)
-        should_copy = TRUTHY_VALUES.include?(set_preset_roles)
-        scenario.copy_preset_roles if should_copy
+      def copy_preset_roles_if_requested(scenario, set_preset_roles, preset_scenario_users)
+        should_copy = TRUTHY_VALUES.include?(set_preset_roles) || preset_scenario_users.present?
+        scenario.copy_preset_roles(preset_scenario_users) if should_copy
       end
 
       def update_version_tag(scenario, current_user)

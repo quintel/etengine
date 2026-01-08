@@ -363,10 +363,29 @@ class Scenario < ApplicationRecord
     scenario_users.delete_all
   end
 
-  def copy_preset_roles
+  def copy_preset_roles(preset_scenario_users = nil)
     return unless parent
-    return if copy_roles_from_saved_scenario
 
+    if preset_scenario_users.present?
+      copy_roles_from_user_data(preset_scenario_users)
+    else
+      copy_roles_from_parent
+    end
+  end
+
+  private
+
+  def copy_roles_from_user_data(users_data)
+    users_data.each do |user_data|
+      scenario_users.create(
+        user_id: user_data['user_id'] || user_data[:user_id],
+        user_email: user_data['user_email'] || user_data[:user_email],
+        role_id: user_data['role_id'] || user_data[:role_id]
+      )
+    end
+  end
+
+  def copy_roles_from_parent
     parent.scenario_users.each do |preset_user|
       if (existing_user = scenario_users.find_by(user: preset_user.user))
         existing_user.role_id = preset_user.role_id
@@ -375,40 +394,6 @@ class Scenario < ApplicationRecord
         scenario_users.create(user: preset_user.user, role_id: preset_user.role_id)
       end
     end
-  end
-
-  private
-
-  def copy_roles_from_saved_scenario
-    saved_scenario_id = fetch_saved_scenario_id_for(parent.id)
-    return false unless saved_scenario_id
-
-    users_data = fetch_saved_scenario_users(saved_scenario_id)
-    return false unless users_data
-
-    users_data.each do |user_data|
-      scenario_users.create(
-        user_id: user_data['user_id'],
-        user_email: user_data['user_email'],
-        role_id: user_data['role_id']
-      )
-    end
-
-    true
-  rescue StandardError
-    false
-  end
-
-  def fetch_saved_scenario_id_for(scenario_id)
-    scenario = Scenario.find_by(id: scenario_id)
-    scenario&.metadata&.dig('saved_scenario_id')
-  end
-
-  def fetch_saved_scenario_users(saved_scenario_id)
-    response = ETEngine::MyEtm.client.get("/api/v1/saved_scenarios/#{saved_scenario_id}/users")
-    response.success? ? response.body : nil
-  rescue Faraday::Error
-    nil
   end
 
   # Validation method for when a user sets their metadata.
