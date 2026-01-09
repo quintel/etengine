@@ -868,38 +868,5 @@ describe Scenario do
     it 'sets the collaborator of the preset' do
       expect { subject }.to(change { scenario.owner?(preset_collaborator) })
     end
-
-    context 'with preset_scenario_users data' do
-      subject do
-        scenario.copy_preset_roles(users_data)
-        scenario.reload
-      end
-
-      let(:user1) { create(:user) }
-      let(:user2) { create(:user) }
-
-      let(:users_data) do
-        [
-          { user_id: user1.id, user_email: nil, role_id: 3 },
-          { user_id: nil, user_email: 'pending@example.com', role_id: 2 }
-        ]
-      end
-
-      it 'creates scenario users from the provided data' do
-        expect { subject }.to change(scenario.scenario_users, :count).by(2)
-      end
-
-      it 'sets the owner from user_id' do
-        subject
-        expect(scenario).to be_owner(user1)
-      end
-
-      it 'creates pending user with email' do
-        subject
-        pending_user = scenario.scenario_users.find_by(user_email: 'pending@example.com')
-        expect(pending_user).to be_present
-        expect(pending_user.role_id).to eq(2)
-      end
-    end
   end
 end

@@ -363,27 +363,13 @@ class Scenario < ApplicationRecord
     scenario_users.delete_all
   end
 
-  def copy_preset_roles(preset_scenario_users = nil)
+  def copy_preset_roles
     return unless parent
 
-    if preset_scenario_users.present?
-      copy_roles_from_user_data(preset_scenario_users)
-    else
-      copy_roles_from_parent
-    end
+    copy_roles_from_parent
   end
 
   private
-
-  def copy_roles_from_user_data(users_data)
-    users_data.each do |user_data|
-      scenario_users.create(
-        user_id: user_data['user_id'] || user_data[:user_id],
-        user_email: user_data['user_email'] || user_data[:user_email],
-        role_id: user_data['role_id'] || user_data[:role_id]
-      )
-    end
-  end
 
   def copy_roles_from_parent
     parent.scenario_users.each do |preset_user|
