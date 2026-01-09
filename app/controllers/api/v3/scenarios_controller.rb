@@ -3,10 +3,6 @@
 module Api
   module V3
     class ScenariosController < BaseController
-      rescue_from Scenario::YearInterpolator::InterpolationError do |ex|
-        render json: { errors: [ex.message] }, status: :bad_request
-      end
-
       load_resource except: %i[show create destroy dump]
       load_and_authorize_resource class: Scenario, only: %i[index show destroy dump]
 
@@ -207,22 +203,61 @@ module Api
         render json: { errors: @scenario.errors.to_hash }, status: :unprocessable_content
       end
 
-      # POST /api/v3/scenarios/interpolate
+      # POST /api/v3/scenarios/:id/interpolate
       def interpolate
-        @interpolated = Scenario::YearInterpolator.call(
-          @scenario, params.require(:end_year).to_i, current_user
+        result = Scenario::YearInterpolator.call(
+          @scenario,
+          params.require(:end_year).to_i,
+          params[:start_scenario_id]&.to_i,
+          current_user,
+          current_ability
         )
 
-        Scenario.transaction do
-          @interpolated.save!
-        end
-
-        render json: ScenarioSerializer.new(self, @interpolated)
+        result.either(  
+          lambda { |scenario|  
+            Scenario.transaction { scenario.save! } 
+            render json: ScenarioSerializer.new(self, scenario)
+          },  
+          lambda { |errors|  
+            render json: { errors: errors.values.flatten }, status: :unprocessable_content  
+          }  
+        )
       rescue ActionController::ParameterMissing
-        render(
-          status: :bad_request,
-          json: { errors: ['Interpolated scenario must have an end year'] }
+        render json: { errors: ['Interpolated scenario must have an end year'] },
+          status: :bad_request
+      end
+
+      # POST /api/v3/scenarios/interpolate
+      #
+      # Creates interpolated scenarios for each target end year between the given scenarios.
+      # For example: Given a list of scenario_ids for scenarios with end_years [2030, 2040, 2050]
+      # and given the target end_years [2025, 2035, 2045], this endpoint creates:
+      #
+      # - A 2025 scenario interpolated between the 2030 scenario's start_year and end_year
+      # - A 2035 scenario interpolated between the 2030 and 2040 scenarios
+      # - A 2045 scenario interpolated between the 2040 and 2050 scenarios
+      #
+      def interpolate_collection
+        authorize!(:create, Scenario)
+
+        result = Scenario::BatchYearInterpolator.call(
+          scenario_ids: params.require(:scenario_ids).map(&:to_i),
+          end_years: params.require(:end_years).map(&:to_i),
+          user: current_user,
+          ability: current_ability
         )
+
+        result.either(  
+          lambda { |scenarios|  
+            Scenario.transaction { scenarios.each(&:save!) }  
+            render json: scenarios.map { |s| ScenarioSerializer.new(self, s) }  
+          },  
+          lambda { |errors|  
+            render json: { errors: }, status: :unprocessable_content  
+          }  
+        )
+      rescue ActionController::ParameterMissing => e
+        render json: { errors: [e.message] }, status: :bad_request
       end
 
       # PUT-PATCH /api/v3/scenarios/:id
@@ -407,18 +442,6 @@ module Api
       end
 
       private
-
-      def find_preset_or_scenario
-        @scenario =
-          Preset.get(params[:id]).try(:to_scenario) ||
-          Scenario.find_for_calculation(params[:id])
-
-        render_not_found(errors: ['Scenario not found']) unless @scenario
-      end
-
-      def find_scenario
-        @scenario = Scenario.find_for_calculation(params[:id])
-      end
 
       # Internal: All the request parameters, filtered.
       #
