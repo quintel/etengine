@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     # NOTE: a lot of logic in this controller should not be here. One day this
@@ -16,7 +18,7 @@ module Api
       def create
         process_scenario_users(create_new: true) do |scenario_user, _|
           unless scenario_user.valid?
-            add_error(scenario_user.email, scenario_user.errors.messages.keys)
+            add_error(scenario_user.email, scenario_user.errors.full_messages)
             next
           end
 
@@ -39,7 +41,7 @@ module Api
           scenario_user.update_role(new_role)
 
           unless scenario_user.save
-            add_error(scenario_user.email, scenario_user.errors.messages.keys)
+            add_error(scenario_user.email, scenario_user.errors.full_messages)
             next
           end
 
@@ -53,7 +55,7 @@ module Api
       def destroy
         process_scenario_users do |scenario_user, _|
           unless scenario_user.destroy
-            add_error(scenario_user.email, scenario_user.errors.messages.keys)
+            add_error(scenario_user.email, scenario_user.errors.full_messages)
             next
           end
 
@@ -61,6 +63,12 @@ module Api
         end
 
         json_response
+      end
+
+      # DELETE /api/v3/scenarios/:scenario_id/users
+      def destroy_all
+        @scenario.scenario_users.destroy_all
+        head :no_content
       end
 
       private

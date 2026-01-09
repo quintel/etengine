@@ -3,11 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe ScenarioUpdater::Services::PostSaveOperations do
-  let(:scenario) { FactoryBot.create(:scenario) }
+  let(:scenario) { create(:scenario) }
   let(:service) { described_class.new }
 
   it 'copies preset roles if requested' do
-    expect(scenario).to receive(:copy_preset_roles)
+    expect(scenario).to receive(:copy_preset_roles).with(no_args)
     service.call(scenario, true, 'user')
   end
 

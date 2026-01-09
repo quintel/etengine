@@ -59,7 +59,7 @@ class ScenarioUpdater
     balanced_values = yield calculate_balanced_values(
       user_values, provided_values, coupling_state, reset, autobalance, force_balance
     )
-    _balanced       = yield validate_balance(user_values, balanced_values, provided_values)
+    _balanced = yield validate_balance(user_values, balanced_values, provided_values)
 
     Success([coupling_state, user_values, balanced_values])
   end
@@ -113,25 +113,26 @@ class ScenarioUpdater
     )
   end
 
-  def calculate_balanced_values(user_values, provided_values, coupling_state, reset, autobalance, force_balance)
+  def calculate_balanced_values(user_values, provided_values, coupling_state, reset, autobalance,
+    force_balance)
     service(:CalculateBalancedValues).call(
       scenario,
-      user_values: user_values,
-      provided_values: provided_values,
+      user_values:,
+      provided_values:,
       uncoupled_inputs: coupling_state[:uncoupled_inputs],
-      reset: reset,
-      autobalance: autobalance,
-      force_balance: force_balance
+      reset:,
+      autobalance:,
+      force_balance:
     )
   end
 
   def validate_balance(user_values, balanced_values, provided_values)
     service(:ValidateBalance).call(
       scenario,
-      user_values: user_values,
-      balanced_values: balanced_values,
-      provided_values: provided_values,
-      skip_validation: skip_validation
+      user_values:,
+      balanced_values:,
+      provided_values:,
+      skip_validation:
     )
   end
 
