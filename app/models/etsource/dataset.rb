@@ -24,14 +24,6 @@ module Etsource
       ::Etsource::Dataset::Import.new(country).import
     end
 
-    def self.insulation_costs(region_code, file)
-      NastyCache.instance.fetch("insulation_cost.#{region_code}.#{file}") do
-        Etsource::Dataset::InsulationCostMap.new(
-          Atlas::Dataset.find(region_code).insulation_costs(file)
-        )
-      end
-    end
-
     def self.weather_properties(region_code, variant_name)
       key = "weather_properties.#{region_code}.#{variant_name}"
 

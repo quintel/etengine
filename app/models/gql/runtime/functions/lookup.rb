@@ -179,18 +179,6 @@ module Gql::Runtime
         keys.empty? ? scope.graph.area : scope.area(keys.first)
       end
 
-      # Public: Retrieves the insulation cost map for a file (new_builds,
-      # apartments, etc), then looks up the cost of moving from one level to
-      # another.
-      #
-      # from_level may instead of a string key when looking up costs for new
-      # builds.
-      #
-      # Returns a numeric.
-      def INSULATION_COST(file, from_level, to_level)
-        scope.graph.insulation_costs(file).get(from_level, to_level)
-      end
-
       # Public: Retrieves a single value from the weather_properties.csv file
       # associated with the currently-selected weather curve set.
       def WEATHER_PROPERTY(key)
