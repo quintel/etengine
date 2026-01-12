@@ -29,7 +29,7 @@ class Scenario::BatchYearInterpolator
 
   def call
     yield validate
-    yield fetch_and_validate_scenarios
+    yield validate_scenarios
     yield validate_target_years
     interpolate_all
   end
@@ -45,37 +45,29 @@ class Scenario::BatchYearInterpolator
     result.success? ? Success(nil) : Failure(result.errors.to_h)
   end
 
-  def fetch_and_validate_scenarios
-    @scenarios = Scenario.where(id: @scenario_ids).to_a
+  def scenarios  
+    @scenarios ||= Scenario.where(id: @scenario_ids).sort_by(&:end_year)  
+  end  
 
-    if @scenarios.length != @scenario_ids.length
-      missing = @scenario_ids - @scenarios.map(&:id)
-      return Failure(scenario_ids: ["scenarios not found: #{missing.join(', ')}"])
+  def validate_scenarios
+    if scenarios.length != @scenario_ids.length
+      return Failure(scenario_ids: ["scenarios not found: #{(@scenario_ids - scenarios.map(&:id)).join(', ')}"])
     end
 
     if @ability
-      inaccessible = @scenarios.reject { |s| @ability.can?(:read, s) }
+      inaccessible = scenarios.reject { |s| @ability.can?(:read, s) }
       if inaccessible.any?
-        ids = inaccessible.map(&:id).join(', ')
-        return Failure(scenario_ids: ["scenarios not accessible: #{ids}"])
+        return Failure(scenario_ids: ["scenarios not accessible: #{inaccessible.map(&:id).join(', ')}"])
       end
     end
 
-    # Sort scenarios by end_year
-    @scenarios.sort_by!(&:end_year)
+    if scenarios.any?(&:scaler)  
+        return Failure(scenario_ids: ["cannot interpolate scaled scenarios"])  
+    end
 
-    # Validate all scenarios have same start_year and area_code
-    first = @scenarios.first
-    @scenarios.each do |scenario|
-      if scenario.scaler
-        return Failure(scenario_ids: ["cannot interpolate scaled scenario #{scenario.id}"])
-      end
-      if scenario.start_year != first.start_year
-        return Failure(scenario_ids: ['all scenarios must have the same start year'])
-      end
-      if scenario.area_code != first.area_code
-        return Failure(scenario_ids: ['all scenarios must have the same area code'])
-      end
+    # Validate all scenarios have same area_code (and therefore same end_year)
+    unless scenarios.uniq(&:area_code).length == 1  
+       return Failure(scenario_ids: ['all scenarios must have the same area code'])  
     end
 
     Success(nil)
@@ -83,10 +75,10 @@ class Scenario::BatchYearInterpolator
 
   def validate_target_years
     @end_years.each do |year|
-      if year <= @scenarios.first.start_year
+      if year <= scenarios.first.start_year
         return Failure(end_years: ["#{year} must be posterior to the first scenario start year"])
       end
-      if year >= @scenarios.last.end_year
+      if year >= scenarios.last.end_year
         return Failure(end_years: ["#{year} must be prior to the latest scenario end year"])
       end
     end
@@ -95,17 +87,15 @@ class Scenario::BatchYearInterpolator
   end
 
   def interpolate_all
-    results = []
-
-    @end_years.each do |target_year|
+    results = @end_years.map do |target_year|
       # Find the scenario with end_year after the target (the one we interpolate from)
-      later_scenario = @scenarios.find { |s| s.end_year > target_year }
+      later_scenario = scenarios.find { |s| s.end_year > target_year }
 
       next unless later_scenario
 
       # Find the scenario with end_year before the target (used as start_scenario)
       # This may be nil if target_year is before the first scenario's end_year
-      earlier_scenario = @scenarios.reverse.find { |s| s.end_year < target_year }
+      earlier_scenario = scenarios.reverse.find { |s| s.end_year < target_year }
 
       result = Scenario::YearInterpolator.call(
         later_scenario,
@@ -115,13 +105,12 @@ class Scenario::BatchYearInterpolator
         @ability
       )
 
-      case result
-      in Dry::Monads::Success(scenario)
-        results << scenario
-      in Dry::Monads::Failure(errors)
-        msg = "failed to interpolate year #{target_year}: #{errors.values.flatten.join(', ')}"
+      if result.failure?
+        msg = "failed to interpolate year #{target_year}: #{result.failure.values.flatten.join(', ')}"
         return Failure(interpolation: [msg])
       end
+      
+      result.value!
     end
 
     Success(results)

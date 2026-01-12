@@ -321,7 +321,8 @@ RSpec.describe Scenario::BatchYearInterpolator do
     end
 
     it 'includes an error about scaled scenarios' do
-      expect(result.failure[:scenario_ids].first).to match(/cannot interpolate scaled scenario/)
+      expect(result.failure[:scenario_ids].first)
+        .to match(/cannot interpolate scaled scenarios/)
     end
   end
 end
