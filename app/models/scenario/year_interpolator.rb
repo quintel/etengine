@@ -11,7 +11,6 @@ class Scenario::YearInterpolator
     option :scenario
     option :start_scenario_id, optional: true
     option :start_scenario, optional: true
-    option :ability, optional: true
 
     params do
       required(:year).filled(:integer)
@@ -36,7 +35,6 @@ class Scenario::YearInterpolator
     rule do
       next base.failure('start scenario not found') if start_scenario_id && !start_scenario
       next unless start_scenario
-      next base.failure('start scenario not accessible') if ability && !ability.can?(:read, start_scenario)
 
       if start_scenario.id == scenario.id
         base.failure('start scenario must not be the same as the original scenario')
@@ -53,20 +51,24 @@ class Scenario::YearInterpolator
     end
   end
 
-  def self.call(scenario, year, start_scenario_id = nil, user = nil, ability = nil)
-    new(scenario:, year:, start_scenario_id:, user:, ability:).call
+  def self.call(scenario:, year:, start_scenario: nil, start_scenario_id: nil, user: nil, ability: nil)
+    new(scenario:, year:, start_scenario:, start_scenario_id:, user:, ability:).call
   end
 
-  def initialize(scenario:, year:, start_scenario_id: nil, user: nil, ability: nil)
+  def initialize(scenario:, year:, start_scenario: nil, start_scenario_id: nil, user: nil, ability: nil)
     @scenario = scenario
     @year = year
-    @start_scenario_id = start_scenario_id
+    @start_scenario = start_scenario
+    @start_scenario_id = start_scenario_id || start_scenario&.id
     @user = user
     @ability = ability
   end
 
   def call
-    @start_scenario = Scenario.find_by(id: @start_scenario_id)
+    if @start_scenario.nil? && @start_scenario_id
+      scope = @ability ? Scenario.accessible_by(@ability) : Scenario
+      @start_scenario = scope.find_by(id: @start_scenario_id)
+    end
 
     yield validate
     interpolate_scenario
@@ -78,8 +80,7 @@ class Scenario::YearInterpolator
     result = Contract.new(
       scenario: @scenario,
       start_scenario_id: @start_scenario_id,
-      start_scenario: @start_scenario,
-      ability: @ability
+      start_scenario: @start_scenario
     ).call(year: @year)
 
     result.success? ? Success(nil) : Failure(result.errors.to_h)

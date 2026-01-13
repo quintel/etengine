@@ -249,7 +249,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sends back an error message' do
-      expect(response_data).to include('errors' => ['start scenario not accessible'])
+      expect(response_data).to include('errors' => ['start scenario not found'])
     end
   end
 

@@ -169,13 +169,9 @@ describe 'APIv3 Scenarios interpolate_collection', :etsource_fixture do
       private_scenario
     end
 
-    it 'returns 422 Unprocessable Entity' do
+    it 'returns 404 Not Found' do
       send_data
-      expect(response.status).to eq(422)
-    end
-
-    it 'returns an error message' do
-      expect(response_data['errors']['scenario_ids'].first).to match(/not accessible/)
+      expect(response.status).to eq(404)
     end
   end
 

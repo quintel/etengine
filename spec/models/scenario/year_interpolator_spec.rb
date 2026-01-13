@@ -13,7 +13,7 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2030).value! }
+    let(:interpolated) { described_class.call(scenario: source, year: 2030).value! }
 
     it 'returns a new scenario' do
       expect(interpolated).to be_a(Scenario)
@@ -56,7 +56,7 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2030).value! }
+    let(:interpolated) { described_class.call(scenario: source, year: 2030).value! }
 
     it 'keeps valid inputs' do
       expect(interpolated.user_values.keys).to include('grouped_input_one')
@@ -79,7 +79,7 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2030).value! }
+    let(:interpolated) { described_class.call(scenario: source, year: 2030).value! }
 
     it 'sets the inputs' do
       expect(interpolated.user_values.keys.sort)
@@ -108,7 +108,7 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2030).value! }
+    let(:interpolated) { described_class.call(scenario: source, year: 2030).value! }
 
     it 'sets the inputs' do
       expect(interpolated.user_values.keys.sort)
@@ -134,7 +134,7 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:result) { described_class.call(source, 2010) }
+    let(:result) { described_class.call(scenario: source, year: 2010) }
 
     it 'returns a failure' do
       expect(result).to be_failure
@@ -154,7 +154,7 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:result) { described_class.call(source, 2051) }
+    let(:result) { described_class.call(scenario: source, year: 2051) }
 
     it 'returns a failure' do
       expect(result).to be_failure
@@ -175,7 +175,7 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:result) { described_class.call(source, 2050) }
+    let(:result) { described_class.call(scenario: source, year: 2050) }
 
     it 'returns a failure' do
       expect(result).to be_failure
@@ -199,7 +199,7 @@ RSpec.describe Scenario::YearInterpolator do
       HeatNetworkOrder.default_order.reverse
     end
 
-    let(:interpolated) { described_class.call(source, 2040).value! }
+    let(:interpolated) { described_class.call(scenario: source, year: 2040).value! }
 
     before do
       HeatNetworkOrder.create!(scenario: source, order: techs)
@@ -232,7 +232,7 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:result) { described_class.call(scaled_source, 2040) }
+    let(:result) { described_class.call(scenario: scaled_source, year: 2040) }
 
     it 'returns failure' do
       expect(result).to be_failure
@@ -261,7 +261,7 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2040, start_scenario.id).value! }
+    let(:interpolated) { described_class.call(scenario: source, year: 2040, start_scenario_id: start_scenario.id).value! }
 
     it 'interpolates based on the start scenario values' do
       # 50 -> 75 in 20 years

@@ -206,11 +206,11 @@ module Api
       # POST /api/v3/scenarios/:id/interpolate
       def interpolate
         result = Scenario::YearInterpolator.call(
-          @scenario,
-          params.require(:end_year).to_i,
-          params[:start_scenario_id]&.to_i,
-          current_user,
-          current_ability
+          scenario: @scenario,
+          year: params.require(:end_year).to_i,
+          start_scenario_id: params[:start_scenario_id]&.to_i,
+          user: current_user,
+          ability: current_ability
         )
 
         result.either(  
@@ -238,10 +238,12 @@ module Api
       # - A 2045 scenario interpolated between the 2040 and 2050 scenarios
       #
       def interpolate_collection
-        authorize!(:create, Scenario)
+        scenario_ids = params.require(:scenario_ids).map(&:to_i)
+
+        Scenario.where(id: scenario_ids).each { |scenario| authorize!(:clone, scenario) }
 
         result = Scenario::BatchYearInterpolator.call(
-          scenario_ids: params.require(:scenario_ids).map(&:to_i),
+          scenario_ids:,
           end_years: params.require(:end_years).map(&:to_i),
           user: current_user,
           ability: current_ability

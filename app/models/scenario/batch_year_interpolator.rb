@@ -45,29 +45,25 @@ class Scenario::BatchYearInterpolator
     result.success? ? Success(nil) : Failure(result.errors.to_h)
   end
 
-  def scenarios  
-    @scenarios ||= Scenario.where(id: @scenario_ids).sort_by(&:end_year)  
-  end  
+  def scenarios
+    @scenarios ||= begin
+      scope = @ability ? Scenario.accessible_by(@ability) : Scenario
+      scope.where(id: @scenario_ids).sort_by(&:end_year)
+    end
+  end
 
   def validate_scenarios
     if scenarios.length != @scenario_ids.length
       return Failure(scenario_ids: ["scenarios not found: #{(@scenario_ids - scenarios.map(&:id)).join(', ')}"])
     end
 
-    if @ability
-      inaccessible = scenarios.reject { |s| @ability.can?(:read, s) }
-      if inaccessible.any?
-        return Failure(scenario_ids: ["scenarios not accessible: #{inaccessible.map(&:id).join(', ')}"])
-      end
-    end
-
     if scenarios.any?(&:scaler)  
-        return Failure(scenario_ids: ["cannot interpolate scaled scenarios"])  
+      return Failure(scenario_ids: ["cannot interpolate scaled scenarios"])  
     end
 
     # Validate all scenarios have same area_code (and therefore same end_year)
     unless scenarios.uniq(&:area_code).length == 1  
-       return Failure(scenario_ids: ['all scenarios must have the same area code'])  
+      return Failure(scenario_ids: ['all scenarios must have the same area code'])  
     end
 
     Success(nil)
@@ -87,7 +83,7 @@ class Scenario::BatchYearInterpolator
   end
 
   def interpolate_all
-    results = @end_years.map do |target_year|
+    results = @end_years.filter_map do |target_year|
       # Find the scenario with end_year after the target (the one we interpolate from)
       later_scenario = scenarios.find { |s| s.end_year > target_year }
 
@@ -98,11 +94,11 @@ class Scenario::BatchYearInterpolator
       earlier_scenario = scenarios.reverse.find { |s| s.end_year < target_year }
 
       result = Scenario::YearInterpolator.call(
-        later_scenario,
-        target_year,
-        earlier_scenario&.id,
-        @user,
-        @ability
+        scenario: later_scenario,
+        year: target_year,
+        start_scenario: earlier_scenario,
+        user: @user,
+        ability: @ability
       )
 
       if result.failure?
