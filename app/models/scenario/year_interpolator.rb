@@ -9,7 +9,6 @@ class Scenario::YearInterpolator
   # Validates input for year interpolation
   class Contract < Dry::Validation::Contract
     option :scenario
-    option :start_scenario_id, optional: true
     option :start_scenario, optional: true
 
     params do
@@ -33,10 +32,9 @@ class Scenario::YearInterpolator
     end
 
     rule do
-      next base.failure('start scenario not found') if start_scenario_id && !start_scenario
       next unless start_scenario
 
-      if start_scenario.id == scenario.id
+      if start_scenario == scenario
         base.failure('start scenario must not be the same as the original scenario')
       end
       if start_scenario.end_year >= scenario.end_year
@@ -51,25 +49,18 @@ class Scenario::YearInterpolator
     end
   end
 
-  def self.call(scenario:, year:, start_scenario: nil, start_scenario_id: nil, user: nil, ability: nil)
-    new(scenario:, year:, start_scenario:, start_scenario_id:, user:, ability:).call
+  def self.call(scenario:, year:, start_scenario: nil, user: nil)
+    new(scenario:, year:, start_scenario:, user:).call
   end
 
-  def initialize(scenario:, year:, start_scenario: nil, start_scenario_id: nil, user: nil, ability: nil)
+  def initialize(scenario:, year:, start_scenario: nil, user: nil)
     @scenario = scenario
     @year = year
     @start_scenario = start_scenario
-    @start_scenario_id = start_scenario_id || start_scenario&.id
     @user = user
-    @ability = ability
   end
 
   def call
-    if @start_scenario.nil? && @start_scenario_id
-      scope = @ability ? Scenario.accessible_by(@ability) : Scenario
-      @start_scenario = scope.find_by(id: @start_scenario_id)
-    end
-
     yield validate
     interpolate_scenario
   end
@@ -79,7 +70,6 @@ class Scenario::YearInterpolator
   def validate
     result = Contract.new(
       scenario: @scenario,
-      start_scenario_id: @start_scenario_id,
       start_scenario: @start_scenario
     ).call(year: @year)
 

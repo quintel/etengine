@@ -261,7 +261,11 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:interpolated) { described_class.call(scenario: source, year: 2040, start_scenario_id: start_scenario.id).value! }
+    let(:interpolated) do
+      described_class.call(
+        scenario: source, year: 2040, start_scenario:
+      ).value!
+    end
 
     it 'interpolates based on the start scenario values' do
       # 50 -> 75 in 20 years

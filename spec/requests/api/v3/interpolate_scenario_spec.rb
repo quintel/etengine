@@ -221,13 +221,13 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     before { source }
 
-    it 'returns 422 Unprocessable Entity' do
+    it 'returns 404 Unprocessable Entity' do
       send_data
-      expect(response.status).to be(422)
+      expect(response.status).to be(404)
     end
 
     it 'sends back an error message' do
-      expect(response_data).to include('errors' => ['start scenario not found'])
+      expect(response_data).to include('errors' => ["No such scenario: 999999"])
     end
   end
 
@@ -243,13 +243,13 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     before { source }
 
-    it 'returns 422 Unprocessable Entity' do
+    it 'returns 404 Unprocessable Entity' do
       send_data
-      expect(response.status).to be(422)
+      expect(response.status).to be(404)
     end
 
     it 'sends back an error message' do
-      expect(response_data).to include('errors' => ['start scenario not found'])
+      expect(response_data).to include('errors' => ["Not found"])
     end
   end
 

@@ -33,7 +33,7 @@ RSpec.describe Scenario::BatchYearInterpolator do
     describe 'when scenario_ids are provided in sequential order' do
       let(:result) do
         described_class.call(
-          scenario_ids: [scenario_2030.id, scenario_2040.id, scenario_2050.id],
+          scenarios: [scenario_2030, scenario_2040, scenario_2050],
           end_years: [2035, 2045]
         )
       end
@@ -69,10 +69,10 @@ RSpec.describe Scenario::BatchYearInterpolator do
       end
     end
 
-    describe 'when scenario_ids are provided in random order' do
+    describe 'when scenarios are provided in random order' do
       let(:result) do
         described_class.call(
-          scenario_ids: [scenario_2050.id, scenario_2030.id, scenario_2040.id],
+          scenarios: [scenario_2050, scenario_2030, scenario_2040],
           end_years: [2035]
         )
       end
@@ -97,7 +97,7 @@ RSpec.describe Scenario::BatchYearInterpolator do
   context 'with a target year before the earliest scenario end_year but after start_year' do
     let(:result) do
       described_class.call(
-        scenario_ids: [scenario_2030.id, scenario_2050.id],
+        scenarios: [scenario_2030, scenario_2050],
         end_years: [2020]
       )
     end
@@ -122,7 +122,7 @@ RSpec.describe Scenario::BatchYearInterpolator do
   context 'with a single scenario and a single end_year' do
     let(:result) do
       described_class.call(
-        scenario_ids: [scenario_2040.id],
+        scenarios: [scenario_2040],
         end_years: [2035]
       )
     end
@@ -151,7 +151,7 @@ RSpec.describe Scenario::BatchYearInterpolator do
   context 'with a single scenario and multiple end_years' do
     let(:result) do
       described_class.call(
-        scenario_ids: [scenario_2040.id],
+        scenarios: [scenario_2040],
         end_years: [2020, 2030, 2035]
       )
     end
@@ -204,7 +204,7 @@ RSpec.describe Scenario::BatchYearInterpolator do
   context 'with empty end_years' do
     let(:result) do
       described_class.call(
-        scenario_ids: [scenario_2030.id, scenario_2050.id],
+        scenarios: [scenario_2030, scenario_2050],
         end_years: []
       )
     end
@@ -221,7 +221,7 @@ RSpec.describe Scenario::BatchYearInterpolator do
   context 'with a target year before or equal to the first scenario start_year' do
     let(:result) do
       described_class.call(
-        scenario_ids: [scenario_2030.id, scenario_2050.id],
+        scenarios: [scenario_2030, scenario_2050],
         end_years: [2011]  # start_year is 2011
       )
     end
@@ -239,7 +239,7 @@ RSpec.describe Scenario::BatchYearInterpolator do
   context 'with a target year after the latest scenario' do
     let(:result) do
       described_class.call(
-        scenario_ids: [scenario_2030.id, scenario_2050.id],
+        scenarios: [scenario_2030, scenario_2050],
         end_years: [2055]
       )
     end
@@ -265,7 +265,7 @@ RSpec.describe Scenario::BatchYearInterpolator do
 
     let(:result) do
       described_class.call(
-        scenario_ids: [scenario_nl.id, scenario_de.id],
+        scenarios: [scenario_nl, scenario_de],
         end_years: [2040]
       )
     end
@@ -276,23 +276,6 @@ RSpec.describe Scenario::BatchYearInterpolator do
 
     it 'includes an error about area codes' do
       expect(result.failure[:scenario_ids].first).to match(/same area code/)
-    end
-  end
-
-  context 'with a non-existent scenario ID' do
-    let(:result) do
-      described_class.call(
-        scenario_ids: [scenario_2050.id, 999999],
-        end_years: [2040]
-      )
-    end
-
-    it 'returns failure' do
-      expect(result).to be_failure
-    end
-
-    it 'includes an error about missing scenarios' do
-      expect(result.failure[:scenario_ids].first).to match(/not found/)
     end
   end
 
@@ -311,7 +294,7 @@ RSpec.describe Scenario::BatchYearInterpolator do
 
     let(:result) do
       described_class.call(
-        scenario_ids: [scenario_2030.id, scenario_scaled.id],
+        scenarios: [scenario_2030, scenario_scaled],
         end_years: [2040]
       )
     end

@@ -16,12 +16,21 @@ module Api
         authorize!(:update, Scenario)
       end
 
+      before_action only: %i[interpolate_collection] do
+        # Authorize create here because we load the resources explicity in the action
+        authorize!(:create, Scenario)
+
+        load_batch_scenarios
+      end
+
       before_action only: %i[dashboard merit] do
         authorize!(:read, @scenario)
       end
 
       before_action only: %i[interpolate] do
         authorize!(:clone, @scenario)
+
+        load_start_scenario
       end
 
       before_action only: %i[couple uncouple] do
@@ -207,20 +216,19 @@ module Api
       def interpolate
         result = Scenario::YearInterpolator.call(
           scenario: @scenario,
-          year: params.require(:end_year).to_i,
-          start_scenario_id: params[:start_scenario_id]&.to_i,
-          user: current_user,
-          ability: current_ability
+          year: interpolate_params.require(:end_year).to_i,
+          start_scenario: @start_scenario,
+          user: current_user
         )
 
-        result.either(  
-          lambda { |scenario|  
-            Scenario.transaction { scenario.save! } 
+        result.either(
+          lambda { |scenario|
+            Scenario.transaction { scenario.save! }
             render json: ScenarioSerializer.new(self, scenario)
-          },  
-          lambda { |errors|  
-            render json: { errors: errors.values.flatten }, status: :unprocessable_content  
-          }  
+          },
+          lambda { |errors|
+            render json: { errors: errors.values.flatten }, status: :unprocessable_content
+          }
         )
       rescue ActionController::ParameterMissing
         render json: { errors: ['Interpolated scenario must have an end year'] },
@@ -238,25 +246,20 @@ module Api
       # - A 2045 scenario interpolated between the 2040 and 2050 scenarios
       #
       def interpolate_collection
-        scenario_ids = params.require(:scenario_ids).map(&:to_i)
-
-        Scenario.where(id: scenario_ids).each { |scenario| authorize!(:clone, scenario) }
-
         result = Scenario::BatchYearInterpolator.call(
-          scenario_ids:,
+          scenarios: @scenarios,
           end_years: params.require(:end_years).map(&:to_i),
-          user: current_user,
-          ability: current_ability
+          user: current_user
         )
 
-        result.either(  
-          lambda { |scenarios|  
-            Scenario.transaction { scenarios.each(&:save!) }  
-            render json: scenarios.map { |s| ScenarioSerializer.new(self, s) }  
-          },  
-          lambda { |errors|  
-            render json: { errors: }, status: :unprocessable_content  
-          }  
+        result.either(
+          lambda { |scenarios|
+            Scenario.transaction { scenarios.each(&:save!) }
+            render json: scenarios.map { |s| ScenarioSerializer.new(self, s) }
+          },
+          lambda { |errors|
+            render json: { errors: }, status: :unprocessable_content
+          }
         )
       rescue ActionController::ParameterMissing => e
         render json: { errors: [e.message] }, status: :bad_request
@@ -539,6 +542,34 @@ module Api
       # Returns a Bool
       def include_curves_in_merit?
         merit_parameters[:include_curves] != 'false'
+      end
+
+      def interpolate_params
+        params.permit(:end_year, :start_scenario_id)
+      end
+
+      # Internal: Load batch resources, render not found when not found or
+      # inaccessible
+      def load_batch_scenarios
+        scenario_ids = params.require(:scenario_ids)
+        @scenarios = Scenario.accessible_by(current_ability).where(id: scenario_ids)
+
+        return unless @scenarios.length != scenario_ids.length
+
+        render json: { errors: [
+          "scenarios not found: #{scenario_ids - @scenarios.map(&:id)}"
+        ] }, status: :not_found
+      end
+
+      # Internal: load start scenario needed for interpolation
+      def load_start_scenario
+        if (start_scenario_id = interpolate_params[:start_scenario_id])
+          @start_scenario = Scenario.find(start_scenario_id)
+
+          authorize!(:read, @start_scenario)
+        else
+          @start_scenario = nil
+        end
       end
 
       def force_uncouple
