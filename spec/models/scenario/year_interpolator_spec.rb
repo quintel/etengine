@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe Scenario::YearInterpolator do
   context 'with a scenario' do
     let(:source) do
-      FactoryBot.create(:scenario, {
+      create(:scenario, {
         id:              99999, # Avoid a collision with a preset ID
         end_year:        2050,
         user_values:     { 'grouped_input_one' => 75 },
@@ -11,7 +13,7 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2030) }
+    let(:interpolated) { described_class.call(scenario: source, year: 2030).value! }
 
     it 'returns a new scenario' do
       expect(interpolated).to be_a(Scenario)
@@ -44,17 +46,17 @@ RSpec.describe Scenario::YearInterpolator do
 
   context 'with a scenario containing a non-existant input' do
     let(:source) do
-      FactoryBot.create(:scenario, {
+      create(:scenario, {
         id:          99999, # Avoid a collision with a preset ID
         end_year:    2050,
         user_values: {
           'grouped_input_one' => 75,
-          'nope'              => 100,
+          'nope'              => 100
         }
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2030) }
+    let(:interpolated) { described_class.call(scenario: source, year: 2030).value! }
 
     it 'keeps valid inputs' do
       expect(interpolated.user_values.keys).to include('grouped_input_one')
@@ -67,7 +69,7 @@ RSpec.describe Scenario::YearInterpolator do
 
   context 'with a scenario containing an enum input' do
     let(:source) do
-      FactoryBot.create(:scenario, {
+      create(:scenario, {
         id: 99999,
         end_year: 2050,
         user_values: {
@@ -77,7 +79,7 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2030) }
+    let(:interpolated) { described_class.call(scenario: source, year: 2030).value! }
 
     it 'sets the inputs' do
       expect(interpolated.user_values.keys.sort)
@@ -96,7 +98,7 @@ RSpec.describe Scenario::YearInterpolator do
 
   context 'with a scenario containing a boolean input' do
     let(:source) do
-      FactoryBot.create(:scenario, {
+      create(:scenario, {
         id: 99999,
         end_year: 2050,
         user_values: {
@@ -106,7 +108,7 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2030) }
+    let(:interpolated) { described_class.call(scenario: source, year: 2030).value! }
 
     it 'sets the inputs' do
       expect(interpolated.user_values.keys.sort)
@@ -125,40 +127,47 @@ RSpec.describe Scenario::YearInterpolator do
 
   context 'with a year older than the analysis year' do
     let(:source) do
-      FactoryBot.create(:scenario, {
+      create(:scenario, {
         id:          99999, # Avoid a collision with a preset ID
         end_year:    2050,
         user_values: { 'grouped_input_one' => 75 }
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2010) }
+    let(:result) { described_class.call(scenario: source, year: 2010) }
 
-    it 'raises an exception' do
-      expect { interpolated }
-        .to raise_error(/prior to the dataset analysis year/i)
+    it 'returns a failure' do
+      expect(result).to be_failure
+    end
+
+    it 'includes an error about the analysis year' do
+      expect(result.failure.values.flatten.first).to match(/must be posterior to the dataset analysis year/i)
     end
   end
 
   context 'with a year after the source scenario end year' do
     let(:source) do
-      FactoryBot.create(:scenario, {
+      create(:scenario, {
         id:          99999, # Avoid a collision with a preset ID
         end_year:    2050,
         user_values: { 'grouped_input_one' => 75 }
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2051) }
+    let(:result) { described_class.call(scenario: source, year: 2051) }
 
-    it 'raises an exception' do
-      expect { interpolated }.to raise_error(/prior to the original scenario/i)
+    it 'returns a failure' do
+      expect(result).to be_failure
+    end
+
+    it 'includes an error about the original scenario' do
+      expect(result.failure.values.flatten.first).to match(/must be prior to the original scenario end year/i)
     end
   end
 
   context 'with a year the same as the source scenario end year' do
     let(:source) do
-      FactoryBot.create(:scenario, {
+      create(:scenario, {
         id:              99999, # Avoid a collision with a preset ID
         end_year:        2050,
         user_values:     { 'grouped_input_one' => 75 },
@@ -166,20 +175,20 @@ RSpec.describe Scenario::YearInterpolator do
       })
     end
 
-    let(:interpolated) { described_class.call(source, 2050) }
+    let(:result) { described_class.call(scenario: source, year: 2050) }
 
-    it 'sets user_values inputs' do
-      expect(interpolated.user_values).to eq(source.user_values)
+    it 'returns a failure' do
+      expect(result).to be_failure
     end
 
-    it 'sets balanced_values inputs' do
-      expect(interpolated.balanced_values).to eq(source.balanced_values)
+    it 'includes an error about the original scenario' do
+      expect(result.failure.values.flatten.first).to match(/must be prior to the original scenario end year/i)
     end
   end
 
   context 'when the scenario has a heat network order' do
     let(:source) do
-      FactoryBot.create(:scenario, {
+      create(:scenario, {
         id:          99999, # Avoid a collision with a preset ID
         end_year:    2050,
         user_values: { 'grouped_input_one' => 75 }
@@ -190,7 +199,7 @@ RSpec.describe Scenario::YearInterpolator do
       HeatNetworkOrder.default_order.reverse
     end
 
-    let(:interpolated) { described_class.call(source, 2040) }
+    let(:interpolated) { described_class.call(scenario: source, year: 2040).value! }
 
     before do
       HeatNetworkOrder.create!(scenario: source, order: techs)
@@ -207,6 +216,69 @@ RSpec.describe Scenario::YearInterpolator do
 
     it 'copies the heat network order attributes' do
       expect(interpolated.heat_network_orders.first.order).to eq(techs)
+    end
+  end
+
+  context 'with a scaled scenario' do
+    let(:scaled_source) do
+      scenario = create(:scenario, {
+        id: 99993,
+        end_year: 2050,
+        user_values: { 'grouped_input_one' => 100.0 },
+        scaler: ScenarioScaling.new(
+          area_attribute: 'present_number_of_residences',
+          value:          1000
+        )
+      })
+    end
+
+    let(:result) { described_class.call(scenario: scaled_source, year: 2040) }
+
+    it 'returns failure' do
+      expect(result).to be_failure
+    end
+
+    it 'includes an error about scaled scenarios' do
+      expect(result.failure.values.flatten.first).to match(/cannot interpolate scaled scenarios/)
+    end
+  end
+
+  context 'when passing a start scenario' do
+    let(:source) do
+      create(:scenario, {
+        id:          99999, # Avoid a collision with a preset ID
+        end_year:    2050,
+        user_values:      { 'grouped_input_one' => 75.0 },
+        balanced_values:  { 'grouped_input_two' => 50 }
+      })
+    end
+
+    let(:start_scenario) do
+      create(:scenario, {
+        id:          88888, # Avoid a collision with a preset ID
+        end_year:    2030,
+        user_values: { 'grouped_input_one' => 50.0 }
+      })
+    end
+
+    let(:interpolated) do
+      described_class.call(
+        scenario: source, year: 2040, start_scenario:
+      ).value!
+    end
+
+    it 'interpolates based on the start scenario values' do
+      # 50 -> 75 in 20 years
+      # = 62.5 in 10 years
+      expect(interpolated.user_values['grouped_input_one'])
+        .to be_within(1e-2).of(62.5)
+    end
+
+    it 'interpolates inputs even if not set in start scenario' do
+      # 0 -> 50 in 20 years
+      # = 25 in 10 years
+      expect(interpolated.balanced_values['grouped_input_two'])
+        .to be_within(1e-2).of(25)
     end
   end
 end

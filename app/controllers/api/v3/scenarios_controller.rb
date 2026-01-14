@@ -3,10 +3,6 @@
 module Api
   module V3
     class ScenariosController < BaseController
-      rescue_from Scenario::YearInterpolator::InterpolationError do |ex|
-        render json: { errors: [ex.message] }, status: :bad_request
-      end
-
       load_resource except: %i[show create destroy dump]
       load_and_authorize_resource class: Scenario, only: %i[index show destroy dump]
 
@@ -20,12 +16,21 @@ module Api
         authorize!(:update, Scenario)
       end
 
+      before_action only: %i[interpolate_collection] do
+        # Authorize create here because we load the resources explicity in the action
+        authorize!(:create, Scenario)
+
+        load_batch_scenarios
+      end
+
       before_action only: %i[dashboard merit] do
         authorize!(:read, @scenario)
       end
 
       before_action only: %i[interpolate] do
         authorize!(:clone, @scenario)
+
+        load_start_scenario
       end
 
       before_action only: %i[couple uncouple] do
@@ -207,22 +212,57 @@ module Api
         render json: { errors: @scenario.errors.to_hash }, status: :unprocessable_content
       end
 
-      # POST /api/v3/scenarios/interpolate
+      # POST /api/v3/scenarios/:id/interpolate
       def interpolate
-        @interpolated = Scenario::YearInterpolator.call(
-          @scenario, params.require(:end_year).to_i, current_user
+        result = Scenario::YearInterpolator.call(
+          scenario: @scenario,
+          year: interpolate_params.require(:end_year).to_i,
+          start_scenario: @start_scenario,
+          user: current_user
         )
 
-        Scenario.transaction do
-          @interpolated.save!
-        end
-
-        render json: ScenarioSerializer.new(self, @interpolated)
+        result.either(
+          lambda { |scenario|
+            Scenario.transaction { scenario.save! }
+            render json: ScenarioSerializer.new(self, scenario)
+          },
+          lambda { |errors|
+            render json: { errors: errors.values.flatten }, status: :unprocessable_content
+          }
+        )
       rescue ActionController::ParameterMissing
-        render(
-          status: :bad_request,
-          json: { errors: ['Interpolated scenario must have an end year'] }
+        render json: { errors: ['Interpolated scenario must have an end year'] },
+          status: :bad_request
+      end
+
+      # POST /api/v3/scenarios/interpolate
+      #
+      # Creates interpolated scenarios for each target end year between the given scenarios.
+      # For example: Given a list of scenario_ids for scenarios with end_years [2030, 2040, 2050]
+      # and given the target end_years [2025, 2035, 2045], this endpoint creates:
+      #
+      # - A 2025 scenario interpolated between the 2030 scenario's start_year and end_year
+      # - A 2035 scenario interpolated between the 2030 and 2040 scenarios
+      # - A 2045 scenario interpolated between the 2040 and 2050 scenarios
+      #
+      def interpolate_collection
+        result = Scenario::BatchYearInterpolator.call(
+          scenarios: @scenarios,
+          end_years: params.require(:end_years).map(&:to_i),
+          user: current_user
         )
+
+        result.either(
+          lambda { |scenarios|
+            Scenario.transaction { scenarios.each(&:save!) }
+            render json: scenarios.map { |s| ScenarioSerializer.new(self, s) }
+          },
+          lambda { |errors|
+            render json: { errors: }, status: :unprocessable_content
+          }
+        )
+      rescue ActionController::ParameterMissing => e
+        render json: { errors: [e.message] }, status: :bad_request
       end
 
       # PUT-PATCH /api/v3/scenarios/:id
@@ -408,18 +448,6 @@ module Api
 
       private
 
-      def find_preset_or_scenario
-        @scenario =
-          Preset.get(params[:id]).try(:to_scenario) ||
-          Scenario.find_for_calculation(params[:id])
-
-        render_not_found(errors: ['Scenario not found']) unless @scenario
-      end
-
-      def find_scenario
-        @scenario = Scenario.find_for_calculation(params[:id])
-      end
-
       # Internal: All the request parameters, filtered.
       #
       # Returns a ActionController::Parameters
@@ -514,6 +542,34 @@ module Api
       # Returns a Bool
       def include_curves_in_merit?
         merit_parameters[:include_curves] != 'false'
+      end
+
+      def interpolate_params
+        params.permit(:end_year, :start_scenario_id)
+      end
+
+      # Internal: Load batch resources, render not found when not found or
+      # inaccessible
+      def load_batch_scenarios
+        scenario_ids = params.require(:scenario_ids)
+        @scenarios = Scenario.accessible_by(current_ability).where(id: scenario_ids)
+
+        return unless @scenarios.length != scenario_ids.length
+
+        render json: { errors: [
+          "scenarios not found: #{scenario_ids - @scenarios.map(&:id)}"
+        ] }, status: :not_found
+      end
+
+      # Internal: load start scenario needed for interpolation
+      def load_start_scenario
+        if (start_scenario_id = interpolate_params[:start_scenario_id])
+          @start_scenario = Scenario.find(start_scenario_id)
+
+          authorize!(:read, @start_scenario)
+        else
+          @start_scenario = nil
+        end
       end
 
       def force_uncouple

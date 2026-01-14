@@ -3,19 +3,80 @@
 # Receives a scenario and creates a new scenario with a new end year. Input
 # values will be adjusted to linearly interpolate new values based on the year.
 class Scenario::YearInterpolator
+  include Dry::Monads[:result]
+  include Dry::Monads::Do.for(:call)
 
-  def self.call(scenario, year, current_user = nil)
-    new(scenario, year, current_user).run
+  # Validates input for year interpolation
+  class Contract < Dry::Validation::Contract
+    option :scenario
+    option :start_scenario, optional: true
+
+    params do
+      required(:year).filled(:integer)
+    end
+
+    rule do
+      base.failure('cannot interpolate scaled scenarios') if scenario.scaler
+    end
+
+    rule(:year) do
+      if value >= scenario.end_year
+        key.failure('must be prior to the original scenario end year')
+      end
+      if value <= scenario.start_year
+        key.failure('must be posterior to the dataset analysis year')
+      end
+      if start_scenario && value <= start_scenario.end_year
+        key.failure('must be posterior to the start scenario end year')
+      end
+    end
+
+    rule do
+      next unless start_scenario
+
+      if start_scenario == scenario
+        base.failure('start scenario must not be the same as the original scenario')
+      end
+      if start_scenario.end_year >= scenario.end_year
+        base.failure('start scenario end year must be prior to original scenario end year')
+      end
+      if start_scenario.start_year != scenario.start_year
+        base.failure('start scenario start year must match original scenario start year')
+      end
+      if start_scenario.area_code != scenario.area_code
+        base.failure('start scenario area code must match original scenario area code')
+      end
+    end
   end
 
-  def initialize(scenario, year, current_user)
+  def self.call(scenario:, year:, start_scenario: nil, user: nil)
+    new(scenario:, year:, start_scenario:, user:).call
+  end
+
+  def initialize(scenario:, year:, start_scenario: nil, user: nil)
     @scenario = scenario
     @year = year
-    @current_user = current_user
+    @start_scenario = start_scenario
+    @user = user
   end
 
-  def run
-    validate!
+  def call
+    yield validate
+    interpolate_scenario
+  end
+
+  private
+
+  def validate
+    result = Contract.new(
+      scenario: @scenario,
+      start_scenario: @start_scenario
+    ).call(year: @year)
+
+    result.success? ? Success(nil) : Failure(result.errors.to_h)
+  end
+
+  def interpolate_scenario
     clone = Scenario.new
     clone.copy_scenario_state(@scenario)
 
@@ -23,44 +84,14 @@ class Scenario::YearInterpolator
     clone.source   = @scenario.source
 
     clone.scenario_users.destroy_all
-    clone.user = @current_user if @current_user
+    clone.user = @user if @user
     clone.reload unless clone.new_record?
 
-    clone.private = @scenario.clone_should_be_private?(@current_user)
+    clone.private = @scenario.clone_should_be_private?(@user)
+    clone.user_values = interpolate_input_collection(:user_values)
+    clone.balanced_values = interpolate_input_collection(:balanced_values)
 
-    if @year != @scenario.end_year
-      clone.user_values =
-        interpolate_input_collection(@scenario.user_values)
-
-      clone.balanced_values =
-        interpolate_input_collection(@scenario.balanced_values)
-    end
-
-    clone
-  end
-
-  private
-
-  def validate!
-    unless @year
-      raise InterpolationError, 'Interpolated scenario must have an end year'
-    end
-
-    if @year > @scenario.end_year
-      raise InterpolationError,
-        'Interpolated scenario must have an end year equal or prior to the ' \
-        "original scenario (#{@scenario.end_year})"
-    end
-
-    if @year < @scenario.start_year
-      raise InterpolationError,
-        'Interpolated scenario may not have an end year prior to the dataset ' \
-        "analysis year (#{@scenario.start_year})"
-    end
-
-    if @scenario.scaler
-      raise InterpolationError, 'Cannot interpolate scaled scenarios'
-    end
+    Success(clone)
   end
 
   # Internal: Receives a collection of inputs and interpolates the values to
@@ -71,13 +102,17 @@ class Scenario::YearInterpolator
   # based in 2030, the input value will be 50.
   #
   # Returns the interpolated inputs.
-  def interpolate_input_collection(collection)
-    num_years = @scenario.end_year - @year
-    total_years = @scenario.end_year - @scenario.start_year
+  def interpolate_input_collection(collection_attribute)
+    start_collection = @start_scenario&.public_send(collection_attribute)
+    collection = @scenario.public_send(collection_attribute)
+    start_year = @start_scenario&.end_year || @scenario.start_year
+    total_years = @scenario.end_year - start_year
+    elapsed_years = @year - start_year
 
     collection.each_with_object(collection.class.new) do |(key, value), interp|
       if (input = Input.get(key))
-        interp[key] = interpolate_input(input, value, total_years, num_years)
+        start = start_collection&.[](key) || input.start_value_for(@scenario)
+        interp[key] = interpolate_input(input, start, value, total_years, elapsed_years)
       end
     end
   end
@@ -86,14 +121,11 @@ class Scenario::YearInterpolator
   # value in the original scenario.
   #
   # Returns a Numeric or String value for the new user values.
-  def interpolate_input(input, value, total_years, num_years)
+  def interpolate_input(input, start, value, total_years, elapsed_years)
     return value if input.enum? || input.unit == 'bool'
 
-    start = input.start_value_for(@scenario)
     change_per_year = (value - start) / total_years
 
-    start + (change_per_year * (total_years - num_years))
+    start + (change_per_year * elapsed_years)
   end
-
-  class InterpolationError < RuntimeError; end
 end

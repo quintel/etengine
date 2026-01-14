@@ -38,6 +38,7 @@ Rails.application.routes.draw do
           post :merge
           post :load_dump
           post :export
+          post :interpolate, to: 'scenarios#interpolate_collection'
           get  :templates
           get  'versions', to: 'scenario_version_tags#index'
         end

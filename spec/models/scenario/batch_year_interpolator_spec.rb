@@ -1,0 +1,311 @@
+# frozen_string_literal: true
+
+require 'spec_helper'
+
+RSpec.describe Scenario::BatchYearInterpolator do
+  let(:scenario_2030) do
+    create(:scenario, {
+      id: 99990,
+      end_year: 2030,
+      user_values: { 'grouped_input_one' => 50.0 }
+    })
+  end
+
+  let(:scenario_2040) do
+    create(:scenario, {
+      id: 99991,
+      end_year: 2040,
+      user_values: { 'grouped_input_one' => 75.0 }
+    })
+  end
+
+  let(:scenario_2050) do
+    create(:scenario, {
+      id: 99992,
+      end_year: 2050,
+      user_values: { 'grouped_input_one' => 100.0 }
+    })
+  end
+
+  let(:interpolated) { result.value! }
+
+  context 'with valid scenarios and target years' do
+    describe 'when scenario_ids are provided in sequential order' do
+      let(:result) do
+        described_class.call(
+          scenarios: [scenario_2030, scenario_2040, scenario_2050],
+          end_years: [2035, 2045]
+        )
+      end
+
+      it 'returns success' do
+        expect(result).to be_success
+      end
+
+      it 'returns two interpolated scenarios' do
+        expect(interpolated.length).to eq(2)
+      end
+
+      it 'creates a scenario for year 2035' do
+        expect(interpolated[0].end_year).to eq(2035)
+      end
+
+      it 'creates a scenario for year 2045' do
+        expect(interpolated[1].end_year).to eq(2045)
+      end
+
+      it 'interpolates the 2035 scenario between 2030 and 2040' do
+        # 50 -> 75 in 10 years
+        # = 62.5 in 5 years
+        expect(interpolated[0].user_values['grouped_input_one'])
+          .to be_within(1e-2).of(62.5)
+      end
+
+      it 'interpolates the 2045 scenario between 2040 and 2050' do
+        # 75 -> 100 in 10 years
+        # = 87.5 in 5 years
+        expect(interpolated[1].user_values['grouped_input_one'])
+          .to be_within(1e-2).of(87.5)
+      end
+    end
+
+    describe 'when scenarios are provided in random order' do
+      let(:result) do
+        described_class.call(
+          scenarios: [scenario_2050, scenario_2030, scenario_2040],
+          end_years: [2035]
+        )
+      end
+
+      it 'returns success' do
+        expect(result).to be_success
+      end
+
+      it 'creates a scenario for year 2035' do
+        expect(interpolated[0].end_year).to eq(2035)
+      end
+
+      it 'interpolates the 2035 scenario between 2030 and 2040' do
+        # 50 -> 75 in 10 years
+        #= 62.5 in 5 years
+        expect(interpolated[0].user_values['grouped_input_one'])
+          .to be_within(1e-2).of(62.5)
+      end
+    end
+  end
+
+  context 'with a target year before the earliest scenario end_year but after start_year' do
+    let(:result) do
+      described_class.call(
+        scenarios: [scenario_2030, scenario_2050],
+        end_years: [2020]
+      )
+    end
+
+    it 'returns success' do
+      expect(result).to be_success
+    end
+
+    it 'creates an interpolated scenario for 2020' do
+      expect(interpolated[0].end_year).to eq(2020)
+    end
+
+    it 'interpolates using the first scenario without a start_scenario_id' do
+      # start_year is 2011, end_year is 2030
+      # grouped_input_one: start=100, target=50 over 19 years
+      # At year 2020 (9 years elapsed): 100 + ((50-100)/19)*9 = 100 - 23.68 = 76.32
+      expect(interpolated[0].user_values['grouped_input_one'])
+        .to be_within(1e-2).of(76.32)
+    end
+  end
+
+  context 'with a single scenario and a single end_year' do
+    let(:result) do
+      described_class.call(
+        scenarios: [scenario_2040],
+        end_years: [2035]
+      )
+    end
+
+    it 'returns success' do
+      expect(result).to be_success
+    end
+
+    it 'returns one interpolated scenario' do
+      expect(interpolated.length).to eq(1)
+    end
+
+    it 'creates a scenario for year 2035' do
+      expect(interpolated[0].end_year).to eq(2035)
+    end
+
+    it 'interpolates between start_year and end_year of the single scenario' do
+      # start_year is 2011, end_year is 2040
+      # grouped_input_one: start=100, target=75 over 29 years
+      # At year 2035 (24 years elapsed): 100 + ((75-100)/29)*24 = 100 - 20.69 = 79.31
+      expect(interpolated[0].user_values['grouped_input_one'])
+        .to be_within(1e-2).of(79.31)
+    end
+  end
+
+  context 'with a single scenario and multiple end_years' do
+    let(:result) do
+      described_class.call(
+        scenarios: [scenario_2040],
+        end_years: [2020, 2030, 2035]
+      )
+    end
+
+    it 'returns success' do
+      expect(result).to be_success
+    end
+
+    it 'returns three interpolated scenarios' do
+      expect(interpolated.length).to eq(3)
+    end
+
+    it 'creates a scenario for year 2020' do
+      expect(interpolated[0].end_year).to eq(2020)
+    end
+
+    it 'creates a scenario for year 2030' do
+      expect(interpolated[1].end_year).to eq(2030)
+    end
+
+    it 'creates a scenario for year 2035' do
+      expect(interpolated[2].end_year).to eq(2035)
+    end
+
+    it 'interpolates 2020 between start_year and end_year of the single scenario' do
+      # start_year is 2011, end_year is 2040
+      # grouped_input_one: start=100, target=75 over 29 years
+      # At year 2020 (9 years elapsed): 100 + ((75-100)/29)*9 = 100 - 7.76 = 92.24
+      expect(interpolated[0].user_values['grouped_input_one'])
+        .to be_within(1e-2).of(92.24)
+    end
+
+    it 'interpolates 2030 between start_year and end_year of the single scenario' do
+      # start_year is 2011, end_year is 2040
+      # grouped_input_one: start=100, target=75 over 29 years
+      # At year 2030 (19 years elapsed): 100 + ((75-100)/29)*19 = 100 - 16.38 = 83.62
+      expect(interpolated[1].user_values['grouped_input_one'])
+        .to be_within(1e-2).of(83.62)
+    end
+
+    it 'interpolates 2035 between start_year and end_year of the single scenario' do
+      # start_year is 2011, end_year is 2040
+      # grouped_input_one: start=100, target=75 over 29 years
+      # At year 2035 (24 years elapsed): 100 + ((75-100)/29)*24 = 100 - 20.69 = 79.31
+      expect(interpolated[2].user_values['grouped_input_one'])
+        .to be_within(1e-2).of(79.31)
+    end
+  end
+
+  context 'with empty end_years' do
+    let(:result) do
+      described_class.call(
+        scenarios: [scenario_2030, scenario_2050],
+        end_years: []
+      )
+    end
+
+    it 'returns failure' do
+      expect(result).to be_failure
+    end
+
+    it 'includes an error about end_years' do
+      expect(result.failure[:end_years]).to include('must be filled')
+    end
+  end
+
+  context 'with a target year before or equal to the first scenario start_year' do
+    let(:result) do
+      described_class.call(
+        scenarios: [scenario_2030, scenario_2050],
+        end_years: [2011]  # start_year is 2011
+      )
+    end
+
+    it 'returns failure' do
+      expect(result).to be_failure
+    end
+
+    it 'includes an error about the target year' do
+      expect(result.failure[:end_years].first)
+        .to match(/must be posterior to the first scenario start year/)
+    end
+  end
+
+  context 'with a target year after the latest scenario' do
+    let(:result) do
+      described_class.call(
+        scenarios: [scenario_2030, scenario_2050],
+        end_years: [2055]
+      )
+    end
+
+    it 'returns failure' do
+      expect(result).to be_failure
+    end
+
+    it 'includes an error about the target year' do
+      expect(result.failure[:end_years].first)
+        .to match(/must be prior to the latest scenario end year/)
+    end
+  end
+
+  context 'with scenarios having different area codes' do
+    let(:scenario_nl) do
+      create(:scenario, { id: 99990, end_year: 2030, area_code: 'nl' })
+    end
+
+    let(:scenario_de) do
+      create(:scenario, { id: 99991, end_year: 2050, area_code: 'de' })
+    end
+
+    let(:result) do
+      described_class.call(
+        scenarios: [scenario_nl, scenario_de],
+        end_years: [2040]
+      )
+    end
+
+    it 'returns failure' do
+      expect(result).to be_failure
+    end
+
+    it 'includes an error about area codes' do
+      expect(result.failure[:scenario_ids].first).to match(/same area code/)
+    end
+  end
+
+  context 'with a scaled scenario' do
+    let(:scenario_scaled) do
+      create(:scenario, {
+        id: 99993,
+        end_year: 2050,
+        user_values: { 'grouped_input_one' => 100.0 },
+        scaler: ScenarioScaling.new(
+          area_attribute: 'present_number_of_residences',
+          value:          1000
+        )
+      })
+    end
+
+    let(:result) do
+      described_class.call(
+        scenarios: [scenario_2030, scenario_scaled],
+        end_years: [2040]
+      )
+    end
+
+    it 'returns failure' do
+      expect(result).to be_failure
+    end
+
+    it 'includes an error about scaled scenarios' do
+      expect(result.failure[:scenario_ids].first)
+        .to match(/cannot interpolate scaled scenarios/)
+    end
+  end
+end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe 'APIv3 Scenarios', :etsource_fixture do
@@ -14,7 +16,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
   let(:token_header) { access_token_header(user, :write) }
 
   let(:source) do
-    FactoryBot.create(:scenario, user: user, end_year: 2050)
+    create(:scenario, user:, end_year: 2050)
   end
 
   context 'with valid parameters' do
@@ -61,7 +63,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
 
     it 'sends back an error message' do
-      expect(response_data).to include('errors' => ["No such scenario: 999999"])
+      expect(response_data).to include('errors' => ['No such scenario: 999999'])
     end
   end
 
@@ -115,7 +117,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     it 'sets the scenario owner' do
       scenario = Scenario.last
       expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
+      expect(scenario.scenario_users.find_by(user:).role_id).to eq(3)
     end
   end
 
@@ -149,7 +151,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     it 'sets the scenario owner' do
       scenario = Scenario.last
       expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
+      expect(scenario.scenario_users.find_by(user:).role_id).to eq(3)
     end
   end
 
@@ -171,6 +173,172 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     it 'returns 404 Not Found' do
       send_data
       expect(response).to be_not_found
+    end
+  end
+
+  context 'with a valid start scenario id' do
+    let(:send_data) do
+      post "/api/v3/scenarios/#{source.id}/interpolate",
+        params: { end_year: 2040, start_scenario_id: start_scenario.id },
+        headers: access_token_header(user, :write)
+    end
+
+    let(:start_scenario) { create(:scenario, end_year: 2030, user:) }
+
+    before do
+      source
+      start_scenario
+    end
+
+    it 'returns 200 OK' do
+      send_data
+      expect(response.status).to eq(200)
+    end
+
+    it 'saves the scenario' do
+      expect { send_data }.to change(Scenario, :count).by(1)
+    end
+
+    it 'sends the scenario ID' do
+      expect(response_data).to include('id' => Scenario.last.id)
+    end
+
+    it 'sets the area code' do
+      expect(response_data).to include('area_code' => source.area_code)
+    end
+
+    it 'sets the end year' do
+      expect(response_data).to include('end_year' => 2040)
+    end
+  end
+
+  context 'with an inexistent start scenario id' do
+    let(:send_data) do
+      post "/api/v3/scenarios/#{source.id}/interpolate",
+        params: { end_year: 2040, start_scenario_id: 999999 },
+        headers: token_header
+    end
+
+    before { source }
+
+    it 'returns 404 Unprocessable Entity' do
+      send_data
+      expect(response.status).to be(404)
+    end
+
+    it 'sends back an error message' do
+      expect(response_data).to include('errors' => ["No such scenario: 999999"])
+    end
+  end
+
+  context 'with an inaccessible start scenario' do
+    let(:send_data) do
+      post "/api/v3/scenarios/#{source.id}/interpolate",
+        params: { end_year: 2040, start_scenario_id: start_scenario.id },
+        headers: token_header
+    end
+
+    let(:start_scenario) { create(:scenario, end_year: 2030, user: other_user, private: true) }
+    let(:other_user) { create(:user) }
+
+    before { source }
+
+    it 'returns 404 Unprocessable Entity' do
+      send_data
+      expect(response.status).to be(404)
+    end
+
+    it 'sends back an error message' do
+      expect(response_data).to include('errors' => ["Not found"])
+    end
+  end
+
+  context 'with same start scenario as source scenario' do
+    let(:send_data) do
+      post "/api/v3/scenarios/#{source.id}/interpolate",
+        params: { end_year: 2040, start_scenario_id: source.id },
+        headers: token_header
+    end
+
+    before { source }
+
+    it 'returns 422 Unprocessable Entity' do
+      send_data
+      expect(response.status).to be(422)
+    end
+
+    it 'sends back an error message' do
+      expect(response_data['errors'])
+        .to include('start scenario must not be the same as the original scenario')
+    end
+  end
+
+  context 'with an invalid start scenario end year (after source scenario)' do
+    let(:send_data) do
+      post "/api/v3/scenarios/#{source.id}/interpolate",
+        params: { end_year: 2040, start_scenario_id: start_scenario.id },
+        headers: token_header
+    end
+
+    let(:start_scenario) { create(:scenario, end_year: 2055, user:) }
+
+    before { source }
+
+    it 'returns 422 Unprocessable Entity' do
+      send_data
+      expect(response.status).to be(422)
+    end
+
+    it 'sends back an error message' do
+      expect(response_data['errors']).to include(
+        'must be posterior to the start scenario end year'
+      )
+    end
+  end
+
+  context 'with an invalid interpolation year (earlier than start scenario)' do
+    let(:send_data) do
+      post "/api/v3/scenarios/#{source.id}/interpolate",
+        params: { end_year: 2040, start_scenario_id: start_scenario.id },
+        headers: token_header
+    end
+
+    let(:start_scenario) { create(:scenario, end_year: 2045, user:) }
+
+    before { source }
+
+    it 'returns 422 Unprocessable Entity' do
+      send_data
+      expect(response.status).to be(422)
+    end
+
+    it 'sends back an error message' do
+      expect(response_data['errors']).to include(
+        'must be posterior to the start scenario end year'
+      )
+    end
+  end
+
+  context 'with an invalid start scenario area code' do
+    let(:send_data) do
+      post "/api/v3/scenarios/#{source.id}/interpolate",
+        params: { end_year: 2040, start_scenario_id: start_scenario.id },
+        headers: token_header
+    end
+
+    let(:start_scenario) { create(:scenario, end_year: 2030, user:, area_code: 'de') }
+
+    before { source }
+
+    it 'returns 422 Unprocessable Entity' do
+      send_data
+      expect(response.status).to be(422)
+    end
+
+    it 'sends back an error message' do
+      expect(response_data['errors']).to include(
+        'start scenario area code must match original scenario area code'
+      )
     end
   end
 end
