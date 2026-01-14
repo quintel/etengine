@@ -372,12 +372,26 @@ class Scenario < ApplicationRecord
   private
 
   def copy_roles_from_parent
+    users_by_id = scenario_users.where.not(user_id: nil).index_by(&:user_id)
+    users_by_email = scenario_users.where(user_id: nil).index_by(&:user_email)
+
     parent.scenario_users.each do |preset_user|
-      if (existing_user = scenario_users.find_by(user: preset_user.user))
+      existing_user =
+        if preset_user.user_id.present?
+          users_by_id[preset_user.user_id]
+        else
+          users_by_email[preset_user.user_email]
+        end
+
+      if existing_user
         existing_user.role_id = preset_user.role_id
         existing_user.save(validate: false)
       else
-        scenario_users.create(user: preset_user.user, role_id: preset_user.role_id)
+        scenario_users.create(
+          user_id: preset_user.user_id,
+          user_email: preset_user.user_email,
+          role_id: preset_user.role_id
+        )
       end
     end
   end
