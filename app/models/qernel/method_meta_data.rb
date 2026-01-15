@@ -30,7 +30,6 @@ module Qernel
           :weighted_carrier_cost_per_mj  => {},
           :weighted_carrier_co2_per_mj   => {},
           :sustainability_share          => {},
-          :final_demand                  => {},
           :primary_demand                => {},
           :primary_demand_of_fossil      => {},
           :primary_demand_of_sustainable => {}

@@ -240,20 +240,6 @@ module Qernel::RecursiveFactor::Base
     @right_dead_end
   end
 
-  # Public: Determines if the node has any parents into which we should
-  # recurse when performing calculations. A domestic dead end includes when the
-  # node inputs are all abroad.
-  #
-  # Returns true or false.
-  def domestic_dead_end?
-    unless defined?(@domestic_dead_end)
-      @domestic_dead_end = right_dead_end? ||
-        input_edges.all? { |edge| edge.rgt_node.abroad? }
-    end
-
-    @domestic_dead_end
-  end
-
   # Public: A combination of loss, treat-as-loss, and output efficiency compensation factors.
   #
   # Adjusts recursively calculated values for:

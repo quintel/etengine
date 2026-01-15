@@ -1,7 +1,7 @@
-# Presents the primary and final demands of application_group nodes
+# Presents the primary demands of application_group nodes
 # as a CSV file.
 class ApplicationDemandsSerializer
-  attr_reader :final_carriers, :primary_carriers
+  attr_reader :primary_carriers
 
   # Creates a new application demands serializer.
   #
@@ -22,8 +22,7 @@ class ApplicationDemandsSerializer
     CSV.generate do |csv|
       csv << [
         'key', 'primary_co2_emission',
-        *primary_carriers.map { |c| "primary_demand_of_#{c} (MJ)" },
-        *final_carriers.map { |c| "final_demand_of_#{c} (MJ)" }
+        *primary_carriers.map { |c| "primary_demand_of_#{c} (MJ)" }
       ]
 
       @graph.group_nodes(:application_group).each do |node|
@@ -40,29 +39,22 @@ class ApplicationDemandsSerializer
     [
       node.key,
       node.query.primary_co2_emission,
-      *primary_carriers.map { |ca| node.query.primary_demand_of(ca) },
-      *final_carriers.map { |ca| node.query.final_demand_of(ca) }
+      *primary_carriers.map { |ca| node.query.primary_demand_of(ca) }
     ]
   end
 
   # Internal: Determines those carriers which may have a non-zero primary
-  # or final demand, so as not to waste time calculating values which will
+  # demand, so as not to waste time calculating values which will
   # always be zero.
   def populate_carriers!
     primary_carriers = Set.new
-    final_carriers   = Set.new
 
     @graph.nodes.each do |conv|
       if conv.query.right_dead_end? || conv.primary_energy_demand?
         primary_carriers.merge(conv.outputs.map { |c| c.carrier.key })
       end
-
-      if conv.final_demand_group?
-        final_carriers.merge(conv.outputs.map { |c| c.carrier.key })
-      end
     end
 
     @primary_carriers = primary_carriers.to_a.sort
-    @final_carriers = final_carriers.to_a.sort
   end
 end

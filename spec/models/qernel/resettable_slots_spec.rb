@@ -2,12 +2,12 @@ require 'spec_helper'
 
 module Qernel
   describe Node do
-    describe "max_demand_recursive" do
+    describe "resettable slots with hidden edges" do
       before do
         @gql = Scenario.default.gql
       end
 
-      it "equals max_demand if max_demand is available"  do
+      it "calculates primary_demand correctly"  do
         expect(@gql.query_future("V(resettable_slots_with_hidden_edge, demand)")).to eq(11000.0)
         expect(@gql.query_future("V(resettable_slots_with_hidden_edge_child, demand)")).to eq(11000.0)
         expect(@gql.query_future("V(resettable_slots_with_hidden_edge_child, primary_demand)")).to eq(11000.0)
