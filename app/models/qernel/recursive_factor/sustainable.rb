@@ -27,7 +27,7 @@ module Qernel::RecursiveFactor::Sustainable
   end
 
   def sustainability_share_factor(edge)
-    return nil unless domestic_dead_end? || primary_energy_demand?
+    return nil unless right_dead_end? || primary_energy_demand?
 
     # Called sustainability_share directly on a domestic or primary node.
     return query.dataset_get(:sustainability_share) unless edge

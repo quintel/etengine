@@ -59,8 +59,6 @@ module Qernel
           name.start_with?('cost_') ||
           name.start_with?('primary_demand') ||
           name.start_with?('demand_of_') ||
-          name.start_with?('dependent_supply') ||
-          name.start_with?('final_demand') ||
           super
       end
 
@@ -82,10 +80,6 @@ module Qernel
         elsif /^primary_demand(\w*)$/.match?(method_id_s)
           node.send(method_id, *arguments)
         elsif /^demand_of_(\w*)$/.match?(method_id_s)
-          node.send(method_id, *arguments)
-        elsif /^dependent_supply(\w*)$/.match?(method_id_s)
-          node.send(method_id, *arguments)
-        elsif /^final_demand(\w*)$/.match?(method_id_s)
           node.send(method_id, *arguments)
         else
           Rails.logger.info("NodeApi#method_missing: #{method_id}")
