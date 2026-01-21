@@ -160,7 +160,6 @@ module Inspect
 
       apply_scenario_changes(
         scenario,
-        success_path: inspect_scenario_path(id: scenario.id),
         failure_path: edit_path,
         success_notice: success_notice,
         render_on_invalid: render_on_invalid
@@ -186,7 +185,7 @@ module Inspect
     end
 
     # Applies scenario changes via updater and updates user sortables in a transaction
-    def apply_scenario_changes(scenario, success_path:, failure_path:, success_notice:, render_on_invalid:)
+    def apply_scenario_changes(scenario, failure_path:, success_notice:, render_on_invalid:)
       updater_params = build_updater_params(params)
       force_update = params[:force_update].present?
       result = ::ScenarioUpdater.new(scenario, updater_params, current_user, skip_validation: force_update).call
@@ -214,7 +213,7 @@ module Inspect
       end
 
       if success
-        redirect_to success_path, notice: success_notice
+        redirect_to inspect_scenario_path(id: scenario.id), notice: success_notice
       else
         # If there are validation errors and force_update wasn't used, render the form
         if flash.now[:show_force_update]

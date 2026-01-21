@@ -31,7 +31,6 @@ module Qernel
       include Cost
       include DemandHelpers
       include DemandSupply
-      include Employment
       include HelperCalculations
       include FallbackMethods
 
