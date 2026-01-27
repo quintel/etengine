@@ -9,14 +9,6 @@ module Api
         authorize!(:read, @scenario)
       end
 
-      # GET /api/v3/scenarios/:id/application_demands
-      #
-      # Returns a CSV file containing the primary and final demands of nodes belonging to the
-      # application_group group.
-      def application_demands
-        send_csv(ApplicationDemandsSerializer.new(@scenario), 'application_demands.%d.csv')
-      end
-
       # GET /api/v3/scenarios/:id/production_parameters
       #
       # Returns a CSV file containing the capacities and costs of some electricity and heat
