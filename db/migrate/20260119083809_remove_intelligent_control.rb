@@ -16,6 +16,10 @@ class RemoveIntelligentControl < ActiveRecord::Migration[7.1]
       buildings_useful_demand_lighting
   ].freeze
 
+  # Old and new keys for appliance efficiency
+  APPLIANCE_EFFICIENCY_OLD_KEY = 'buildings_useful_demand_for_appliances'
+  APPLIANCE_EFFICIENCY_NEW_KEY = 'buildings_appliances_efficiency'
+
   # Start year useful demand edge values for daylight and motion control
   DEMAND_AFTER_DAYLIGHT_SHARE_START_YEAR = 0.947
   DEMAND_AFTER_MOTION_SHARE_START_YEAR = 0.961
@@ -53,6 +57,11 @@ class RemoveIntelligentControl < ActiveRecord::Migration[7.1]
       # Remove old inputs from the scenario
       scenario.user_values.delete(OLD_DEMAND_INPUT_KEY)
       BUILDINGS_INTELLIGENT_LIGHT_KEYS.each { |key| scenario.user_values.delete(key) }
+    
+      # Migrate appliance efficiency key if present
+      if scenario.user_values.key?(APPLIANCE_EFFICIENCY_OLD_KEY)
+        scenario.user_values[APPLIANCE_EFFICIENCY_NEW_KEY] = scenario.user_values.delete(APPLIANCE_EFFICIENCY_OLD_KEY)
+      end
     end
   end
 
