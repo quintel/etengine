@@ -44,11 +44,12 @@ class RemoveIntelligentControl < ActiveRecord::Migration[7.1]
         scenario.user_values['buildings_useful_demand_lighting'] = demand_value
       elsif old_demand_set && intel_light_set
         # Both demand and intelligent light were set: combine effects for lighting
-        # this demand value (in percentage per year) needs to be converted into a factor per year
+        # Demand value (in percentage per year) needs to be converted into a factor per year
         demand_value = scenario.user_values[OLD_DEMAND_INPUT_KEY]
         demand_value_factor = 1 + demand_value / 100.0
-        # combined effect is demand value * combined intelligent light factor per year
+        # Combined effect demand and lighting, converted back to percentage per year
         combined_effect = demand_value_factor * combined_intelligent_light_effect_factor_per_year(scenario)
+        combined_effect = (combined_effect - 1.0) * 100.0
         scenario.user_values['buildings_useful_demand_appliances'] = demand_value
         scenario.user_values['buildings_useful_demand_lighting'] = combined_effect.clamp(-5.0, 5.0)
       elsif !old_demand_set && intel_light_set
@@ -91,7 +92,7 @@ class RemoveIntelligentControl < ActiveRecord::Migration[7.1]
       1.0
     end
 
-    # Determine combined effect (multiply only the effects that were set, 1.0 = no effect)
+    # Determine combined effect per year (multiply only the effects that were set, 1.0 = no effect)
     combined_intelligent_light_effect = useful_demand_effect_daylight * useful_demand_effect_motion
     years = scenario.end_year - scenario.start_year
     combined_intelligent_light_effect ** (1.0 / years)
