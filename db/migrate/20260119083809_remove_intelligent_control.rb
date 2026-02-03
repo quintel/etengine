@@ -44,17 +44,15 @@ class RemoveIntelligentControl < ActiveRecord::Migration[7.1]
         scenario.user_values['buildings_useful_demand_lighting'] = demand_value
       elsif old_demand_set && intel_light_set
         # Both demand and intelligent light were set: combine effects for lighting
-        # Demand value (in percentage per year) needs to be converted into a factor per year
         demand_value = scenario.user_values[OLD_DEMAND_INPUT_KEY]
-        demand_value_factor = 1 + demand_value / 100.0
-        # Combined effect demand and lighting, converted back to percentage per year
-        combined_effect = demand_value_factor * combined_intelligent_light_effect_factor_per_year(scenario)
-        combined_effect = (combined_effect - 1.0) * 100.0
+        demand_factor = 1 + demand_value / 100.0
+        lighting_factor = combined_intelligent_light_effect_factor_per_year(scenario)
+        combined_effect = (demand_factor * lighting_factor - 1.0) * 100.0
         scenario.user_values['buildings_useful_demand_appliances'] = demand_value
         scenario.user_values['buildings_useful_demand_lighting'] = combined_effect.clamp(-5.0, 5.0)
       elsif !old_demand_set && intel_light_set
         # Only intelligent light was set: use intelligent light effect for lighting
-        intel_light_effect = combined_intelligent_light_effect_percentage_per_year(scenario)
+        intel_light_effect = (combined_intelligent_light_effect_factor_per_year(scenario) - 1.0) * 100.0
         scenario.user_values['buildings_useful_demand_lighting'] = intel_light_effect.clamp(-5.0, 5.0)
       end
 
@@ -96,13 +94,5 @@ class RemoveIntelligentControl < ActiveRecord::Migration[7.1]
     combined_intelligent_light_effect = useful_demand_effect_daylight * useful_demand_effect_motion
     years = scenario.end_year - scenario.start_year
     combined_intelligent_light_effect ** (1.0 / years)
-    # This value needs to be returned
-  end
-
-  # The following should be a new function, which will convert the previous factor per year into
-  # a percentage per year
-  def combined_intelligent_light_effect_percentage_per_year(scenario)
-    # Convert combined light effect to % per year
-    (combined_intelligent_light_effect_factor_per_year(scenario) - 1.0) * 100.0
   end
 end
