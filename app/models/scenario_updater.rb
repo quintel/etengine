@@ -74,8 +74,9 @@ class ScenarioUpdater
 
   # Post-save
   def post_save(scenario_data, persisted)
-    set_preset_roles = truthy?(scenario_data[:set_preset_roles])
-    _post_saved = yield post_save_operations(set_preset_roles)
+    set_preset_roles     = truthy?(scenario_data[:set_preset_roles])
+    saved_scenario_users = scenario_data[:saved_scenario_users]
+    _post_saved          = yield post_save_operations(set_preset_roles, saved_scenario_users)
     Success(persisted)
   end
 
@@ -148,8 +149,8 @@ class ScenarioUpdater
     service(:PersistScenario).call(scenario, attributes, skip_validation)
   end
 
-  def post_save_operations(set_preset_roles)
-    service(:PostSaveOperations).call(scenario, set_preset_roles, current_user)
+  def post_save_operations(set_preset_roles, saved_scenario_users)
+    service(:PostSaveOperations).call(scenario, set_preset_roles, saved_scenario_users, current_user)
   end
 
   # Helper to instantiate services
