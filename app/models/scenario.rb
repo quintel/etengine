@@ -369,6 +369,25 @@ class Scenario < ApplicationRecord
     copy_roles_from_parent
   end
 
+  # Upserts ScenarioUser records from an explicit list of user params. Used
+  # when MyETM pushes a SavedScenario's roles onto the underlying session.
+  def sync_users_from_params(user_params)
+    user_params.each do |entry|
+      entry = entry.with_indifferent_access
+
+      if (existing = find_scenario_user_by(entry))
+        existing.role_id = entry[:role_id]
+        existing.save(validate: false)
+      else
+        scenario_users.create!(
+          user_id: entry[:user_id].presence,
+          user_email: entry[:user_email].presence,
+          role_id: entry[:role_id]
+        )
+      end
+    end
+  end
+
   private
 
   def copy_roles_from_parent
@@ -380,6 +399,12 @@ class Scenario < ApplicationRecord
         scenario_users.create(user: preset_user.user, role_id: preset_user.role_id)
       end
     end
+  end
+
+  def find_scenario_user_by(entry)
+    return scenario_users.find_by(user_id: entry[:user_id]) if entry[:user_id]
+
+    scenario_users.find_by(user_email: entry[:user_email]) if entry[:user_email]
   end
 
   # Validation method for when a user sets their metadata.
