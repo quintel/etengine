@@ -306,7 +306,8 @@ module Api
 
         if final_params[:scenario].blank?
           authorize!(:read, @scenario)
-        elsif final_params[:scenario][:set_preset_roles].present?
+        elsif final_params[:scenario][:set_preset_roles].present? ||
+              final_params[:scenario][:saved_scenario_users].present?
           authorize!(:destroy, @scenario)
         else
           authorize!(:update, @scenario)
@@ -472,7 +473,8 @@ module Api
           :set_preset_roles,
           :source,
           { user_values: {} },
-          { metadata: {} }
+          { metadata: {} },
+          { saved_scenario_users: %i[user_id user_email role_id] }
         ])
 
         attrs = attrs[:scenario] || {}
