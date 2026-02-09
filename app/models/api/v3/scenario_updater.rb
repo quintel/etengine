@@ -49,7 +49,7 @@ module Api
           'id', 'present_updated_at', 'created_at', 'updated_at'
         ).merge(
           @scenario_data
-            .except(:area_code, :end_year, :set_preset_roles)
+            .except(:area_code, :end_year, :set_preset_roles, :saved_scenario_users)
             .merge(balanced_values:, user_values:, metadata:)
         )
 
@@ -57,6 +57,7 @@ module Api
           return false unless @scenario.save(validate: false)
 
           @scenario.copy_preset_roles if copy_preset_roles?
+          @scenario.sync_users_from_params(@scenario_data[:saved_scenario_users]) if @scenario_data[:saved_scenario_users]
           @scenario.scenario_version_tag&.update(user: @current_user)
           true
         else
