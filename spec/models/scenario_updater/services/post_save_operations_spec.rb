@@ -8,13 +8,13 @@ RSpec.describe ScenarioUpdater::Services::PostSaveOperations do
 
   it 'copies preset roles if requested' do
     expect(scenario).to receive(:copy_preset_roles).with(no_args)
-    service.call(scenario, true, 'user')
+    service.call(scenario, true, '', 'user')
   end
 
   it 'updates version tag' do
     version_tag = double('VersionTag')
     allow(scenario).to receive(:scenario_version_tag).and_return(version_tag)
     expect(version_tag).to receive(:update).with(user: 'user')
-    service.call(scenario, false, 'user')
+    service.call(scenario, false, '', 'user')
   end
 end

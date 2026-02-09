@@ -18,7 +18,7 @@ class ScenarioUpdater
 
       def filter_scenario_data(scenario, scenario_data)
         scenario_data
-          .except(:area_code, :end_year, :set_preset_roles, :user_values)
+          .except(:area_code, :end_year, :set_preset_roles, :saved_scenario_users, :user_values)
           .merge(metadata: metadata_to_apply(scenario, scenario_data))
       end
 
