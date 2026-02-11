@@ -17,11 +17,18 @@ module Api
         send_csv(ProductionParametersSerializer.new(@scenario), 'production_parameters.%d.csv')
       end
 
-      # GET /api/v3/scenarios/:id/energy_flow
+      # GET /api/v3/scenarios/:id/energy_flow_future
       #
-      # Returns a CSV file containing the energetic inputs and outputs of every node in the graph.
-      def energy_flow
-        send_csv(NodeFlowSerializer.new(@scenario.gql.future.graph, 'MJ'), 'energy_flow.%d.csv')
+      # Returns a CSV file containing the energetic inputs and outputs of every node in the future graph.
+      def energy_flow_future
+        send_csv(NodeFlowSerializer.new(@scenario.gql.future.graph, 'MJ'), 'energy_flow_future.%d.csv')
+      end
+
+      # GET /api/v3/scenarios/:id/energy_flow_present
+      #
+      # Returns a CSV file containing the energetic inputs and outputs of every node in the present graph.
+      def energy_flow_present
+        send_csv(NodeFlowSerializer.new(@scenario.gql.present.graph, 'MJ'), 'energy_flow_present.%d.csv')
       end
 
       # GET /api/v3/scenarios/:id/molecule_flow
