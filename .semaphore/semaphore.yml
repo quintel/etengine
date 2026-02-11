@@ -24,19 +24,22 @@ blocks:
             - bundle config set --local deployment 'true'
             - bundle install || (rm -rf vendor/bundle && cache clear && bundle install)
             - cache store
-            - bundle exec rails db:setup
-            - bundle exec rails assets:precompile
+            - 'bundle exec rails db:setup'
+            - 'bundle exec rails assets:precompile'
             - bundle exec rspec
 promotions:
   - name: Deploy to staging
     pipeline_file: deploy_staging.yml
     auto_promote:
-      when: "result = 'passed' and branch = 'master'"
+      when: result = 'passed' and branch = 'master'
+    deployment_target: staging
   - name: Deploy to production
     pipeline_file: deploy_production.yml
     auto_promote:
-      when: "result = 'passed' and branch = 'production'"
+      when: result = 'passed' and branch = 'production'
+    deployment_target: production
   - name: Deploy to stable
     pipeline_file: deploy_stable.yml
     auto_promote:
-      when: "result = 'passed' and branch = 'auth-again'"
+      when: result = 'passed' and branch = 'auth-again'
+    deployment_target: 2025-S1
