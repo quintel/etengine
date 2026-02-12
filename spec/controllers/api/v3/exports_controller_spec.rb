@@ -7,7 +7,7 @@ describe Api::V3::ExportController do
   let(:user) { create(:user) }
   let(:headers) { access_token_header(user, :write) }
 
-  describe 'GET energy_flows.csv' do
+  describe 'GET energy_flow.csv' do
     before do
       request.headers.merge!(headers)
       get :energy_flow, params: { id: scenario.id }, format: :csv
@@ -27,6 +27,29 @@ describe Api::V3::ExportController do
 
     it 'renders the CSV' do
       expect(response.body).to eq(NodeFlowSerializer.new(scenario.gql.future.graph, 'MJ').as_csv)
+    end
+  end
+
+  describe 'GET energy_flow_present.csv' do
+    before do
+      request.headers.merge!(headers)
+      get :energy_flow_present, params: { id: scenario.id }, format: :csv
+    end
+
+    it 'is successful' do
+      expect(response).to be_ok
+    end
+
+    it 'sets the content type to text/csv' do
+      expect(response.media_type).to eq('text/csv')
+    end
+
+    it 'sets the CSV filename' do
+      expect(response.headers['Content-Disposition']).to include("energy_flow_present.#{scenario.id}.csv")
+    end
+
+    it 'renders the CSV' do
+      expect(response.body).to eq(NodeFlowSerializer.new(scenario.gql.present.graph, 'MJ').as_csv)
     end
   end
 
