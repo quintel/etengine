@@ -7,10 +7,10 @@ describe Api::V3::ExportController do
   let(:user) { create(:user) }
   let(:headers) { access_token_header(user, :write) }
 
-  describe 'GET energy_flow_future.csv' do
+  describe 'GET energy_flow.csv' do
     before do
       request.headers.merge!(headers)
-      get :energy_flow_future, params: { id: scenario.id }, format: :csv
+      get :energy_flow, params: { id: scenario.id }, format: :csv
     end
 
     it 'is successful' do
@@ -22,7 +22,7 @@ describe Api::V3::ExportController do
     end
 
     it 'sets the CSV filename' do
-      expect(response.headers['Content-Disposition']).to include("energy_flow_future.#{scenario.id}.csv")
+      expect(response.headers['Content-Disposition']).to include("energy_flow.#{scenario.id}.csv")
     end
 
     it 'renders the CSV' do
