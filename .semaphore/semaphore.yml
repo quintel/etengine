@@ -18,21 +18,13 @@ blocks:
         - name: Test
           commands:
             - checkout
-# Start temporary changes to fix semaphore caching issues
-            # - sem-service start mysql 8
-            # - cache restore
             - sem-service start mysql 8
-            - cache clear
-            - rm -rf vendor/bundle
-            - bundle config unset path || true
-            - bundle config unset deployment || true
             - sudo apt-get update
             - sudo apt-get install -y libmysqlclient-dev
-            - bundle install
-# End temporary changes to fix semaphore caching issues
+            - cache restore
             - gem install bundler
             - bundle config set --local deployment 'true'
-            - bundle install || (rm -rf vendor/bundle && cache clear && bundle install)
+            - bundle install
             - cache store
             - 'bundle exec rails db:setup'
             - 'bundle exec rails assets:precompile'
