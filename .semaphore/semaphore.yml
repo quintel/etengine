@@ -3,7 +3,7 @@ name: Test ETEngine
 agent:
   machine:
     type: e1-standard-2
-    os_image: ubuntu2004
+    os_image: ubuntu2404
 execution_time_limit:
   hours: 6
 blocks:
@@ -19,10 +19,12 @@ blocks:
           commands:
             - checkout
             - sem-service start mysql 8
+            - sudo apt-get update
+            - sudo apt-get install -y libmysqlclient-dev
             - cache restore
             - gem install bundler
             - bundle config set --local deployment 'true'
-            - bundle install || (rm -rf vendor/bundle && cache clear && bundle install)
+            - bundle install
             - cache store
             - 'bundle exec rails db:setup'
             - 'bundle exec rails assets:precompile'
