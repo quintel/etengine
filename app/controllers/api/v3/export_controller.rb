@@ -19,9 +19,16 @@ module Api
 
       # GET /api/v3/scenarios/:id/energy_flow
       #
-      # Returns a CSV file containing the energetic inputs and outputs of every node in the graph.
+      # Returns a CSV file containing the energetic inputs and outputs of every node in the future graph.
       def energy_flow
         send_csv(NodeFlowSerializer.new(@scenario.gql.future.graph, 'MJ'), 'energy_flow.%d.csv')
+      end
+
+      # GET /api/v3/scenarios/:id/energy_flow_present
+      #
+      # Returns a CSV file containing the energetic inputs and outputs of every node in the present graph.
+      def energy_flow_present
+        send_csv(NodeFlowSerializer.new(@scenario.gql.present.graph, 'MJ'), 'energy_flow_present.%d.csv')
       end
 
       # GET /api/v3/scenarios/:id/molecule_flow
