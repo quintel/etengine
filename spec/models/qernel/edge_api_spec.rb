@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Qernel::NodeApi::Base do
-  let(:supplier) { FactoryBot.build(:node, key: :supplier) }
-  let(:consumer) { FactoryBot.build(:node, key: :consumer) }
+  let(:supplier) { build(:node, key: :supplier) }
+  let(:consumer) { build(:node, key: :consumer) }
   let(:carrier)  { Qernel::Carrier.new(key: :network_gas) }
   let!(:edge)    { Qernel::Edge.new('', consumer, supplier, carrier, :share) }
 

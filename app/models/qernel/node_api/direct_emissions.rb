@@ -135,7 +135,7 @@ module Qernel
           return composition if composition
         end
 
-        nil # TODO: consider this case
+        0.0
       end
     end
   end

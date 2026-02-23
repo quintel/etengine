@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Presents comprehensive emission data including gross, captured, and net emissions
 # for both fossil and biogenic CO2, plus other GHG emissions.
 class EmissionsExportSerializer
@@ -20,7 +22,7 @@ class EmissionsExportSerializer
 
       nodes.each do |node|
         row = node_row(node)
-        csv << row if row  # Only include valid rows (skip nil)
+        csv << row if row # Only include valid rows (skip nil)
       end
     end
   end
@@ -42,19 +44,17 @@ class EmissionsExportSerializer
   def nodes
     # Include all energy nodes that have emissions or are final demand nodes
     @graph.nodes.select do |node|
-      has_emissions?(node) || node.groups.include?(:final_demand)
+      emissions?(node) || node.groups.include?(:final_demand)
     end.sort_by(&:key)
   end
 
-  def has_emissions?(node)
+  def emissions?(node)
     node.query.direct_co2_emission_of_fossil_gross.positive? ||
       node.query.direct_co2_emission_of_bio_gross.positive?
   rescue StandardError => e
     # Nodes without DirectEmissions module (e.g., molecule graph nodes) will raise NoMethodError
     # This is expected and we silently exclude them
-    Rails.logger.debug(
-      "Emissions check failed for #{node.key}: #{e.class.name} - #{e.message}"
-    )
+    Rails.logger.debug { "Emissions check failed for #{node.key}: #{e.class.name} - #{e.message}" }
     false
   end
 
@@ -78,7 +78,7 @@ class EmissionsExportSerializer
     co2_production = to_kton(fossil_gross)
     co2_capture = to_kton(fossil_captured + bio_captured)
 
-    # Column 3: Other GHG emissions (CH4, N2O, etc. - currently 0, future: AREA attributes)
+    # TODO: Column 3: Other GHG emissions (CH4, N2O, etc. - currently 0, future: AREA attributes)
     other_ghg = 0.0
 
     # Column 4: Total GHG emissions = production - capture + other
@@ -88,9 +88,8 @@ class EmissionsExportSerializer
     bio_net = safe_query(node, :direct_co2_emission_of_bio)
     biogenic = bio_net.nil? ? nil : to_kton(bio_net)
 
-    # Column 6: CO2 emissions end-use allocation (primary emissions)
-    primary_fossil = safe_query(node, :primary_co2_emission_of_fossil)
-    end_use_allocation = primary_fossil.nil? ? nil : to_kton(primary_fossil)
+    # TODO: Column 6: CO2 emissions end-use allocation (PLACEHOLDER)
+    end_use_allocation = 0.0
 
     [
       node.key,
@@ -147,6 +146,7 @@ class EmissionsExportSerializer
     end
 
     return '0' if value.abs < 0.000001  # 1 kg
+
     value.to_s
   end
 end

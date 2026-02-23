@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe EmissionsExportSerializer do
   let(:scenario) { Scenario.default }
-  let(:serializer) { EmissionsExportSerializer.new(scenario) }
+  let(:serializer) { described_class.new(scenario) }
 
   describe '#as_csv' do
     it 'returns a CSV string' do
@@ -30,14 +30,12 @@ RSpec.describe EmissionsExportSerializer do
       expect(csv.length).to be >= 1
 
       # If there are data rows, validate structure
-      if csv.length > 1
-        expect(csv[1].length).to eq(7)
-      end
+      expect(csv[1].length).to eq(7) if csv.length > 1
     end
 
     it 'formats node data correctly when rows exist' do
       csv = CSV.parse(serializer.as_csv)
-      data_rows = csv[1..-1]  # Skip header
+      data_rows = csv[1..] # Skip header
 
       # Each row (if any) should have 7 columns
       data_rows.each do |row|
@@ -49,21 +47,19 @@ RSpec.describe EmissionsExportSerializer do
       it 'exports CO2 capture as negative value' do
         csv = CSV.parse(serializer.as_csv)
         # Find any row with capture value
-        rows_with_capture = csv[1..-1].select { |row| row[2].to_f < 0 }
+        rows_with_capture = csv[1..].select { |row| row[2].to_f < 0 }
 
         # If there are CCS nodes, they should have negative capture
-        if rows_with_capture.any?
-          expect(rows_with_capture.first[2].to_f).to be < 0
-        end
+        expect(rows_with_capture.first[2].to_f).to be < 0 if rows_with_capture.any?
       end
 
       it 'validates Total GHG = Production - Capture + Other GHG' do
         csv = CSV.parse(serializer.as_csv)
-        data_rows = csv[1..-1]
+        data_rows = csv[1..]
 
         data_rows.each do |row|
           production = row[1].to_f
-          capture = row[2].to_f  # Already negative in export
+          capture = row[2].to_f # Already negative in export
           other_ghg = row[3].to_f
           total_ghg = row[4].to_f
 
@@ -111,7 +107,6 @@ RSpec.describe EmissionsExportSerializer do
       expect(serializer.send(:format_value, 1.23456789)).to eq('1.23456789')
     end
 
-
     it 'handles integer-like floats correctly' do
       expect(serializer.send(:format_value, 5.0)).to eq('5.0')
     end
@@ -126,33 +121,29 @@ RSpec.describe EmissionsExportSerializer do
     end
   end
 
-  describe '#has_emissions?' do
+  describe '#emissions?' do
     let(:node_with_fossil) do
       double('Node', query: double('Query',
         direct_co2_emission_of_fossil_gross: 10.0,
-        direct_co2_emission_of_bio_gross: 0.0
-      ))
+        direct_co2_emission_of_bio_gross: 0.0))
     end
 
     let(:node_with_bio) do
       double('Node', query: double('Query',
         direct_co2_emission_of_fossil_gross: 0.0,
-        direct_co2_emission_of_bio_gross: 5.0
-      ))
+        direct_co2_emission_of_bio_gross: 5.0))
     end
 
     let(:node_with_both) do
       double('Node', query: double('Query',
         direct_co2_emission_of_fossil_gross: 10.0,
-        direct_co2_emission_of_bio_gross: 5.0
-      ))
+        direct_co2_emission_of_bio_gross: 5.0))
     end
 
     let(:node_with_neither) do
       double('Node', query: double('Query',
         direct_co2_emission_of_fossil_gross: 0.0,
-        direct_co2_emission_of_bio_gross: 0.0
-      ))
+        direct_co2_emission_of_bio_gross: 0.0))
     end
 
     let(:node_with_error) do
@@ -162,23 +153,23 @@ RSpec.describe EmissionsExportSerializer do
     end
 
     it 'returns true for nodes with fossil emissions' do
-      expect(serializer.send(:has_emissions?, node_with_fossil)).to be true
+      expect(serializer.send(:emissions?, node_with_fossil)).to be(true)
     end
 
     it 'returns true for nodes with bio emissions' do
-      expect(serializer.send(:has_emissions?, node_with_bio)).to be true
+      expect(serializer.send(:emissions?, node_with_bio)).to be(true)
     end
 
     it 'returns true for nodes with both emission types' do
-      expect(serializer.send(:has_emissions?, node_with_both)).to be true
+      expect(serializer.send(:emissions?, node_with_both)).to be(true)
     end
 
     it 'returns false for nodes with no emissions' do
-      expect(serializer.send(:has_emissions?, node_with_neither)).to be false
+      expect(serializer.send(:emissions?, node_with_neither)).to be(false)
     end
 
     it 'returns false when query raises an error' do
-      expect(serializer.send(:has_emissions?, node_with_error)).to be false
+      expect(serializer.send(:emissions?, node_with_error)).to be(false)
     end
   end
 
@@ -198,11 +189,13 @@ RSpec.describe EmissionsExportSerializer do
     end
 
     let(:node_returning_nan) do
-      double('Node', key: :nan_node, query: double('Query', direct_co2_emission_of_fossil: Float::NAN))
+      double('Node', key: :nan_node,
+        query: double('Query', direct_co2_emission_of_fossil: Float::NAN))
     end
 
     let(:node_returning_infinity) do
-      double('Node', key: :inf_node, query: double('Query', direct_co2_emission_of_fossil: Float::INFINITY))
+      double('Node', key: :inf_node,
+        query: double('Query', direct_co2_emission_of_fossil: Float::INFINITY))
     end
 
     it 'returns the query result when successful' do
@@ -218,7 +211,8 @@ RSpec.describe EmissionsExportSerializer do
     end
 
     it 'returns nil when query returns NaN' do
-      expect(serializer.send(:safe_query, node_returning_nan, :direct_co2_emission_of_fossil)).to be_nil
+      expect(serializer.send(:safe_query, node_returning_nan,
+        :direct_co2_emission_of_fossil)).to be_nil
     end
 
     it 'returns nil when query returns Infinity' do
@@ -226,7 +220,8 @@ RSpec.describe EmissionsExportSerializer do
     end
 
     it 'returns nil when query returns nil' do
-      nil_node = double('Node', key: :nil_node, query: double('Query', direct_co2_emission_of_fossil: nil))
+      nil_node = double('Node', key: :nil_node,
+        query: double('Query', direct_co2_emission_of_fossil: nil))
       expect(serializer.send(:safe_query, nil_node, :direct_co2_emission_of_fossil)).to be_nil
     end
   end

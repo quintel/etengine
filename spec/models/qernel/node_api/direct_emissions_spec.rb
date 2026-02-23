@@ -113,7 +113,6 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       end
     end
 
-
     context 'with multi-level supply chain' do
       # Create a graph:
       # [Coal Producer] -> [Coal Plant] -> [Electricity Grid] -> [Data Center] -> [Terminus]
@@ -322,7 +321,6 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       end
     end
 
-
     context 'with zero total input' do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
@@ -359,7 +357,8 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
           builder.add(:green_gas_producer, groups: [:primary_energy_demand], demand: 30)
 
           # Network gas distributor receives from two sources
-          builder.connect(:natural_gas_producer, :network_gas_distributor, :natural_gas, type: :share)
+          builder.connect(:natural_gas_producer, :network_gas_distributor, :natural_gas,
+            type: :share)
           builder.connect(:green_gas_producer, :network_gas_distributor, :green_gas, type: :share)
 
           # Distributor supplies burner with mixed network gas (nil co2 value - uses recursion)
