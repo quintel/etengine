@@ -12,6 +12,7 @@ module Qernel
       include RecursiveFactor::PrimaryCo2
       include RecursiveFactor::Sustainable
 
+      include DirectEmissions
       include EmissionsCurve
 
       dataset_accessors :from_molecules
