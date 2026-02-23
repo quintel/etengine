@@ -70,6 +70,14 @@ module Api
         send_csv(CostsParametersSerializer.new(@scenario), 'costs_parameters.%d.csv')
       end
 
+      # GET /api/v3/scenarios/:id/emissions
+      #
+      # Returns a CSV file containing direct emissions data including:
+      # CO2 production, CO2 capture, other GHG emissions, and biogenic emissions
+      def emissions
+        send_csv(EmissionsExportSerializer.new(@scenario), 'emissions.%d.csv')
+      end
+
       private
 
       def send_csv(serializer, filename_template)
