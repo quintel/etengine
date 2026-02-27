@@ -28,7 +28,8 @@ module Api
       #
       # Returns a CSV file containing the energetic inputs and outputs of every node in the present graph.
       def energy_flow_present
-        send_csv(NodeFlowSerializer.new(@scenario.gql.present.graph, 'MJ'), 'energy_flow_present.%d.csv')
+        send_csv(NodeFlowSerializer.new(@scenario.gql.present.graph, 'MJ'),
+          'energy_flow_present.%d.csv')
       end
 
       # GET /api/v3/scenarios/:id/molecule_flow
@@ -68,6 +69,14 @@ module Api
       # Returns a CSV file containing the cost paramaters of nodes belonging to costs groups.
       def costs_parameters
         send_csv(CostsParametersSerializer.new(@scenario), 'costs_parameters.%d.csv')
+      end
+
+      # GET /api/v3/scenarios/:id/emissions
+      #
+      # Returns a CSV file containing direct emissions data including:
+      # CO2 production, CO2 capture, other GHG emissions, and biogenic emissions
+      def emissions
+        send_csv(EmissionsExportSerializer.new(@scenario), 'emissions.%d.csv')
       end
 
       private
