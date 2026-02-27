@@ -93,12 +93,6 @@ gem "stackprof"
 gem 'sentry-ruby'
 gem "sentry-rails"
 gem "sentry-sidekiq"
-gem 'sentry-opentelemetry'
-
-# OpenTelemetry gems for distributed tracing
-gem 'opentelemetry-sdk'
-gem 'opentelemetry-exporter-otlp'
-gem 'opentelemetry-instrumentation-all'
 
 group :development do
   # gem 'quiet_assets'
