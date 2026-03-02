@@ -9,7 +9,7 @@ module Api
       before_action :assert_valid_sortable_type, only: %i[show update]
 
       rescue_from NoMethodError do |e|
-        raise e unless e.message.starts_with?("undefined method `permit'")
+        raise e unless e.message.starts_with?("undefined method 'permit'")
 
         render json: { errors: ['Invalid JSON payload'] }, status: :bad_request
       end

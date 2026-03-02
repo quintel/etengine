@@ -1,4 +1,4 @@
-ruby '~> 3.2.7'
+ruby '~> 3.4.7'
 
 source 'https://rubygems.org'
 
@@ -52,7 +52,7 @@ gem 'inline_svg'
 gem 'letter_opener'
 gem 'local_time'
 gem 'stimulus-rails'
-gem 'tailwindcss-rails'
+gem 'tailwindcss-rails', '~> 3.3.1'
 gem 'turbo-rails'
 gem 'view_component'
 
@@ -74,12 +74,13 @@ gem 'parallel'
 gem 'ruby-progressbar'
 
 # own gems
-gem 'quintel_merit', ref: '54d2be1', github: 'quintel/merit'
-gem 'atlas',         ref: '33f32a4', github: 'quintel/atlas'
-gem 'fever',         ref: '2a91194', github: 'quintel/fever'
-gem 'refinery',      ref: 'c39c9b1', github: 'quintel/refinery'
-gem 'rubel',         ref: 'e36554a', github: 'quintel/rubel'
-gem 'turbine-graph', '>=0.1',        require: 'turbine'
+gem 'quintel_merit', ref: 'e59980a', github: 'quintel/merit' #TODO: update once merged to master
+gem 'atlas',         ref: '89b1591', github: 'quintel/atlas' #TODO: update once merged to master
+gem 'fever',         ref: '4c2b4c1', github: 'quintel/fever' #TODO: update once merged to master
+gem 'refinery',      ref: 'c308c6d', github: 'quintel/refinery' #TODO: update once merged to master
+gem 'rubel',         ref: '32ae1ea', github: 'quintel/rubel' #TODO: update once merged to master
+gem 'turbine-graph', ref: 'fd07581', github: 'quintel/turbine', require: 'turbine' #TODO: update once merged to master
+# gem 'turbine-graph', '>=0.1',        require: 'turbine'
 
 # system gems
 gem 'mysql2'
@@ -102,7 +103,7 @@ end
 
 group :test, :development do
   gem 'binding_of_caller'
-  gem 'factory_bot_rails'
+  gem 'factory_bot_rails', '~> 6.0'
   gem 'pry-byebug'
   gem 'pry-rails'
   gem 'rspec-rails', '~> 7.0'
