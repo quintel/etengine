@@ -150,7 +150,7 @@ RSpec.describe Api::V3::UserSortablesController, type: :controller do
       before do
         allow_any_instance_of(described_class)
           .to receive(:sortable_params)
-          .and_raise(NoMethodError.new("undefined method `permit' for nil:NilClass"))
+          .and_raise(NoMethodError.new("undefined method 'permit' for nil:NilClass"))
       end
 
       it 'rescues and returns 400 Invalid JSON payload' do
