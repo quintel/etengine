@@ -36,6 +36,9 @@ module Etm
     config.active_support.deprecation = :log
     config.active_support.message_serializer = :message_pack
 
+    # Use a dedicated database for Solid Queue (see config/database.yml for connection details).
+    config.solid_queue.connects_to = { database: { writing: :queue } }
+
     config.encoding = "utf-8"
 
     config.filter_parameters << :password

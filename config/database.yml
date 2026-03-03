@@ -15,18 +15,28 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   socket: <%= ENV['DATABASE_HOST'].present? ? nil : '/tmp/mysql.sock' %>
 
-development: &development
-  <<: *default
-  database: <%= ENV.fetch('MYSQL_DATABASE', 'etengine_development') %>
-  host: <%= ENV.fetch('DATABASE_HOST', nil) %>
-  username: <%= ENV.fetch('MYSQL_USER', 'root') %>
-  password: <%= ENV.fetch('MYSQL_PASSWORD', nil) %>
+development:
+  primary: &development
+    <<: *default
+    database: <%= ENV.fetch('MYSQL_DATABASE', 'etengine_development') %>
+    host: <%= ENV.fetch('DATABASE_HOST', nil) %>
+    username: <%= ENV.fetch('MYSQL_USER', 'root') %>
+    password: <%= ENV.fetch('MYSQL_PASSWORD', nil) %>
+  queue:
+    <<: *development
+    database: <%= ENV.fetch('QUEUE_DATABASE', 'etengine_queue_development') %>
+    migrations_paths: db/queue_migrate
 
 # Warning: The database defined as "test" will be erased and re-generated from your development
 # database when you run "rake". Do not set this db to the same as development or production.
 test:
-  <<: *development
-  database: etengine_test
+  primary:
+    <<: *development
+    database: etengine_test
+  queue:
+    <<: *development
+    database: etengine_queue_test
+    migrations_paths: db/queue_migrate
 
 # As with config/credentials.yml, you never want to store sensitive information, like your database
 # password, in your source code. If your source code is ever seen by anyone, they now have access to
@@ -46,9 +56,19 @@ test:
 #   production: url: <%= ENV['DATABASE_URL'] %>
 #
 production:
-  <<: *default
-  url: <%= ENV['DATABASE_URL'] %>
+  primary:
+    <<: *default
+    url: <%= ENV['DATABASE_URL'] %>
+  queue:
+    <<: *default
+    url: <%= ENV['QUEUE_DATABASE_URL'] %>
+    migrations_paths: db/queue_migrate
 
 staging:
-  <<: *default
-  url: <%= ENV['DATABASE_URL'] %>
+  primary:
+    <<: *default
+    url: <%= ENV['DATABASE_URL'] %>
+  queue:
+    <<: *default
+    url: <%= ENV['QUEUE_DATABASE_URL'] %>
+    migrations_paths: db/queue_migrate

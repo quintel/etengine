@@ -36,7 +36,7 @@ gem 'cancancan', '~> 3.0'
 gem 'identity', ref: 'e18aa91', github: 'quintel/identity_rails'
 
 gem 'activerecord-session_store'
-gem 'sidekiq'
+gem 'solid_queue'
 
 # Auth front-end
 gem 'dry-initializer'
@@ -93,7 +93,6 @@ gem 'highline',                require: false
 gem "stackprof"
 gem 'sentry-ruby'
 gem "sentry-rails"
-gem "sentry-sidekiq"
 
 group :development do
   # gem 'quiet_assets'
