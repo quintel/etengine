@@ -79,7 +79,7 @@ describe 'APIv3 Scenarios interpolate_collection', :etsource_fixture do
     end
 
     it 'returns an error message' do
-      expect(response_data).to include('errors' => ['param is missing or the value is empty: scenario_ids'])
+      expect(response_data).to include('errors' => ['param is missing or the value is empty or invalid: scenario_ids'])
     end
   end
 
@@ -101,7 +101,7 @@ describe 'APIv3 Scenarios interpolate_collection', :etsource_fixture do
     end
 
     it 'returns an error message' do
-      expect(response_data).to include('errors' => ['param is missing or the value is empty: end_years'])
+      expect(response_data).to include('errors' => ['param is missing or the value is empty or invalid: end_years'])
     end
   end
 
