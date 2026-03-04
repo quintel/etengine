@@ -84,7 +84,7 @@ gem 'turbine-graph', ref: 'fd07581', github: 'quintel/turbine', require: 'turbin
 
 # system gems
 gem 'mysql2'
-gem 'dalli'
+gem 'solid_cache'
 
 gem 'term-ansicolor', '1.0.7', require: false
 gem 'highline',                require: false
