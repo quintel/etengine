@@ -20,9 +20,6 @@ Rails.application.configure do
   # or in config/master.key. This key is used to decrypt credentials (and other encrypted files).
   # config.require_master_key = true
 
-  # Use a different cache store in production
-  config.cache_store = :mem_cache_store, ENV["MEMCACHE_SERVERS"]
-
   # Disable serving static files from the `/public` folder by default since
   # Apache or NGINX already handles this.
   config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present?
@@ -43,11 +40,6 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
-  # Mount Action Cable outside main process or domain.
-  # config.action_cable.mount_path = nil
-  # config.action_cable.url = "wss://example.com/cable"
-  # config.action_cable.allowed_request_origins = [ "http://example.com", /http:\/\/example.*/ ]
-
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true
 
@@ -59,15 +51,12 @@ Rails.application.configure do
   config.log_tags = [ :request_id ]
 
   # Use a different cache store in production.
-  # config.cache_store = :mem_cache_store
+  config.cache_store = :solid_cache_store
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
-  # config.active_job.queue_adapter     = :resque
+  config.active_job.queue_adapter = :solid_queue
   # config.active_job.queue_name_prefix = "etm_#{Rails.env}"
   config.action_mailer.perform_caching = false
-
-  # Run ActiveJob inline until a queue is set up in production.
-  config.active_job.queue_adapter = :sidekiq
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
