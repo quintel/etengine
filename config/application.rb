@@ -39,6 +39,9 @@ module Etm
     # Use a dedicated database for Solid Queue (see config/database.yml for connection details).
     config.solid_queue.connects_to = { database: { writing: :queue } }
 
+    # Use a dedicated database for Solid Cache (see config/database.yml for connection details).
+    config.solid_cache.connects_to = { database: { writing: :cache } }
+
     config.encoding = "utf-8"
 
     config.filter_parameters << :password
