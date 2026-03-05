@@ -22,6 +22,9 @@ Rails.application.configure do
   # Enable hostname for puma-dev
   config.hosts << 'etengine.test'
 
+  # Disable host authorization in development for Docker (allows host.etm.local with any port)
+  config.host_authorization = { exclude: ->(request) { true } }
+
   # Always use a memory store so that we don't reload datasets on every request.
   config.cache_store = :memory_store, { size: 512 * (1024**3) } # 512 Mb
   # config.cache_store = :dalli_store

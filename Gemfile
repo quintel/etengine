@@ -94,11 +94,6 @@ gem 'sentry-ruby'
 gem "sentry-rails"
 gem "sentry-sidekiq"
 
-# OpenTelemetry gems for distributed tracing (sends to Grafana Cloud)
-gem 'opentelemetry-sdk'
-gem 'opentelemetry-exporter-otlp'
-gem 'opentelemetry-instrumentation-all'
-
 group :development do
   # gem 'quiet_assets'
   gem 'better_errors'
