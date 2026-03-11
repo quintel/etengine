@@ -36,7 +36,7 @@ client_refresh_url:
 standalone: false
 
 version_tag: <%= ENV.fetch('VERSION_TAG', 'latest') %>
-release: '2026-01'
+release: '2026-02'
 
 mailer:
   # E-mail address from which to send e-mails.
