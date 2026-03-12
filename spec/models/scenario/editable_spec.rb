@@ -398,7 +398,7 @@ RSpec.describe Scenario::Editable do
 
       it 'has an error on metadata' do
         expect(editable.errors[:metadata]).to include(
-          "is not valid JSON: 859: unexpected token at '{'"
+          "is not valid JSON: expected object key, got EOF at line 1 column 2"
         )
       end
     end

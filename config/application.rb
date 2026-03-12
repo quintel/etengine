@@ -9,7 +9,7 @@ Bundler.require(*Rails.groups)
 module Etm
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.0
+    config.load_defaults 8.0
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
@@ -35,6 +35,12 @@ module Etm
 
     config.active_support.deprecation = :log
     config.active_support.message_serializer = :message_pack
+
+    # Use a dedicated database for Solid Queue (see config/database.yml for connection details).
+    config.solid_queue.connects_to = { database: { writing: :queue } }
+
+    # Use a dedicated database for Solid Cache (see config/database.yml for connection details).
+    config.solid_cache.connects_to = { database: { writing: :cache } }
 
     config.encoding = "utf-8"
 
