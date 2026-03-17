@@ -74,13 +74,12 @@ gem 'parallel'
 gem 'ruby-progressbar'
 
 # own gems
-gem 'quintel_merit', ref: 'e59980a', github: 'quintel/merit' #TODO: update once merged to master
-gem 'atlas',         ref: '89b1591', github: 'quintel/atlas' #TODO: update once merged to master
-gem 'fever',         ref: '4c2b4c1', github: 'quintel/fever' #TODO: update once merged to master
-gem 'refinery',      ref: 'c308c6d', github: 'quintel/refinery' #TODO: update once merged to master
-gem 'rubel',         ref: '32ae1ea', github: 'quintel/rubel' #TODO: update once merged to master
-gem 'turbine-graph', ref: 'fd07581', github: 'quintel/turbine', require: 'turbine' #TODO: update once merged to master
-# gem 'turbine-graph', '>=0.1',        require: 'turbine'
+gem 'quintel_merit', ref: 'aae77e0', github: 'quintel/merit'
+gem 'atlas',         ref: 'f0fb6be', github: 'quintel/atlas'
+gem 'fever',         ref: '2afebd1', github: 'quintel/fever'
+gem 'refinery',      ref: '36b8e34', github: 'quintel/refinery'
+gem 'rubel',         ref: '9fe7010', github: 'quintel/rubel'
+gem 'turbine-graph', '>=0.1',        require: 'turbine'
 
 # system gems
 gem 'mysql2'

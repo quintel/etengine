@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/quintel/atlas.git
-  revision: 89b1591868c43eeefcf88a026bd90610e8e00d41
-  ref: 89b1591
+  revision: f0fb6bea437b69141eb8874b87f455fdeb803ba3
+  ref: f0fb6be
   specs:
     atlas (1.0.0)
       activemodel (>= 7)
@@ -14,8 +14,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/fever.git
-  revision: 4c2b4c1d1da2bc74f0d1a9825be94463e78169ee
-  ref: 4c2b4c1
+  revision: 2afebd1291a07a0768002271c73b6f6bbf40268e
+  ref: 2afebd1
   specs:
     fever (0.1.0)
 
@@ -37,8 +37,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/merit.git
-  revision: e59980abd112f47d6778ab4cbc1c16d456a2ae6b
-  ref: e59980a
+  revision: aae77e0a05df92af6c751738d39f9f8b8346e5a8
+  ref: aae77e0
   specs:
     quintel_merit (0.1.0)
       csv
@@ -53,8 +53,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/refinery.git
-  revision: c308c6d56f9b81e9b613a9dffc01ad941fb0ef93
-  ref: c308c6d
+  revision: 36b8e3457e930a0079262871e352b90b4c6c3eb9
+  ref: 36b8e34
   specs:
     refinery (0.0.1)
       ruby-graphviz
@@ -63,17 +63,10 @@ GIT
 
 GIT
   remote: https://github.com/quintel/rubel.git
-  revision: 32ae1ea09fcf06c88c7c771d307c202d8dcaf560
-  ref: 32ae1ea
+  revision: 9fe7010549222bd02d705ce915e31e3f9c271f11
+  ref: 9fe7010
   specs:
     rubel (0.1.1)
-
-GIT
-  remote: https://github.com/quintel/turbine.git
-  revision: fd0758104e8d8e8376e8b4012ab4249a059237e0
-  ref: fd07581
-  specs:
-    turbine-graph (0.1.3)
 
 GEM
   remote: https://rubygems.org/
@@ -690,6 +683,7 @@ GEM
     tilt (2.7.0)
     timeout (0.6.0)
     tsort (0.2.0)
+    turbine-graph (0.1.4)
     turbo-rails (2.0.23)
       actionpack (>= 7.1.0)
       railties (>= 7.1.0)
@@ -808,7 +802,7 @@ DEPENDENCIES
   tailwindcss-rails (~> 3.3.1)
   term-ansicolor (= 1.0.7)
   text-table
-  turbine-graph!
+  turbine-graph (>= 0.1)
   turbo-rails
   view_component
   watchr
