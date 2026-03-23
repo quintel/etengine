@@ -58,5 +58,4 @@ config/settings/*.local.yml
 config/environments/*.local.yml
 
 # Ignore key files for decrypting credentials and more.
-/config/*.key
-
+/config/credentials/*.key
