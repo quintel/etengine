@@ -62,6 +62,7 @@ class Graph
                 :area
 
   delegate :weather_properties, to: :area
+  delegate :emissions, to: :area
 
   def self.dataset_group_with_name(name)
     :"#{name}_graph"

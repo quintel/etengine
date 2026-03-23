@@ -39,6 +39,15 @@ module Etsource
       end
     end
 
+    #  same as weather?
+    def self.emissions(area_code)
+      key = "emissions.#{area_code}"
+
+      NastyCache.instance.fetch(key) do
+        Atlas::Dataset.find(area_code).emissions.to_h
+      end
+    end
+
     def self.region_codes(refresh: false)
       NastyCache.instance.delete('region_codes') if refresh
 

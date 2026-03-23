@@ -179,6 +179,14 @@ module Gql::Runtime
         keys.empty? ? scope.graph.area : scope.area(keys.first)
       end
 
+      # Public: Retrieves a single value from the emissions.csv file
+      def EMISSIONS(sector_key, type = :co2, date = :start_year)
+        keys = sector_key.to_s.split('.').map(&:to_sym)
+        keys << type
+
+        scope.graph.emissions.get(keys, date)
+      end
+
       # Public: Retrieves a single value from the weather_properties.csv file
       # associated with the currently-selected weather curve set.
       def WEATHER_PROPERTY(key)
