@@ -27,7 +27,6 @@ blocks:
             - 'ssh -i ~/.ssh/id_deploy "${SSH_USER}@${SSH_HOST}" -p $SSH_PORT "cd /var/www/etengine && ./deploy.sh"'
       secrets:
         - name: Docker Hub credentials
-        - name: ETEngine credentials master.key
         - name: Staging SSH settings
     run:
       when: branch = 'master'
