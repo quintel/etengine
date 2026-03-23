@@ -24,13 +24,13 @@
 
 set -e
 
-mkdir -p /tmp/atlas
+# mkdir -p /tmp/atlas
 
-CACHED_DATASETS_PATH=/tmp/atlas bundle exec rake deploy:load_etsource deploy:calculate_datasets
+# CACHED_DATASETS_PATH=/tmp/atlas bundle exec rake deploy:load_etsource deploy:calculate_datasets
 
-rm -rf /app/tmp/atlas/*.pack
-cp -R /tmp/atlas/*.pack /app/tmp/atlas
+# rm -rf /app/tmp/atlas/*.pack
+# cp -R /tmp/atlas/*.pack /app/tmp/atlas
 
-rm -rf /tmp/atlas
+# rm -rf /tmp/atlas
 
 bundle exec rails db:migrate
