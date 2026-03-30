@@ -33,6 +33,9 @@ module Etm
     config.i18n.available_locales = %i[en nl]
     config.i18n.default_locale = :en
 
+    # Use a dedicated database for Solid Queue (see config/database.yml for connection details).
+    config.solid_queue.connects_to = { database: { writing: :queue } }
+
     config.active_support.deprecation = :log
     config.active_support.message_serializer = :message_pack
 
