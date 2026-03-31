@@ -18,12 +18,14 @@ module Qernel
     dataset_accessors :weather_curve_set
     dataset_accessors :disabled_sectors
 
-    attr_accessor :graph
+    attr_accessor :graph, :emissions
     attr_reader :dataset_key, :key
 
     def initialize(graph = nil)
       self.graph = graph unless graph.nil?
       @dataset_key = @key = :area_data
+
+      @emissions   = Qernel::Emissions.new(graph)
     end
 
     # Remove when we replace :area with :area_code
@@ -55,9 +57,10 @@ module Qernel
       Etsource::Dataset.weather_properties(area_code, weather_curve_set)
     end
 
-    def emissions
-      fetch(:emissions) { Qernel::Emissions.new(**Etsource::Dataset.emissions(area_code)) }
-    end
+    # # TODO: will change after fixing ETScource::Loader
+    # def emissions
+    #   fetch(:emissions) { Qernel::Emissions.new(**Etsource::Dataset.emissions(area_code)) }
+    # end
 
     # ----- attributes/methods still used in gqueries. should be properly added to etsource or change gqueries.
 

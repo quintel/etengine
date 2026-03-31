@@ -1,4 +1,17 @@
 GIT
+  remote: https://github.com/quintel/atlas.git
+  revision: 02c849ef51d3efd5f64095c96ca020280e36fbeb
+  ref: 02c849e
+  specs:
+    atlas (1.0.0)
+      activemodel (>= 7)
+      activesupport (>= 7)
+      csv (>= 3)
+      gpgme (~> 2.0)
+      turbine-graph (>= 0.1)
+      virtus (~> 1.0)
+
+GIT
   remote: https://github.com/quintel/fever.git
   revision: 2a911947caba3bba1f837ae153654a9d47a6f42d
   ref: 2a91194
@@ -52,17 +65,6 @@ GIT
   ref: e36554a
   specs:
     rubel (0.1.1)
-
-PATH
-  remote: ../gems/atlas
-  specs:
-    atlas (1.0.0)
-      activemodel (>= 7)
-      activesupport (>= 7)
-      csv (>= 3)
-      gpgme (~> 2.0)
-      turbine-graph (>= 0.1)
-      virtus (~> 1.0)
 
 GEM
   remote: https://rubygems.org/

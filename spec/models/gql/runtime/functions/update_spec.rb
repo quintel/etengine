@@ -50,7 +50,7 @@ describe Gql::Runtime::Functions::Update, :etsource_fixture do
     end
   end
 
-  describe 'UPDATE(EMISSIONS(households, other_ghg), 10)' do
+  describe 'UPDATE(EMISSIONS(households), other_ghg, 10)' do
     before { result }
 
     it 'does not raise an error' do
@@ -58,7 +58,6 @@ describe Gql::Runtime::Functions::Update, :etsource_fixture do
     end
 
     it 'sets the emissions to 10' do
-      debugger
       expect(gql.query_future('EMISSIONS(households, other_ghg)')).to eq(10)
     end
   end

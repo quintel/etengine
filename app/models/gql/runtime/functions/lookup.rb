@@ -179,12 +179,45 @@ module Gql::Runtime
         keys.empty? ? scope.graph.area : scope.area(keys.first)
       end
 
-      # Public: Retrieves a single value from the emissions.csv file
-      def EMISSIONS(sector_key, type = :co2, date = :start_year)
-        keys = sector_key.to_s.split('.').map(&:to_sym)
-        keys << type
+      # Returns an attribute {Qernel::Emissions} or {Qernel::Emissions::ScopedSector}
+      #
+      # keys - The name of the sector ('industry.metal', or 'households'),
+      #      - The type of emissions (ghg, co2)
+      #      - A year of emission (1990), defaults to start_year
+      #
+      #
+      # EMISSIONS() without any keys returns {Qernel::Emissions}
+      #
+      #   EMISSIONS() # => <Qernel::Emissions>
+      #
+      #
+      # EMISSIONS(sector) with just a sector, returns {Qernel::Emissions::ScopedSector}
+      #
+      # Which can be used to update emission factors:
+      #   UPDATE(EMISSION(households), ghg, VALUE )
+      #   UPDATE(EMISSION('industry.metal'), co2, VALUE )
+      #
+      # Examples
+      #
+      #   EMISSIONS('industry.metal') # => <Qernel::Emissions::ScopedSector industry_metal>
+      #
+      #
+      # EMISSIONS(sector, type, year) returns an emission value
+      #
+      # Examples
+      #   EMISSIONS(households, ghg, 1990) => 2506777
+      #
+      def EMISSIONS(*keys)
+        return scope.graph.emissions if keys.empty?
 
-        scope.graph.emissions.get(keys, date)
+        keys[0] = keys.first.to_s.tr('.', '_').to_sym
+
+        return scope.graph.emissions.scope(keys.first) if keys.size == 1
+
+        # Start year is default in emission attributes, remove if supplied
+        keys.pop if keys.last == :start_year
+
+        scope.graph.emissions[keys.join('_').to_sym]
       end
 
       # Public: Retrieves a single value from the weather_properties.csv file

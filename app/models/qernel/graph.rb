@@ -163,6 +163,7 @@ class Graph
   def call_on_each_qernel_object(method_name)
     self.send(method_name)
     area.send(method_name)
+    emissions.send(method_name)
     carriers.each(&method_name)
 
     nodes.each do |n|

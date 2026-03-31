@@ -39,12 +39,12 @@ module Etsource
       end
     end
 
-    #  same as weather?
-    def self.emissions(area_code)
-      key = "emissions.#{area_code}"
-
-      NastyCache.instance.fetch(key) do
-        Atlas::Dataset.find(area_code).emissions.to_h
+    # Gets the emission keys from the default dataset
+    def self.emissions_keys
+      NastyCache.instance.fetch('emission_keys') do
+        Atlas::Dataset.find(
+          Etsource::Config.default_dataset_key
+        ).emissions.to_hash.keys
       end
     end
 
