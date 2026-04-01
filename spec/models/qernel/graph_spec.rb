@@ -622,6 +622,37 @@ module Qernel
 
         # Check query_interface_spec.rb to see how we update goals through GQL
       end
+
+      describe Graph, 'emissions integration' do
+        let(:graph) { Qernel::Graph.new }
+
+        it 'delegates emissions to area' do
+          expect(graph.emissions).to eq(graph.area.emissions)
+        end
+
+        it 'provides emissions as a Qernel::Emissions instance' do
+          expect(graph.emissions).to be_a(Qernel::Emissions)
+        end
+
+        it 'sets the graph reference in emissions' do
+          expect(graph.emissions.graph).to eq(graph)
+        end
+
+        describe '#call_on_each_qernel_object' do
+          it 'includes emissions in lifecycle methods' do
+            expect(graph.emissions).to receive(:assign_dataset_attributes)
+            graph.call_on_each_qernel_object(:assign_dataset_attributes)
+          end
+
+          it 'calls methods on area, emissions, and graph' do
+            expect(graph.area).to receive(:test_method)
+            expect(graph.emissions).to receive(:test_method)
+
+            allow(graph).to receive(:test_method)
+            graph.call_on_each_qernel_object(:test_method)
+          end
+        end
+      end
     end
   end
 end

@@ -181,9 +181,18 @@ module Gql::Runtime
 
       # Returns an attribute {Qernel::Emissions} or {Qernel::Emissions::ScopedSector}
       #
-      # keys - The name of the sector ('industry.metal', or 'households'),
-      #      - The type of emissions (ghg, co2)
-      #      - A year of emission (1990), defaults to start_year
+      # Emissions data is loaded from CSV files in ETSource with the following structure:
+      #   etm_sector, etm_subsector, type, ghg, unit, value
+      #
+      # Parameters:
+      #   - sector: ETM sector name (e.g., 'households', 'energy.electricity_and_heat_production')
+      #             Dots in sector names are converted to underscores for key generation
+      #   - type: Emission type (energetic, non_energetic) - REQUIRED when accessing values
+      #   - ghg: GHG type (co2, other_ghg) - optional
+      #   - year: Year of emission (e.g., 1990) - optional, reads from emissions_YEAR.csv files
+      #
+      # Key generation combines: sector_[subsector_]type_ghg[_year]
+      # Note: Unit column from CSV is not included in keys, blank values return nil
       #
       #
       # EMISSIONS() without any keys returns {Qernel::Emissions}
@@ -191,31 +200,32 @@ module Gql::Runtime
       #   EMISSIONS() # => <Qernel::Emissions>
       #
       #
-      # EMISSIONS(sector) with just a sector, returns {Qernel::Emissions::ScopedSector}
+      # EMISSIONS(sector, type) returns {Qernel::Emissions::ScopedSector}
       #
       # Which can be used to update emission factors:
-      #   UPDATE(EMISSION(households), ghg, VALUE )
-      #   UPDATE(EMISSION('industry.metal'), co2, VALUE )
+      #   UPDATE(EMISSIONS(households, energetic), co2, VALUE )
+      #   UPDATE(EMISSIONS('energy.electricity_and_heat_production', energetic), co2, VALUE )
       #
       # Examples
       #
-      #   EMISSIONS('industry.metal') # => <Qernel::Emissions::ScopedSector industry_metal>
+      #   EMISSIONS('energy.electricity_and_heat_production', energetic)
+      #   # => <Qernel::Emissions::ScopedSector energy_electricity_and_heat_production_energetic>
       #
       #
-      # EMISSIONS(sector, type, year) returns an emission value
+      # EMISSIONS(sector, type, ghg) or EMISSIONS(sector, type, ghg, year) returns an emission value
       #
       # Examples
-      #   EMISSIONS(households, ghg, 1990) => 2506777
+      #   EMISSIONS(households, energetic, other_ghg) # => 12.0 (from emissions_default.csv)
+      #   EMISSIONS(households, energetic, co2, 1990) # => value (from emissions_1990.csv)
+      #   EMISSIONS(energy.electricity_and_heat_production, energetic, other_ghg) # => 18.0
       #
       def EMISSIONS(*keys)
         return scope.graph.emissions if keys.empty?
 
         keys[0] = keys.first.to_s.tr('.', '_').to_sym
 
-        return scope.graph.emissions.scope(keys.first) if keys.size == 1
-
-        # Start year is default in emission attributes, remove if supplied
-        keys.pop if keys.last == :start_year
+        # EMISSIONS(sector, type) -> return ScopedSector
+        return scope.graph.emissions.scope(keys.join('_').to_sym) if keys.size == 2
 
         scope.graph.emissions[keys.join('_').to_sym]
       end

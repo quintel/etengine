@@ -1,5 +1,0 @@
-sector,sub_sector,type,1990,start_year
-energy,electricity_and_heat_production,other_ghg,20.0,18.0
-energy,electricity_and_heat_production,co2,20.0,18.0
-households,,other_ghg,5.0,7.0
-households,,co2,10.0,
