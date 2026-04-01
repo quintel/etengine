@@ -57,6 +57,8 @@ module Scenario::Persistable
       preset,
       :households_space_heating_producer_order
     )
+    self.hydrogen_supply_order = cloned_user_sortable(preset, :hydrogen_supply_order)
+    self.hydrogen_demand_order = cloned_user_sortable(preset, :hydrogen_demand_order)
 
     cloned_attachments(preset) do |cloned_attachment|
       self.attachments << cloned_attachment
