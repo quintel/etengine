@@ -1,4 +1,4 @@
-ruby '~> 3.4.7'
+ruby '~> 4.0.2'
 
 source 'https://rubygems.org'
 
@@ -21,7 +21,6 @@ gem 'activeresource', '~> 6.0'
 # Ruby gems
 gem 'ice_nine'
 gem 'text-table'
-gem 'osmosis',                github: 'quintel/osmosis'
 
 # gem 'numo-narray', require: 'numo/narray'
 
@@ -33,7 +32,6 @@ gem 'kaminari'
 
 # Authentication and authorization
 gem 'cancancan', '~> 3.0'
-gem 'identity', ref: 'e18aa91', github: 'quintel/identity_rails'
 
 gem 'activerecord-session_store'
 gem 'solid_queue'
@@ -79,6 +77,8 @@ gem 'atlas',         ref: 'f0fb6be', github: 'quintel/atlas'
 gem 'fever',         ref: '2afebd1', github: 'quintel/fever'
 gem 'refinery',      ref: '36b8e34', github: 'quintel/refinery'
 gem 'rubel',         ref: '9fe7010', github: 'quintel/rubel'
+gem 'osmosis',       ref: '16fac7c', github: 'quintel/osmosis'
+gem 'identity',      ref: '26f582e', github: 'quintel/identity_rails'
 gem 'turbine-graph', '>=0.1',        require: 'turbine'
 
 # system gems
@@ -100,9 +100,9 @@ group :development do
 end
 
 group :test, :development do
-  gem 'binding_of_caller'
+  gem 'binding_of_caller', '~> 2.0.0'
   gem 'factory_bot_rails', '~> 6.0'
-  gem 'pry-byebug'
+  gem 'pry-byebug', '~> 3.12.0'
   gem 'pry-rails'
   gem 'rspec-rails', '~> 7.0'
   gem 'watchr'

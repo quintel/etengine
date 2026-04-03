@@ -48,7 +48,15 @@ module Qernel::Plugins
     # Internal: Sets up the Merit::Order. Clones the graph dataset so that we
     # can reset the graph after the first calculation.
     def clone_dataset
+      graph_data = @graph.dataset.data.dig(:energy_graph, :graph)
+
+      # :lifecycle is temporarily removed before cloning, since it holds a
+      # circular reference which, combined with Proc values in the dataset,
+      # causes Marshal to fail. The cloned dataset does not need the lifecycle.
+      lifecycle = graph_data&.delete(:lifecycle)
       @original_dataset = @graph.deep_clone(@graph.dataset)
+    ensure
+      graph_data[:lifecycle] = lifecycle if graph_data && lifecycle
     end
 
     # Internal: After the first graph is calculated, demands are passed into the
