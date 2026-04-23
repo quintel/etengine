@@ -31,6 +31,10 @@ module Qernel
       def primary_co2_emission_of_bio_and_fossil_without_capture_factor
         rgt_node.query.primary_co2_emission_of_bio_and_fossil_without_capture_factor
       end
+
+      def direct_output_co2_composition
+        rgt_node.query.direct_output_co2_composition
+      end
     end
   end
 end
