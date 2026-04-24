@@ -269,7 +269,7 @@ GEM
     email_validator (2.2.4)
       activemodel
     equalizer (0.0.11)
-    erb (6.0.2)
+    erb (6.0.4)
     erb-formatter (0.7.3)
       syntax_tree (~> 6.0)
     erubi (1.13.1)
