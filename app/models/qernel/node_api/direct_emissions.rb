@@ -14,42 +14,59 @@ module Qernel
     module DirectEmissions
       # CO2 content of all carriers entering the node (A).
       #
-      # @return [Float] Total CO2 content from input carriers in kg
+      # @return [Float, nil] Total CO2 content from input carriers in kg, or nil if node is not in emissions group
       def direct_co2_input_content_carriers_fossil
-        inputs.sum do |slot|
-          slot.edges.sum do |edge|
-            carbon_content = direct_edge_carbon_content(edge)
-            (edge.net_demand || 0.0) * carbon_content
+        with_emissions_node do
+          inputs.sum do |slot|
+            slot.edges.sum do |edge|
+              carbon_content = direct_edge_carbon_content(edge)
+              (edge.net_demand || 0.0) * carbon_content
+            end
           end
         end
       end
 
       # CO2 content of all carriers leaving the node (C).
       #
-      # @return [Float] Total CO2 content from output carriers in kg
+      # @return [Float, nil] Total CO2 content from output carriers in kg, or nil if node is not in emissions group
       def direct_co2_output_content_carriers_fossil
-        output_edges.sum do |edge|
-          carbon_content = edge.carrier.co2_conversion_per_mj || 0.0
-          (edge.net_demand || 0.0) * carbon_content
+        with_emissions_node do
+          output_edges.sum do |edge|
+            carbon_content = edge.carrier.co2_conversion_per_mj || 0.0
+            (edge.net_demand || 0.0) * carbon_content
+          end
         end
       end
 
       # CO2 emissions produced at this node (E).
       # TODO: extend once capture is included.
       #
-      # @return [Float] Direct fossil CO2 emissions in kg
+      # @return [Float, nil] Direct fossil CO2 emissions in kg, or nil if node is not in emissions group
       def direct_co2_output_production_emissions_fossil
-        direct_co2_input_content_carriers_fossil - direct_co2_output_content_carriers_fossil
+        with_emissions_node do
+          direct_co2_input_content_carriers_fossil -
+            direct_co2_output_content_carriers_fossil
+        end
       end
 
       # CO2 production - for now equal to E
       #
-      # @return [Float] Direct fossil CO2 production in kg
+      # @return [Float, nil] Direct fossil CO2 production in kg, or nil if node is not in emissions group
       def direct_reporting_emissions_co2_production
-        direct_co2_output_production_emissions_fossil
+        with_emissions_node do
+          direct_co2_output_production_emissions_fossil
+        end
       end
 
       private
+
+      # Yields the given block only if the node belongs to the :emissions group.
+      #
+      # @return [Float, nil] Result of the block, or nil if node is not in emissions group
+      def with_emissions_node
+        return nil unless node.groups.include?(:emissions)
+        yield
+      end
 
       # Returns the CO2 content per MJ for a specific edge.
       #

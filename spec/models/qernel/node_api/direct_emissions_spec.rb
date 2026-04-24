@@ -10,7 +10,7 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 100)
-          builder.add(:power_plant)
+          builder.add(:power_plant, groups: [:emissions])
           builder.add(:coal_producer, groups: [:primary_energy_demand])
 
           builder.connect(:coal_producer, :power_plant, :coal, type: :share)
@@ -35,7 +35,7 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 200)
-          builder.add(:gas_plant)
+          builder.add(:gas_plant, groups: [:emissions])
           builder.add(:gas_producer, groups: [:primary_energy_demand])
 
           builder.connect(:gas_producer, :gas_plant, :natural_gas, type: :share)
@@ -60,8 +60,8 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 50)
-          builder.add(:electric_heater)
-          builder.add(:power_plant)
+          builder.add(:electric_heater, groups: [:emissions])
+          builder.add(:power_plant, groups: [:emissions])
           builder.add(:coal_producer, groups: [:primary_energy_demand])
 
           builder.connect(:coal_producer, :power_plant, :coal, type: :share)
@@ -94,7 +94,7 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 100)
-          builder.add(:ccs_plant, free_co2_factor: 0.85)
+          builder.add(:ccs_plant, groups: [:emissions], free_co2_factor: 0.85)
           builder.add(:gas_producer, groups: [:primary_energy_demand])
 
           builder.connect(:gas_producer, :ccs_plant, :natural_gas, type: :share)
@@ -119,9 +119,9 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 50)
-          builder.add(:data_center)
-          builder.add(:electricity_grid)
-          builder.add(:coal_plant)
+          builder.add(:data_center, groups: [:emissions])
+          builder.add(:electricity_grid, groups: [:emissions])
+          builder.add(:coal_plant, groups: [:emissions])
           builder.add(:coal_producer, groups: [:primary_energy_demand])
 
           builder.connect(:coal_producer, :coal_plant, :coal, type: :share)
@@ -161,7 +161,7 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 100)
-          builder.add(:refinery)
+          builder.add(:refinery, groups: [:emissions])
           builder.add(:oil_extraction, groups: [:primary_energy_demand])
 
           builder.connect(:oil_extraction, :refinery, :crude_oil, type: :share)
@@ -184,7 +184,7 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 0)
-          builder.add(:power_plant)
+          builder.add(:power_plant, groups: [:emissions])
           builder.add(:coal_producer, groups: [:primary_energy_demand])
 
           builder.connect(:coal_producer, :power_plant, :coal, type: :share)
@@ -207,7 +207,7 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 100)
-          builder.add(:consumer)
+          builder.add(:consumer, groups: [:emissions])
           builder.add(:producer, groups: [:primary_energy_demand])
 
           builder.connect(:producer, :consumer, :custom_carrier, type: :share)
@@ -231,7 +231,7 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 100)
-          builder.add(:ccs_plant, free_co2_factor: 0.85)
+          builder.add(:ccs_plant, groups: [:emissions], free_co2_factor: 0.85)
           builder.add(:gas_producer, groups: [:primary_energy_demand])
 
           builder.connect(:gas_producer, :ccs_plant, :natural_gas, type: :share)
@@ -272,7 +272,7 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 200)
-          builder.add(:coal_plant, free_co2_factor: 0.0)
+          builder.add(:coal_plant, groups: [:emissions], free_co2_factor: 0.0)
           builder.add(:coal_producer, groups: [:primary_energy_demand])
 
           builder.connect(:coal_producer, :coal_plant, :coal, type: :share)
@@ -305,8 +305,8 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 100)
-          builder.add(:gas_burner)
-          builder.add(:network_gas_distributor)
+          builder.add(:gas_burner, groups: [:emissions])
+          builder.add(:network_gas_distributor, groups: [:emissions])
           builder.add(:natural_gas_producer, groups: [:primary_energy_demand], demand: 70)
           builder.add(:green_gas_producer, groups: [:primary_energy_demand], demand: 30)
 
@@ -347,8 +347,8 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 100)
-          builder.add(:electric_heater)
-          builder.add(:coal_plant)
+          builder.add(:electric_heater, groups: [:emissions])
+          builder.add(:coal_plant, groups: [:emissions])
           builder.add(:coal_producer, groups: [:primary_energy_demand])
 
           builder.connect(:coal_producer, :coal_plant, :coal, type: :share)
@@ -381,8 +381,8 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 50)
-          builder.add(:steam_consumer)
-          builder.add(:gas_chp)
+          builder.add(:steam_consumer, groups: [:emissions])
+          builder.add(:gas_chp, groups: [:emissions])
           builder.add(:gas_producer, groups: [:primary_energy_demand])
 
           builder.connect(:gas_producer, :gas_chp, :natural_gas, type: :share)
@@ -415,8 +415,8 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 75)
-          builder.add(:hot_water_heater)
-          builder.add(:boiler)
+          builder.add(:hot_water_heater, groups: [:emissions])
+          builder.add(:boiler, groups: [:emissions])
           builder.add(:coal_producer, groups: [:primary_energy_demand])
 
           builder.connect(:coal_producer, :boiler, :coal, type: :share)
@@ -449,7 +449,7 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 200)
-          builder.add(:data_center)
+          builder.add(:data_center, groups: [:emissions])
           builder.add(:electricity_import, groups: [:primary_energy_demand])
 
           builder.connect(:electricity_import, :data_center, :imported_electricity, type: :share)
@@ -465,6 +465,41 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       it 'shows zero direct emissions at imported electricity consumer' do
         # Imported electricity is secondary carrier - no local combustion
         expect(data_center).to have_query_value(:direct_co2_input_content_carriers_fossil, 0.0)
+      end
+    end
+  end
+
+  describe 'nodes without emissions group' do
+    # Verify that nodes without the :emissions group return nil instead of raising errors
+    context 'when a node does not have the emissions group' do
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:non_emissions_node)
+          builder.add(:producer, groups: [:primary_energy_demand])
+
+          builder.connect(:producer, :non_emissions_node, :electricity, type: :share)
+          builder.connect(:non_emissions_node, :terminus, :electricity, type: :share)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:non_emissions_node) { graph.node(:non_emissions_node) }
+
+      it 'returns nil for direct_co2_input_content_carriers_fossil' do
+        expect(non_emissions_node.query.direct_co2_input_content_carriers_fossil).to be_nil
+      end
+
+      it 'returns nil for direct_co2_output_content_carriers_fossil' do
+        expect(non_emissions_node.query.direct_co2_output_content_carriers_fossil).to be_nil
+      end
+
+      it 'returns nil for direct_co2_output_production_emissions_fossil' do
+        expect(non_emissions_node.query.direct_co2_output_production_emissions_fossil).to be_nil
+      end
+
+      it 'returns nil for direct_reporting_emissions_co2_production' do
+        expect(non_emissions_node.query.direct_reporting_emissions_co2_production).to be_nil
       end
     end
   end
