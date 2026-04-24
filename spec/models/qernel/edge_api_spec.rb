@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Qernel::NodeApi::Base do
-  let(:supplier) { FactoryBot.build(:node, key: :supplier) }
-  let(:consumer) { FactoryBot.build(:node, key: :consumer) }
+  let(:supplier) { build(:node, key: :supplier) }
+  let(:consumer) { build(:node, key: :consumer) }
   let(:carrier)  { Qernel::Carrier.new(key: :network_gas) }
   let!(:edge)    { Qernel::Edge.new('', consumer, supplier, carrier, :share) }
 
@@ -70,6 +70,26 @@ RSpec.describe Qernel::NodeApi::Base do
       allow(edge).to receive(:parent_share).and_return(0.25)
 
       expect(edge_api.sustainability_share).to eq(0.5 * 0.5 * 0.25)
+    end
+  end
+
+  describe 'direct_output_co2_composition' do
+    it 'delegates to supplier node query' do
+      allow(supplier.query).to receive(:direct_output_co2_composition).and_return(0.09)
+
+      expect(edge_api.direct_output_co2_composition).to eq(0.09)
+    end
+
+    it 'returns nil if supplier composition is nil' do
+      allow(supplier.query).to receive(:direct_output_co2_composition).and_return(nil)
+
+      expect(edge_api.direct_output_co2_composition).to be_nil
+    end
+
+    it 'returns 0.0 for zero-emission suppliers' do
+      allow(supplier.query).to receive(:direct_output_co2_composition).and_return(0.0)
+
+      expect(edge_api.direct_output_co2_composition).to eq(0.0)
     end
   end
 end
