@@ -317,6 +317,34 @@ module Gql::Runtime
         curves = Qernel::Causality::Curves.new(scope.graph, rotate: 0)
         curves.curve(key, nil).to_a
       end
+
+      # Returns an attribute {Qernel::Emissions} or {Qernel::Emissions::ScopedSector}
+      #
+      # EMISSIONS() without any keys returns {Qernel::Emissions}
+      # EMISSIONS(sector) returns {Qernel::Emissions::ScopedSector} for UPDATE statements
+      # EMISSIONS(sector, subsector, use, ghg) returns an emission value
+      #
+      # The first argument can use dot notation which will be converted to underscores.
+      # For example: 'buildings.non_specified' becomes 'buildings_non_specified'
+      #
+      # Examples:
+      #   EMISSIONS() # => <Qernel::Emissions>
+      #   EMISSIONS(buildings_non_specified) # => <Qernel::Emissions::ScopedSector buildings_non_specified>
+      #   EMISSIONS(buildings_non_specified, energetic, other_ghg) # => 2796620.0
+      #
+      def EMISSIONS(*keys)
+        return scope.graph.emissions if keys.empty?
+
+        # Convert dashes to underscores
+        keys[0] = keys.first.to_s.tr('-', '_').to_sym
+
+        # If only one key, return a scoped sector for UPDATE statements
+        return scope.graph.emissions.scope(keys.first) if keys.size == 1
+
+        # Otherwise, look up the value
+        # Build the full key by joining all parts
+        scope.graph.emissions[keys.join('_').to_sym]
+      end
     end
   end
 end
