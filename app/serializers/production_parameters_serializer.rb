@@ -40,7 +40,7 @@ class ProductionParametersSerializer
       @graph.group_nodes(:electricity_production) +
       @graph.group_nodes(:costs_production_dedicated_hydrogen_production) +
       @graph.group_nodes(:costs_infrastructure_hydrogen) +
-      @graph.group_nodes(:costs_storage_and_conversion_p2g) +
+      @graph.group_nodes(:costs_storage_and_conversion_electrolysis) +
       @graph.group_nodes(:costs_storage_and_conversion_p2h) +
       @graph.group_nodes(:costs_storage_and_conversion_p2p)
     ).uniq.sort_by(&:key)
