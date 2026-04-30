@@ -59,7 +59,8 @@ class Graph
 
   attr_accessor :dataset,
                 :finished_nodes,
-                :area
+                :area,
+                :emissions
 
   delegate :weather_properties, to: :area
 
@@ -71,6 +72,7 @@ class Graph
   def initialize(nodes = [], name = :anonymous)
     @logger = Qernel::Logger.new
     @area   = Qernel::Area.new(self)
+    @emissions = Qernel::Emissions.new(self)
     @name   = name.to_sym
 
     @nodes_by_group = {}
@@ -162,6 +164,7 @@ class Graph
   def call_on_each_qernel_object(method_name)
     self.send(method_name)
     area.send(method_name)
+    emissions.send(method_name)
     carriers.each(&method_name)
 
     nodes.each do |n|

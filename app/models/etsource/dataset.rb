@@ -48,5 +48,17 @@ module Etsource
           .map    { |dataset| dataset.key.to_s }
       end
     end
+
+    # Gets the emission keys from the default dataset.
+    # These keys are used to dynamically generate accessor methods in Qernel::Emissions.
+    #
+    # Returns an Array of Symbols.
+    def self.emissions_keys
+      NastyCache.instance.fetch('emission_keys') do
+        Atlas::Dataset.find(
+          Etsource::Config.default_dataset_key
+        ).emissions.to_hash.keys
+      end
+    end
   end
 end

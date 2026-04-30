@@ -40,5 +40,38 @@ module Gql::Runtime::Functions
         end
       end
     end
+
+    # EMISSIONS
+    # ---------
+
+    describe 'EMISSIONS()' do
+      it 'returns a Qernel::Emissions object' do
+        expect(result).to be_a(Qernel::Emissions)
+      end
+    end
+
+    describe 'EMISSIONS(households_non_specified)' do
+      it 'returns a Qernel::Emissions::ScopedSector object' do
+        expect(result).to be_a(Qernel::Emissions::ScopedSector)
+      end
+    end
+
+    describe "EMISSIONS(buildings_non_specified, energetic, other_ghg)" do
+      it 'returns the emission value' do
+        expect(result).to eq(2796620.0)
+      end
+    end
+
+    describe "EMISSIONS(energy_electricity_and_heat_production, energetic, other_ghg)" do
+      it 'returns the emission value' do
+        expect(result).to eq(18.0)
+      end
+    end
+
+    describe 'EMISSIONS(households_non_specified, energetic, co2)' do
+      it 'returns the emission value' do
+        expect(result).to eq(12.0)
+      end
+    end
   end
 end

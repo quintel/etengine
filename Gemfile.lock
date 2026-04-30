@@ -1,18 +1,4 @@
 GIT
-  remote: https://github.com/quintel/atlas.git
-  revision: f0fb6bea437b69141eb8874b87f455fdeb803ba3
-  ref: f0fb6be
-  specs:
-    atlas (1.0.0)
-      activemodel (>= 7)
-      activesupport (>= 7)
-      csv (>= 3)
-      gpgme (~> 2.0)
-      ostruct
-      turbine-graph (>= 0.1)
-      virtus (~> 1.0)
-
-GIT
   remote: https://github.com/quintel/fever.git
   revision: 2afebd1291a07a0768002271c73b6f6bbf40268e
   ref: 2afebd1
@@ -69,6 +55,17 @@ GIT
   ref: 9fe7010
   specs:
     rubel (0.1.1)
+
+PATH
+  remote: ../atlas
+  specs:
+    atlas (1.0.0)
+      activemodel (>= 7)
+      activesupport (>= 7)
+      csv (>= 3)
+      gpgme (~> 2.0)
+      turbine-graph (>= 0.1)
+      virtus (~> 1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -811,7 +808,7 @@ DEPENDENCIES
   webdrivers
 
 RUBY VERSION
-   ruby 4.0.2p0
+  ruby 4.0.2p0
 
 BUNDLED WITH
-   4.0.6
+  4.0.6
