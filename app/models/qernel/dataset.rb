@@ -26,6 +26,7 @@ module Qernel
 
       @data = {
         area: { area_data: {} },
+        emissions: { emissions_data: {} },
         energy_graph: { graph: {} },
         molecules_graph: { graph: {} }
       }
