@@ -180,6 +180,75 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       end
     end
 
+    context 'with crude oil mix (skip carrier value)' do
+      # Create a graph that blends different oil sources:
+      # [Conventional Oil (70 MJ)] -> [Oil Blender] -> [Refinery] -> [Terminus]
+      # [Heavy Oil (30 MJ)]        ->       ^
+      #
+      # Edge from blender to refinery is marked to skip crude_oil carrier value
+      # and calculate composition from the supply mix instead
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:refinery, groups: [:emissions])
+          builder.add(:oil_blender, groups: [:emissions])
+          builder.add(:conventional_oil, groups: [:primary_energy_demand], demand: 70)
+          builder.add(:heavy_oil, groups: [:primary_energy_demand], demand: 30)
+
+          # Oil sources with different CO2 content
+          builder.connect(:conventional_oil, :oil_blender, :crude_oil, type: :share)
+          builder.connect(:heavy_oil, :oil_blender, :crude_oil_heavy, type: :share)
+
+          # Edge marked to skip carrier value and calculate from mix
+          builder.connect(:oil_blender, :refinery, :crude_oil, type: :share, groups: [:emissions_skip_crude_oil_mix])
+          builder.connect(:refinery, :terminus, :diesel, type: :share)
+
+          # Conventional crude oil: 0.0733 kg CO2/MJ
+          builder.carrier_attrs(:crude_oil, co2_conversion_per_mj: 0.0733)
+          # Heavy crude oil: 0.0850 kg CO2/MJ (higher emissions)
+          builder.carrier_attrs(:crude_oil_heavy, co2_conversion_per_mj: 0.0850)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:refinery) { graph.node(:refinery) }
+      let(:oil_blender) { graph.node(:oil_blender) }
+
+      it 'calculates refinery input from supply mix, not carrier value' do
+        # Expected: weighted average based on supply mix
+        # (70 * 0.0733 + 30 * 0.0850) / 100 = 0.07681 kg CO2/MJ
+        # 100 MJ * 0.07681 kg/MJ = 7.681 kg CO2
+        expect(refinery).to have_query_value(:direct_co2_input_content_carriers_fossil, 7.681)
+      end
+
+      it 'calculates blender input content from mixed sources' do
+        # Blender receives:
+        # - 70 MJ conventional crude @ 0.0733 kg/MJ = 5.131 kg
+        # - 30 MJ heavy crude @ 0.0850 kg/MJ = 2.55 kg
+        # Total input: 7.681 kg CO2
+        expect(oil_blender).to have_query_value(:direct_co2_input_content_carriers_fossil, 7.681)
+      end
+
+      it 'calculates blender output content using weighted composition' do
+        # Blender outputs 100 MJ crude_oil with skip group
+        # Should use weighted composition (0.07681 kg/MJ), not carrier value (0.0733 kg/MJ)
+        # 100 MJ * 0.07681 kg/MJ = 7.681 kg CO2
+        expect(oil_blender).to have_query_value(:direct_co2_output_content_carriers_fossil, 7.681)
+      end
+
+      it 'preserves mass balance at blender (pass-through node)' do
+        # For a pass-through blender: A (input) - C (output) = E (emissions)
+        # Since no combustion occurs: E should be 0
+        # Therefore: A should equal C
+        input = oil_blender.query.direct_co2_input_content_carriers_fossil
+        output = oil_blender.query.direct_co2_output_content_carriers_fossil
+        emissions = oil_blender.query.direct_co2_output_production_emissions_fossil
+
+        expect(input).to be_within(0.0000001).of(output)
+        expect(emissions).to be_within(0.0000001).of(0.0)
+      end
+    end
+
     context 'with no demand' do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
