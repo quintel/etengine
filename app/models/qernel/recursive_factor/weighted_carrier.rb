@@ -30,8 +30,15 @@ module Qernel::RecursiveFactor::WeightedCarrier
     return unless edge
 
     # Carriers with no or zero intrinsic CO2 are not counted in this calculation.
-
-    if edge.carrier.co2_conversion_per_mj || right_dead_end?
+    #
+    # Exception: edges marked with emissions_skip_crude_oil_mix should calculate
+    # their CO2 content from the weighted mix of inputs further back in the graph,
+    # rather than using the carrier's intrinsic CO2 value. This handles cases where
+    # crude oil edges represent a mix of different crude oil sources with varying
+    # CO2 intensities
+    if edge.groups&.include?(:emissions_skip_crude_oil_mix)
+      # Continue traversing right to calculate weighted composition
+    elsif edge.carrier.co2_conversion_per_mj || right_dead_end?
       edge.carrier.co2_conversion_per_mj
     end
 
