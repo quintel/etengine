@@ -70,21 +70,24 @@ module Qernel
 
       # Returns the CO2 content per MJ for a specific edge.
       #
-      # 1. Check if edge is marked to skip carrier value and force composition calculation
+      # 1. For edges marked with emissions_skip_crude_oil_mix, calculate from supply mix
       # 2. Use direct carrier value if defined (pure fossil carriers)
       # 3. Use RecursiveFactor's weighted composition for mixed carriers (network_gas, etc.)
       # 4. Return 0.0 if neither is available
       #
+      # Note: The emissions_skip_crude_oil_mix logic is also implemented in
+      # RecursiveFactor::WeightedCarrier#weighted_carrier_co2_per_mj_factor to ensure
+      # correct recursion through intermediate nodes.
+      #
       # @return [Float] CO2 content in kg/MJ
       def direct_edge_carbon_content(edge)
-        # Special case: crude oil mix edges should calculate composition from supply mix
-        # rather than using the carrier's intrinsic CO2 value
-        if edge.groups&.include?(:emissions_skip_crude_oil_mix)
-          supplier = edge.rgt_node
-          return supplier&.query&.weighted_carrier_co2_per_mj || 0.0
-        end
-
         carrier_co2 = edge.carrier.co2_conversion_per_mj
+
+        # Skip carrier value for edges marked to calculate from supply mix
+        # (falls through to weighted composition calculation below)
+        if edge.groups&.include?(:emissions_skip_crude_oil_mix)
+          carrier_co2 = nil
+        end
 
         # If carrier has a defined value (including 0.0), use it directly
         # This handles pure fossil carriers (coal, natural_gas, etc.)
