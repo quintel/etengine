@@ -249,6 +249,271 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       end
     end
 
+    context 'with crude oil skip group on linear chain' do
+      # Create a linear chain that mimics real ETSource structure:
+      # [Crude Oil Producer] -> [Final Demand] -> [Space Heating Demand] -> [Space Heater] -> [Terminus]
+      #                                           (skip edge)              (skip edge)
+      #
+      # This tests that the skip group works correctly through multiple levels
+      # and that intermediate nodes behave as pass-through without emissions
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:buildings_space_heater_crude_oil, groups: [:emissions])
+          builder.add(:buildings_final_demand_for_space_heating_crude_oil, groups: [:emissions])
+          builder.add(:buildings_final_demand_crude_oil, groups: [:emissions])
+          builder.add(:crude_oil_producer, groups: [:primary_energy_demand])
+
+          # Connect producer to final demand
+          builder.connect(:crude_oil_producer, :buildings_final_demand_crude_oil, :crude_oil, type: :share)
+
+          # Connect final demand to intermediate (with skip group)
+          builder.connect(
+            :buildings_final_demand_crude_oil,
+            :buildings_final_demand_for_space_heating_crude_oil,
+            :crude_oil,
+            type: :share,
+            groups: [:emissions_skip_crude_oil_mix]
+          )
+
+          # Connect intermediate to consumer (with skip group)
+          builder.connect(
+            :buildings_final_demand_for_space_heating_crude_oil,
+            :buildings_space_heater_crude_oil,
+            :crude_oil,
+            type: :share,
+            groups: [:emissions_skip_crude_oil_mix]
+          )
+
+          # Connect consumer to terminus
+          builder.connect(:buildings_space_heater_crude_oil, :terminus, :electricity, type: :share)
+
+          builder.carrier_attrs(:crude_oil, co2_conversion_per_mj: 0.0733)
+          builder.carrier_attrs(:electricity, co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:source) { graph.node(:buildings_final_demand_crude_oil) }
+      let(:intermediate) { graph.node(:buildings_final_demand_for_space_heating_crude_oil) }
+      let(:consumer) { graph.node(:buildings_space_heater_crude_oil) }
+
+      it 'preserves mass balance at intermediate node (pass-through)' do
+        # Intermediate node should not produce emissions, just pass energy through
+        input = intermediate.query.direct_co2_input_content_carriers_fossil
+        output = intermediate.query.direct_co2_output_content_carriers_fossil
+        emissions = intermediate.query.direct_co2_output_production_emissions_fossil
+
+        expect(input).to be_within(0.0000001).of(output)
+        expect(emissions).to be_within(0.0000001).of(0.0)
+      end
+
+      it 'calculates input content correctly at intermediate node' do
+        # Intermediate receives 100 MJ @ 0.0733 kg/MJ = 7.33 kg CO2
+        expect(intermediate).to have_query_value(:direct_co2_input_content_carriers_fossil, 7.33)
+      end
+
+      it 'calculates output content correctly at intermediate node' do
+        # Pass-through: output should equal input
+        expect(intermediate).to have_query_value(:direct_co2_output_content_carriers_fossil, 7.33)
+      end
+
+      it 'shows zero production emissions at intermediate node' do
+        # No combustion at intermediate node
+        expect(intermediate).to have_query_value(:direct_co2_output_production_emissions_fossil, 0.0)
+      end
+
+      it 'calculates input content correctly at consumer node' do
+        # Consumer receives 100 MJ @ 0.0733 kg/MJ = 7.33 kg CO2
+        expect(consumer).to have_query_value(:direct_co2_input_content_carriers_fossil, 7.33)
+      end
+
+      it 'shows production emissions at consumer (combustion point)' do
+        # Consumer burns 100 MJ crude oil
+        # A (input) - C (output) = E (emissions)
+        # 7.33 - 0 = 7.33 kg CO2
+        expect(consumer).to have_query_value(:direct_co2_output_production_emissions_fossil, 7.33)
+      end
+    end
+
+    context 'with mixed supply propagating through skip chain' do
+      # Create a chain with mixed crude oil sources to test composition propagation:
+      # [Conventional Oil 70%] -> [Blender] -> [Space Heating Demand] -> [Space Heater] -> [Terminus]
+      # [Heavy Oil 30%]        ->      ^        (skip edge)              (skip edge)
+      #
+      # This tests that weighted composition propagates correctly through the entire chain
+      # and doesn't revert to carrier default value at intermediate nodes
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:buildings_space_heater_crude_oil, groups: [:emissions])
+          builder.add(:buildings_final_demand_for_space_heating_crude_oil, groups: [:emissions])
+          builder.add(:oil_blender, groups: [:emissions])
+          builder.add(:conventional_oil, groups: [:primary_energy_demand], demand: 70)
+          builder.add(:heavy_oil, groups: [:primary_energy_demand], demand: 30)
+
+          # Multiple sources with different CO2 content blend at oil_blender
+          builder.connect(:conventional_oil, :oil_blender, :crude_oil, type: :share)
+          builder.connect(:heavy_oil, :oil_blender, :crude_oil_heavy, type: :share)
+
+          # Blender to intermediate (with skip group)
+          builder.connect(
+            :oil_blender,
+            :buildings_final_demand_for_space_heating_crude_oil,
+            :crude_oil,
+            type: :share,
+            groups: [:emissions_skip_crude_oil_mix]
+          )
+
+          # Intermediate to consumer (with skip group)
+          builder.connect(
+            :buildings_final_demand_for_space_heating_crude_oil,
+            :buildings_space_heater_crude_oil,
+            :crude_oil,
+            type: :share,
+            groups: [:emissions_skip_crude_oil_mix]
+          )
+
+          # Consumer to terminus
+          builder.connect(:buildings_space_heater_crude_oil, :terminus, :electricity, type: :share)
+
+          # Conventional crude oil: 0.0733 kg CO2/MJ
+          builder.carrier_attrs(:crude_oil, co2_conversion_per_mj: 0.0733)
+          # Heavy crude oil: 0.0850 kg CO2/MJ (higher emissions)
+          builder.carrier_attrs(:crude_oil_heavy, co2_conversion_per_mj: 0.0850)
+          builder.carrier_attrs(:electricity, co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:blender) { graph.node(:oil_blender) }
+      let(:intermediate) { graph.node(:buildings_final_demand_for_space_heating_crude_oil) }
+      let(:consumer) { graph.node(:buildings_space_heater_crude_oil) }
+
+      it 'calculates blender input from mixed sources' do
+        # Blender receives:
+        # - 70 MJ conventional crude @ 0.0733 kg/MJ = 5.131 kg
+        # - 30 MJ heavy crude @ 0.0850 kg/MJ = 2.55 kg
+        # Total input: 7.681 kg CO2
+        expect(blender).to have_query_value(:direct_co2_input_content_carriers_fossil, 7.681)
+      end
+
+      it 'calculates blender output using weighted composition' do
+        # Blender outputs 100 MJ crude_oil with skip group
+        # Should use weighted composition (0.07681 kg/MJ), not carrier value (0.0733 kg/MJ)
+        # 100 MJ * 0.07681 kg/MJ = 7.681 kg CO2
+        expect(blender).to have_query_value(:direct_co2_output_content_carriers_fossil, 7.681)
+      end
+
+      it 'preserves mass balance at blender' do
+        input = blender.query.direct_co2_input_content_carriers_fossil
+        output = blender.query.direct_co2_output_content_carriers_fossil
+        emissions = blender.query.direct_co2_output_production_emissions_fossil
+
+        expect(input).to be_within(0.0000001).of(output)
+        expect(emissions).to be_within(0.0000001).of(0.0)
+      end
+
+      it 'propagates weighted composition to intermediate node input' do
+        # Intermediate receives weighted composition, not carrier default
+        # 100 MJ * 0.07681 kg/MJ = 7.681 kg CO2
+        expect(intermediate).to have_query_value(:direct_co2_input_content_carriers_fossil, 7.681)
+      end
+
+      it 'propagates weighted composition to intermediate node output' do
+        # Intermediate outputs weighted composition through skip edge
+        expect(intermediate).to have_query_value(:direct_co2_output_content_carriers_fossil, 7.681)
+      end
+
+      it 'preserves mass balance at intermediate node' do
+        input = intermediate.query.direct_co2_input_content_carriers_fossil
+        output = intermediate.query.direct_co2_output_content_carriers_fossil
+        emissions = intermediate.query.direct_co2_output_production_emissions_fossil
+
+        expect(input).to be_within(0.0000001).of(output)
+        expect(emissions).to be_within(0.0000001).of(0.0)
+      end
+
+      it 'propagates weighted composition to final consumer' do
+        # Consumer receives weighted composition through entire chain
+        # 100 MJ * 0.07681 kg/MJ = 7.681 kg CO2
+        expect(consumer).to have_query_value(:direct_co2_input_content_carriers_fossil, 7.681)
+      end
+
+      it 'shows correct production emissions at consumer' do
+        # Consumer burns all input, producing emissions equal to input content
+        # 7.681 kg CO2
+        expect(consumer).to have_query_value(:direct_co2_output_production_emissions_fossil, 7.681)
+      end
+    end
+
+    context 'with partial skip chain (edge case)' do
+      # Create a chain where only the first edge has skip group:
+      # [Crude Oil Producer] -> [Final Demand] -> [Space Heating Demand] -> [Space Heater] -> [Terminus]
+      #                                           (skip edge)              (NO skip edge)
+      #
+      # This demonstrates the difference: without skip group on second edge,
+      # it should use carrier default value
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:buildings_space_heater_crude_oil, groups: [:emissions])
+          builder.add(:buildings_final_demand_for_space_heating_crude_oil, groups: [:emissions])
+          builder.add(:buildings_final_demand_crude_oil, groups: [:emissions])
+          builder.add(:crude_oil_producer, groups: [:primary_energy_demand])
+
+          # Connect producer to final demand
+          builder.connect(:crude_oil_producer, :buildings_final_demand_crude_oil, :crude_oil, type: :share)
+
+          # Connect final demand to intermediate (WITH skip group)
+          builder.connect(
+            :buildings_final_demand_crude_oil,
+            :buildings_final_demand_for_space_heating_crude_oil,
+            :crude_oil,
+            type: :share,
+            groups: [:emissions_skip_crude_oil_mix]
+          )
+
+          # Connect intermediate to consumer (WITHOUT skip group)
+          builder.connect(
+            :buildings_final_demand_for_space_heating_crude_oil,
+            :buildings_space_heater_crude_oil,
+            :crude_oil,
+            type: :share
+          )
+
+          # Connect consumer to terminus
+          builder.connect(:buildings_space_heater_crude_oil, :terminus, :useable_heat, type: :share)
+
+          builder.carrier_attrs(:crude_oil, co2_conversion_per_mj: 0.0733)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:intermediate) { graph.node(:buildings_final_demand_for_space_heating_crude_oil) }
+      let(:consumer) { graph.node(:buildings_space_heater_crude_oil) }
+
+      it 'calculates intermediate input using skip logic' do
+        # First edge has skip group, so intermediate receives correct value
+        expect(intermediate).to have_query_value(:direct_co2_input_content_carriers_fossil, 7.33)
+      end
+
+      it 'calculates consumer input using carrier default (no skip)' do
+        # Second edge does NOT have skip group, so it uses carrier default
+        # This demonstrates that skip group must be on edge for special handling
+        expect(consumer).to have_query_value(:direct_co2_input_content_carriers_fossil, 7.33)
+      end
+
+      it 'preserves mass balance at intermediate node' do
+        input = intermediate.query.direct_co2_input_content_carriers_fossil
+        output = intermediate.query.direct_co2_output_content_carriers_fossil
+        emissions = intermediate.query.direct_co2_output_production_emissions_fossil
+
+        expect(input).to be_within(0.0000001).of(output)
+        expect(emissions).to be_within(0.0000001).of(0.0)
+      end
+    end
+
     context 'with no demand' do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
