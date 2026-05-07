@@ -110,13 +110,14 @@ class Node
   attr_reader :sector_environment
   alias sector_environment? sector_environment
 
-  attr_reader :primary_energy_demand, :useful_demand, :final_demand_group, :non_energetic_use, :energy_import_export, :bio_resources_demand
+  attr_reader :primary_energy_demand, :useful_demand, :final_demand_group, :non_energetic_use, :energy_import_export, :bio_resources_demand, :emissions
   alias primary_energy_demand? primary_energy_demand
   alias useful_demand? useful_demand
   alias final_demand_group? final_demand_group
   alias non_energetic_use? non_energetic_use
   alias energy_import_export? energy_import_export
   alias bio_resources_demand? bio_resources_demand
+  alias emissions? emissions
 
   # --------- Initializing ----------------------------------------------------
 
@@ -186,6 +187,7 @@ class Node
     @non_energetic_use     = @groups.include? :non_energetic_use
     @energy_import_export  = @groups.include? :energy_import_export
     @bio_resources_demand  = @groups.include? :bio_resources_demand
+    @emissions             = @groups.include? :emissions
 
     @recursive_factor_ignore = @groups.include? :recursive_factor_ignore
 

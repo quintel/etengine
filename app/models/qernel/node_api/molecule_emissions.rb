@@ -68,8 +68,7 @@ module Qernel
       #
       # @return [Float, nil] Result of the block, or nil if node is not in emissions group
       def with_emissions_node
-        return nil unless node.groups.include?(:emissions)
-        yield
+        yield if node.emissions?
       end
     end
   end
