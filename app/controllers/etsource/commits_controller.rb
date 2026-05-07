@@ -160,7 +160,9 @@ class Etsource::CommitsController < ApplicationController
 
   # Returns if an import is currently being performed.
   def import_in_progress?
+    return @import_in_progress unless @import_in_progress.nil?
+
     semaphore = Rails.cache.read(:etsi_semaphore)
-    semaphore && semaphore >= 3.minutes.ago
+    @import_in_progress = semaphore && semaphore >= 3.minutes.ago
   end
 end
