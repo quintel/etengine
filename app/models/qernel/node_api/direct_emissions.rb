@@ -64,38 +64,25 @@ module Qernel
       #
       # @return [Float, nil] Result of the block, or nil if node is not in emissions group
       def with_emissions_node
-        return nil unless node.groups.include?(:emissions)
-        yield
+        yield if node.emissions?
       end
 
       # Returns the CO2 content per MJ for a specific edge.
       #
-      # 1. For edges marked with emissions_skip_crude_oil_mix, calculate from supply mix
-      # 2. Use direct carrier value if defined (pure fossil carriers)
-      # 3. Use RecursiveFactor's weighted composition for mixed carriers (network_gas, etc.)
-      # 4. Return 0.0 if neither is available
-      #
-      # Note: The emissions_skip_crude_oil_mix logic is also implemented in
-      # RecursiveFactor::WeightedCarrier#weighted_carrier_co2_per_mj_factor to ensure
-      # correct recursion through intermediate nodes.
+      # For edges marked with :emissions_skip_crude_oil_mix or carriers without intrinsic
+      # CO2 values, delegates to RecursiveFactor::DirectEmissions to calculate from the
+      # weighted supply mix. Otherwise uses the carrier's direct CO2 value.
       #
       # @return [Float] CO2 content in kg/MJ
       def direct_edge_carbon_content(edge)
-        carrier_co2 = edge.carrier.co2_conversion_per_mj
-
-        # Skip carrier value for edges marked to calculate from supply mix
-        # (falls through to weighted composition calculation below)
-        if edge.groups&.include?(:emissions_skip_crude_oil_mix)
-          carrier_co2 = nil
+        # Check if carrier has intrinsic CO2 value and edge doesn't skip it
+        if edge.carrier.co2_conversion_per_mj && !edge.emissions_skip_crude_oil_mix?
+          return edge.carrier.co2_conversion_per_mj
         end
 
-        # If carrier has a defined value (including 0.0), use it directly
-        # This handles pure fossil carriers (coal, natural_gas, etc.)
-        return carrier_co2 unless carrier_co2.nil?
-
-        # Fallback: calculate weighted composition from suppliers
+        # Fallback: calculate from weighted supply mix using recursive factor
         supplier = edge.rgt_node
-        supplier&.query&.weighted_carrier_co2_per_mj || 0.0
+        supplier&.query&.direct_carbon_content_per_mj || 0.0
       end
     end
   end
