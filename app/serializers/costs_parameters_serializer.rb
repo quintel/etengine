@@ -350,7 +350,7 @@ class CostsParametersSerializer
   #
   # Has subtotal queries
   def costs_storage_and_conversion
-    %w[p2p p2g p2h storage]
+    %w[p2p electrolysis p2h storage]
   end
 
   # Internal: Carriers for which the costs_carriers group is valid
