@@ -75,14 +75,15 @@ module Qernel
       #
       # @return [Float] CO2 content in kg/MJ
       def direct_edge_carbon_content(edge)
-        # Check if carrier has intrinsic CO2 value and edge doesn't skip it
-        if edge.carrier.co2_conversion_per_mj && !edge.emissions_skip_crude_oil_mix?
-          return edge.carrier.co2_conversion_per_mj
-        end
+        return 0.0 unless edge.carrier.fossil?
 
-        # Fallback: calculate from weighted supply mix using recursive factor
         supplier = edge.rgt_node
-        supplier&.query&.direct_carbon_content_per_mj || 0.0
+
+        if edge.emissions_skip_crude_oil_mix? || edge.carrier.co2_conversion_per_mj.nil?
+          supplier&.query&.direct_carbon_content_per_mj || 0.0
+        else
+          edge.carrier.co2_conversion_per_mj
+        end
       end
     end
   end

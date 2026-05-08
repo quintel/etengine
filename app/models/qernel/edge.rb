@@ -17,12 +17,6 @@ module Qernel
     attr_reader :lft_node, :rgt_node, :carrier,
       :id, :key, :edge_type, :groups
 
-    # Micro-optimization -------------------------------------------------------
-    #
-    # Group-based predicate memoized for performance in emissions calculations
-    attr_reader :emissions_skip_crude_oil_mix
-    alias emissions_skip_crude_oil_mix? emissions_skip_crude_oil_mix
-
     # Flow ---------------------------------------------------------------------
 
     alias_method :demand, :value
@@ -57,8 +51,6 @@ module Qernel
       @carrier       = carrier
       @groups        = (groups || []).freeze
       @edge_type     = type.to_sym
-
-      @emissions_skip_crude_oil_mix = @groups.include?(:emissions_skip_crude_oil_mix)
 
       lft_node.add_input_edge(self)
       rgt_node.add_output_edge(self)
@@ -140,6 +132,10 @@ module Qernel
 
     def treat_as_loss?
       !!dataset_get(:treat_as_loss)
+    end
+
+    def emissions_skip_crude_oil_mix?
+      @groups.include?(:emissions_skip_crude_oil_mix)
     end
 
     # Calculation --------------------------------------------------------------
