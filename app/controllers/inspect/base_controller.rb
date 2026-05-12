@@ -21,10 +21,6 @@ class Inspect::BaseController < ApplicationController
 
     @api_scenario = Scenario.find_for_calculation(params[:api_scenario_id])
     @gql = Inspect::LazyGql.new(@api_scenario)
-  rescue Atlas::DocumentNotFoundError => e
-    raise e unless e.message.match?(/could not find a dataset with the key/i)
-
-    start_scenario_and_redirect
   end
 
   # Starts a new scenario and redirects the user to their requested page for the
