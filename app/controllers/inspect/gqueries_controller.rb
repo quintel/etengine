@@ -21,6 +21,9 @@ class Inspect::GqueriesController < Inspect::BaseController
         @result = @gql.query(params[:query].gsub(/\s/,''), nil, true)
       rescue Gql::CommandError => ex
         @error = ex
+      rescue Inspect::LazyGql::DatasetNotFoundError => e
+        flash[:error] = "This scenario uses an unsupported dataset (#{@api_scenario.area_code}). Please create a new scenario."
+        redirect_to inspect_root_path(api_scenario_id: '_')
       end
     end
   end
@@ -29,6 +32,9 @@ class Inspect::GqueriesController < Inspect::BaseController
     @result = @gql.query(@gquery, nil, true)
   rescue Gql::CommandError => e
     @error = e
+  rescue Inspect::LazyGql::DatasetNotFoundError => e
+    flash[:error] = "This scenario uses an unsupported dataset (#{@api_scenario.area_code}). Please create a new scenario."
+    redirect_to inspect_root_path(api_scenario_id: '_')
   end
 
   def result
