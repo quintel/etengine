@@ -23,16 +23,8 @@ module Inspect
 
     def initialize_gql
       @scenario.gql(prepare: true)
-    rescue Atlas::DocumentNotFoundError, RuntimeError => e
-      raise e unless dataset_not_found_error?(e)
-
+    rescue Etsource::DatasetNotFoundError
       raise DatasetNotFoundError, "Dataset '#{@scenario.area_code}' not found for scenario #{@scenario.id}"
-    end
-
-    def dataset_not_found_error?(error)
-      error.message.match?(/could not find a dataset with the key/i) ||
-        error.message.match?(/no atlas data for/i) ||
-        (error.message.include?('dataset') && error.message.include?(@scenario.area_code))
     end
   end
 end
