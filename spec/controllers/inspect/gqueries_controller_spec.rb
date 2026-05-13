@@ -56,5 +56,30 @@ describe Inspect::GqueriesController, :etsource_fixture do
         expect(response).to render_template(:show)
       end
     end
+
+    context 'when scenario has an unsupported dataset' do
+      let(:scenario_with_invalid_dataset) do
+        scenario = FactoryBot.create(:scenario, user: owner)
+        scenario.update_column(:area_code, 'de')
+        scenario
+      end
+
+      before do
+        # Mock the LazyGql to raise DatasetNotFoundError
+        allow_any_instance_of(Inspect::LazyGql).to receive(:query).and_raise(
+          Inspect::LazyGql::DatasetNotFoundError.new("Dataset 'de' not found for scenario #{scenario_with_invalid_dataset.id}")
+        )
+      end
+
+      it "redirects to new scenario with error message" do
+        request.headers.merge!(access_token_header(owner, :read))
+        get :show, params: { id: gquery.key, api_scenario_id: scenario_with_invalid_dataset.id }
+
+        expect(response).to redirect_to(inspect_root_path(api_scenario_id: '_'))
+        expect(flash[:error]).to match(/unsupported dataset/)
+        expect(flash[:error]).to include('de')
+      end
+    end
   end
+
 end

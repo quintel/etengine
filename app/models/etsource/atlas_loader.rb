@@ -28,7 +28,12 @@ module Etsource
       def load(dataset_key)
         location = data_path(dataset_key)
 
-        raise "No Atlas data for #{dataset_key.inspect} at #{location}" unless location.file?
+        unless location.file?
+          raise Etsource::DatasetNotFoundError.new(
+            dataset_key,
+            "No Atlas data for #{dataset_key.inspect} at #{location}"
+          )
+        end
 
         Atlas::ProductionMode.new(parse(location.read))
       end
@@ -47,7 +52,12 @@ module Etsource
       # Returns nothing.
       def calculate!(dataset_key)
         instrument("etsource.loader: atlas+ref(#{dataset_key.inspect})") do
-          dataset = Atlas::Dataset.find(dataset_key)
+          begin
+            dataset = Atlas::Dataset.find(dataset_key)
+          rescue Atlas::DocumentNotFoundError
+            raise Etsource::DatasetNotFoundError.new(dataset_key)
+          end
+
           runner  = Atlas::Runner.new(dataset)
 
           runner.calculate

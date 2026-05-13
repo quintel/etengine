@@ -6,9 +6,7 @@ module Api
         render json: { errors: ['Scenario not found'] }, status: 404
       end
 
-      rescue_from Atlas::DocumentNotFoundError do |e|
-        raise(e) unless e.message.start_with?('Could not find a dataset')
-
+      rescue_from Etsource::DatasetNotFoundError do
         render(
           json: { errors: [
             'Scenario uses an unsupported area code and is no longer available: ' \
@@ -33,7 +31,7 @@ module Api
       # Downloads the hourly price of electricity according to the merit order.
       #
       # GET /api/v3/scenarios/:scenario_id/curves/electricity_price.csv
-      # GET /api/v3/scenarios/:scenario_id/curves/electricity_price.json 
+      # GET /api/v3/scenarios/:scenario_id/curves/electricity_price.json
       def electricity_price
         result = CarrierPriceCSVSerializer.new(
           @scenario.gql.future_graph.carrier(:electricity),
