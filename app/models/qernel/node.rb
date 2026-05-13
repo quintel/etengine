@@ -519,6 +519,17 @@ public
     key.to_s
   end
 
+
+  # Lazy memoized group check for emissions_lulucf_removals.
+  #
+  # Uses lazy memoization instead of eager (in memoize_for_cache) because this is an edge case (called infrequently)
+  #
+  # @return [Boolean] true if node belongs to emissions_lulucf_removals group
+  def emissions_lulucf_removals?
+    return @emissions_lulucf_removals if defined?(@emissions_lulucf_removals)
+    @emissions_lulucf_removals = @groups.include?(:emissions_lulucf_removals)
+  end
+
   # --------- Debug -----------------------------------------------------------
 
   def name
