@@ -46,15 +46,15 @@
           = date.to_formatted_s(:long)
         - latest_sha = @etsource.get_latest_import_sha
         - commits.each do |commit|
-          - cache("etsource.commit.#{ commit.sha }") do
-            .commit{ id: "rev-#{ commit.sha }", class: latest_sha == commit.sha ? 'current' : '' }
-              .action
-                - if latest_sha == commit.sha
-                  .current ✓ &nbsp;Loaded&nbsp;
-                - elsif import_in_progress?
-                  .wait Please wait&hellip;
-                - elsif can_import?
-                  %a.import{ href: import_etsource_commit_path(:id => commit.sha) } Import
-                - else
-                  %span.wait Import disabled
+          .commit{ id: "rev-#{ commit.sha }", class: latest_sha == commit.sha ? 'current' : '' }
+            .action
+              - if latest_sha == commit.sha
+                .current ✓ &nbsp;Loaded&nbsp;
+              - elsif import_in_progress?
+                .wait Please wait&hellip;
+              - elsif can_import?
+                %a.import{ href: import_etsource_commit_path(:id => commit.sha) } Import
+              - else
+                %span.wait Import disabled
+            - cache(commit) do
               = render partial: 'commit', locals: { commit: commit.gcommit }

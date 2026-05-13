@@ -102,6 +102,10 @@ module Etsource
       @gcommit.sha
     end
 
+    def cache_key
+      "etsource/commit/#{sha}"
+    end
+
     #######
     private
     #######
