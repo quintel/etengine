@@ -30,10 +30,14 @@ module Etsource
       molecule_cache['molecules.from_molecules_keys']
     end
 
+    def reset_cache!
+      @molecule_cache = nil
+    end
+
     # Batches all Molecules cache reads into one SQL query per request, so
-    # subsequent fetch calls hit the LocalStore instead of the database.
+    # subsequent fetch calls are served from memory instead of the database.
     def molecule_cache
-      Thread.current[:molecule_cache] ||= Rails.cache.fetch_multi(*CACHE_KEYS) do |key|
+      @molecule_cache ||= Rails.cache.fetch_multi(*CACHE_KEYS) do |key|
         case key
         when 'molecules.from_energy_keys'    then Atlas::MoleculeNode.all.select(&:from_energy).map(&:key).sort
         when 'molecules.from_molecules_keys' then Atlas::EnergyNode.all.select(&:from_molecules).map(&:key).sort

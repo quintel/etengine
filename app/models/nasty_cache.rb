@@ -145,6 +145,11 @@ class NastyCache
     Merit::Curve.reader = Merit::Curve.reader.class.new
 
     @cache_store = {}
+
+    # Reset process-level memoization so the next request re-fetches from
+    # Rails.cache, which has just been cleared by expire_cache!
+    Etsource::MeritOrder.reset_cache!
+    Etsource::Molecules.reset_cache!
   end
 
   def expire_atlas!(options)
