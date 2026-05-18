@@ -67,7 +67,7 @@ module Etsource
 
         it 'raises an error when no such region exists' do
           expect { loader.load(:nope) }.
-            to raise_error(Atlas::DocumentNotFoundError)
+            to raise_error(Etsource::DatasetNotFoundError)
         end
       end # loading a dataset
     end # AtlasLoader::PreCalculated
