@@ -835,6 +835,302 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       it 'returns nil for direct_reporting_emissions_co2_production' do
         expect(non_emissions_node.query.direct_reporting_emissions_co2_production).to be_nil
       end
+
+      it 'returns nil for direct_co2_input_content_carriers_biogenic' do
+        expect(non_emissions_node.query.direct_co2_input_content_carriers_biogenic).to be_nil
+      end
+
+      it 'returns nil for direct_co2_output_content_carriers_biogenic' do
+        expect(non_emissions_node.query.direct_co2_output_content_carriers_biogenic).to be_nil
+      end
+
+      it 'returns nil for direct_co2_output_production_emissions_biogenic' do
+        expect(non_emissions_node.query.direct_co2_output_production_emissions_biogenic).to be_nil
+      end
+    end
+  end
+
+  describe '#direct_co2_input_content_carriers_biogenic' do
+    context 'with a pure biogenic carrier (biogenic_waste)' do
+      # Create a simple graph:
+      # [Biogenic Waste Producer] -> [Waste Burner] -> [Terminus]
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:waste_burner, groups: [:emissions])
+          builder.add(:biogenic_waste_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:biogenic_waste_producer, :waste_burner, :biogenic_waste, type: :share)
+          builder.connect(:waste_burner, :terminus, :electricity, type: :share)
+
+          builder.carrier_attrs(:biogenic_waste, potential_co2_conversion_per_mj: 0.06)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:waste_burner) { graph.node(:waste_burner) }
+
+      it 'calculates biogenic emissions from biogenic_waste input' do
+        # 100 MJ * 0.06 kg/MJ = 6.0 kg biogenic CO2
+        expect(waste_burner).to have_query_value(:direct_co2_input_content_carriers_biogenic, 6.0)
+      end
+    end
+
+    context 'with secondary carriers (electricity from biogenic)' do
+      # Create a graph:
+      # [Biogenic Waste Producer] -> [Waste Plant] -> [Electric Heater] -> [Terminus]
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 50)
+          builder.add(:electric_heater, groups: [:emissions])
+          builder.add(:waste_plant, groups: [:emissions])
+          builder.add(:biogenic_waste_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:biogenic_waste_producer, :waste_plant, :biogenic_waste, type: :share)
+          builder.connect(:waste_plant, :electric_heater, :electricity, type: :share)
+          builder.connect(:electric_heater, :terminus, :heat, type: :share)
+
+          builder.carrier_attrs(:biogenic_waste, potential_co2_conversion_per_mj: 0.06)
+          builder.carrier_attrs(:electricity, potential_co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:electric_heater) { graph.node(:electric_heater) }
+      let(:waste_plant) { graph.node(:waste_plant) }
+
+      it 'returns zero for electricity consumer (no biogenic emissions)' do
+        # Electricity has no biogenic carbon content
+        expect(electric_heater).to have_query_value(:direct_co2_input_content_carriers_biogenic, 0.0)
+      end
+
+      it 'shows biogenic emissions at the waste plant' do
+        # 50 MJ * 0.06 kg/MJ = 3.0 kg biogenic CO2
+        expect(waste_plant).to have_query_value(:direct_co2_input_content_carriers_biogenic, 3.0)
+      end
+    end
+
+    context 'with mixed biogenic carriers (skip carrier value)' do
+      # Create a graph that blends different biogenic sources:
+      # [Wood Waste (60 MJ)] -> [Biogenic Blender] -> [Burner] -> [Terminus]
+      # [Green Waste (40 MJ)] ->       ^
+      #
+      # Edge from blender to burner is marked to skip carrier value
+      # and calculate composition from the supply mix instead
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:burner, groups: [:emissions])
+          builder.add(:biogenic_blender, groups: [:emissions])
+          builder.add(:wood_waste, groups: [:primary_energy_demand], demand: 60)
+          builder.add(:green_waste, groups: [:primary_energy_demand], demand: 40)
+
+          # Biogenic sources with different CO2 content
+          builder.connect(:wood_waste, :biogenic_blender, :wood_pellets, type: :share)
+          builder.connect(:green_waste, :biogenic_blender, :green_waste_carrier, type: :share)
+
+          # Edge marked to skip carrier value and calculate from mix
+          builder.connect(:biogenic_blender, :burner, :biogenic_waste, type: :share, groups: [:emissions_skip_crude_oil_mix])
+          builder.connect(:burner, :terminus, :electricity, type: :share)
+
+          # Wood pellets: 0.07 kg biogenic CO2/MJ
+          builder.carrier_attrs(:wood_pellets, potential_co2_conversion_per_mj: 0.07)
+          # Green waste: 0.05 kg biogenic CO2/MJ
+          builder.carrier_attrs(:green_waste_carrier, potential_co2_conversion_per_mj: 0.05)
+          # Biogenic waste carrier default (should be skipped)
+          builder.carrier_attrs(:biogenic_waste, potential_co2_conversion_per_mj: 0.06)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:burner) { graph.node(:burner) }
+      let(:biogenic_blender) { graph.node(:biogenic_blender) }
+
+      it 'calculates burner input from supply mix, not carrier value' do
+        # Expected: weighted average based on supply mix
+        # (60 * 0.07 + 40 * 0.05) / 100 = 0.062 kg biogenic CO2/MJ
+        # 100 MJ * 0.062 kg/MJ = 6.2 kg biogenic CO2
+        expect(burner).to have_query_value(:direct_co2_input_content_carriers_biogenic, 6.2)
+      end
+
+      it 'calculates blender input content from mixed sources' do
+        # Blender receives:
+        # - 60 MJ wood pellets @ 0.07 kg/MJ = 4.2 kg
+        # - 40 MJ green waste @ 0.05 kg/MJ = 2.0 kg
+        # Total input: 6.2 kg biogenic CO2
+        expect(biogenic_blender).to have_query_value(:direct_co2_input_content_carriers_biogenic, 6.2)
+      end
+
+      it 'calculates blender output content using weighted composition' do
+        # Blender outputs 100 MJ biogenic_waste with skip group
+        # Should use weighted composition (0.062 kg/MJ), not carrier value (0.06 kg/MJ)
+        # 100 MJ * 0.062 kg/MJ = 6.2 kg biogenic CO2
+        expect(biogenic_blender).to have_query_value(:direct_co2_output_content_carriers_biogenic, 6.2)
+      end
+
+      it 'preserves mass balance at blender (pass-through node)' do
+        # For a pass-through blender: A (input) - C (output) = E (emissions)
+        # Since no combustion occurs: E should be 0
+        # Therefore: A should equal C
+        input = biogenic_blender.query.direct_co2_input_content_carriers_biogenic
+        output = biogenic_blender.query.direct_co2_output_content_carriers_biogenic
+        emissions = biogenic_blender.query.direct_co2_output_production_emissions_biogenic
+
+        expect(input).to be_within(0.0000001).of(output)
+        expect(emissions).to be_within(0.0000001).of(0.0)
+      end
+    end
+
+    context 'with no demand' do
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 0)
+          builder.add(:waste_burner, groups: [:emissions])
+          builder.add(:biogenic_waste_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:biogenic_waste_producer, :waste_burner, :biogenic_waste, type: :share)
+          builder.connect(:waste_burner, :terminus, :electricity, type: :share)
+
+          builder.carrier_attrs(:biogenic_waste, potential_co2_conversion_per_mj: 0.06)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:waste_burner) { graph.node(:waste_burner) }
+
+      it 'returns zero when demand is zero' do
+        expect(waste_burner).to have_query_value(:direct_co2_input_content_carriers_biogenic, 0.0)
+      end
+    end
+
+    context 'with carrier having no potential CO2 value' do
+      # Some carriers may not have potential_co2_conversion_per_mj defined
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:consumer, groups: [:emissions])
+          builder.add(:producer, groups: [:primary_energy_demand])
+
+          builder.connect(:producer, :consumer, :custom_carrier, type: :share)
+          builder.connect(:consumer, :terminus, :electricity, type: :share)
+
+          # custom_carrier has no potential_co2_conversion_per_mj set
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:consumer) { graph.node(:consumer) }
+
+      it 'returns zero when carrier has no potential biogenic CO2 value' do
+        expect(consumer).to have_query_value(:direct_co2_input_content_carriers_biogenic, 0.0)
+      end
+    end
+  end
+
+  describe '#direct_co2_output_content_carriers_biogenic' do
+    context 'with pure biogenic carrier output' do
+      # Create a graph:
+      # [Biogenic Producer] -> [Processor] -> [Terminus]
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:processor, groups: [:emissions])
+          builder.add(:biogenic_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:biogenic_producer, :processor, :biogenic_waste, type: :share)
+          builder.connect(:processor, :terminus, :biogenic_waste, type: :share)
+
+          builder.carrier_attrs(:biogenic_waste, potential_co2_conversion_per_mj: 0.06)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:processor) { graph.node(:processor) }
+
+      it 'calculates output biogenic content correctly' do
+        # 100 MJ * 0.06 kg/MJ = 6.0 kg biogenic CO2
+        expect(processor).to have_query_value(:direct_co2_output_content_carriers_biogenic, 6.0)
+      end
+
+      it 'preserves mass balance (pass-through)' do
+        input = processor.query.direct_co2_input_content_carriers_biogenic
+        output = processor.query.direct_co2_output_content_carriers_biogenic
+
+        expect(input).to be_within(0.0000001).of(output)
+      end
+    end
+  end
+
+  describe '#direct_co2_output_production_emissions_biogenic' do
+    context 'with biogenic combustion' do
+      # Create a graph:
+      # [Biogenic Waste Producer] -> [Waste Burner] -> [Terminus]
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:waste_burner, groups: [:emissions])
+          builder.add(:biogenic_waste_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:biogenic_waste_producer, :waste_burner, :biogenic_waste, type: :share)
+          builder.connect(:waste_burner, :terminus, :electricity, type: :share)
+
+          builder.carrier_attrs(:biogenic_waste, potential_co2_conversion_per_mj: 0.06)
+          builder.carrier_attrs(:electricity, potential_co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:waste_burner) { graph.node(:waste_burner) }
+
+      it 'calculates biogenic production emissions correctly' do
+        # Input: 100 MJ * 0.06 kg/MJ = 6.0 kg biogenic CO2
+        # Output: electricity has 0 biogenic content
+        # Emissions: 6.0 - 0 = 6.0 kg biogenic CO2
+        expect(waste_burner).to have_query_value(:direct_co2_output_production_emissions_biogenic, 6.0)
+      end
+
+      it 'validates mass balance equation A - C = E' do
+        input = waste_burner.query.direct_co2_input_content_carriers_biogenic
+        output = waste_burner.query.direct_co2_output_content_carriers_biogenic
+        emissions = waste_burner.query.direct_co2_output_production_emissions_biogenic
+
+        expect(emissions).to be_within(0.0000001).of(input - output)
+      end
+    end
+
+    context 'with biogenic pass-through node' do
+      # Create a graph:
+      # [Biogenic Producer] -> [Distributor] -> [Consumer] -> [Terminus]
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:consumer, groups: [:emissions])
+          builder.add(:distributor, groups: [:emissions])
+          builder.add(:biogenic_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:biogenic_producer, :distributor, :biogenic_waste, type: :share)
+          builder.connect(:distributor, :consumer, :biogenic_waste, type: :share)
+          builder.connect(:consumer, :terminus, :electricity, type: :share)
+
+          builder.carrier_attrs(:biogenic_waste, potential_co2_conversion_per_mj: 0.06)
+          builder.carrier_attrs(:electricity, potential_co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:distributor) { graph.node(:distributor) }
+      let(:consumer) { graph.node(:consumer) }
+
+      it 'shows zero emissions at pass-through distributor' do
+        # Pass-through node: input = output, emissions = 0
+        expect(distributor).to have_query_value(:direct_co2_output_production_emissions_biogenic, 0.0)
+      end
+
+      it 'shows emissions at consumer (combustion point)' do
+        # Consumer burns the biogenic fuel
+        # 100 MJ * 0.06 kg/MJ = 6.0 kg biogenic CO2
+        expect(consumer).to have_query_value(:direct_co2_output_production_emissions_biogenic, 6.0)
+      end
     end
   end
 end
