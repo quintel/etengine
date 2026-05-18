@@ -58,6 +58,42 @@ module Qernel
         end
       end
 
+      # Biogenic CO2 content of all carriers entering the node (A).
+      #
+      # @return [Float, nil] Total biogenic CO2 content from input carriers in kg, or nil if node is not in emissions group
+      def direct_co2_input_content_carriers_biogenic
+        with_emissions_node do
+          inputs.sum do |slot|
+            slot.edges.sum do |edge|
+              biogenic_carbon_content = direct_edge_biogenic_carbon_content(edge)
+              (edge.net_demand || 0.0) * biogenic_carbon_content
+            end
+          end
+        end
+      end
+
+      # Biogenic CO2 content of all carriers leaving the node (C).
+      #
+      # @return [Float, nil] Total biogenic CO2 content from output carriers in kg, or nil if node is not in emissions group
+      def direct_co2_output_content_carriers_biogenic
+        with_emissions_node do
+          output_edges.sum do |edge|
+            biogenic_carbon_content = direct_edge_biogenic_carbon_content(edge)
+            (edge.net_demand || 0.0) * biogenic_carbon_content
+          end
+        end
+      end
+
+      # Biogenic CO2 emissions produced at this node (E).
+      #
+      # @return [Float, nil] Direct biogenic CO2 emissions in kg, or nil if node is not in emissions group
+      def direct_co2_output_production_emissions_biogenic
+        with_emissions_node do
+          direct_co2_input_content_carriers_biogenic -
+            direct_co2_output_content_carriers_biogenic
+        end
+      end
+
       private
 
       # Yields the given block only if the node belongs to the :emissions group.
@@ -83,6 +119,24 @@ module Qernel
         # Fallback: calculate from weighted supply mix using recursive factor
         supplier = edge.rgt_node
         supplier&.query&.direct_carbon_content_per_mj || 0.0
+      end
+
+      # Returns the biogenic CO2 content per MJ for a specific edge.
+      #
+      # For edges marked with :emissions_skip_crude_oil_mix or carriers without intrinsic
+      # potential CO2 values, delegates to RecursiveFactor::DirectEmissions to calculate from the
+      # weighted supply mix. Otherwise uses the carrier's potential biogenic CO2 value.
+      #
+      # @return [Float] Biogenic CO2 content in kg/MJ
+      def direct_edge_biogenic_carbon_content(edge)
+        # Check if carrier has intrinsic potential biogenic CO2 value and edge doesn't skip it
+        if edge.carrier.potential_co2_conversion_per_mj && !edge.emissions_skip_crude_oil_mix?
+          return edge.carrier.potential_co2_conversion_per_mj
+        end
+
+        # Fallback: calculate from weighted supply mix using recursive factor
+        supplier = edge.rgt_node
+        supplier&.query&.direct_biogenic_carbon_content_per_mj || 0.0
       end
     end
   end
