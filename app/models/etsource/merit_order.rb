@@ -1,5 +1,9 @@
 module Etsource
   class MeritOrder
+    class << self
+      attr_accessor :cache
+    end
+
     CACHE_ATTRIBUTES = %i[
       merit_order
       hydrogen
@@ -96,10 +100,14 @@ module Etsource
       merit_order_cache[attribute]
     end
 
+    def self.reset_cache!
+      self.cache = nil
+    end
+
     # Batches all MeritOrder cache reads into one SQL query per request, so
-    # subsequent fetch calls hit the LocalStore instead of the database.
+    # subsequent fetch calls are served from memory instead of the database.
     def merit_order_cache
-      Thread.current[:merit_order_cache] ||= begin
+      self.class.cache ||= begin
         cache_attr_by_key = CACHE_ATTRIBUTES.index_by { |a| "#{a}_hash" }
 
         Rails.cache.fetch_multi(*cache_attr_by_key.keys) do |cache_key|
