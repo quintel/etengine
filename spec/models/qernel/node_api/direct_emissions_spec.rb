@@ -560,12 +560,12 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
     end
   end
 
-  pending 'gross, captured, and net fossil emissions' do
+  describe 'CO2 capture methods' do
     context 'with CCS plant capturing 85% of emissions' do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 100)
-          builder.add(:ccs_plant, groups: [:emissions], free_co2_factor: 0.85)
+          builder.add(:ccs_plant, groups: [:emissions], ccs_capture_rate: 0.85)
           builder.add(:gas_producer, groups: [:primary_energy_demand])
 
           builder.connect(:gas_producer, :ccs_plant, :natural_gas, type: :share)
@@ -578,35 +578,22 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:graph) { builder.to_qernel }
       let(:ccs_plant) { graph.node(:ccs_plant) }
 
-      it 'calculates gross emissions (before capture)' do
-        # 100 MJ * 0.0564 kg/MJ = 5.64 kg CO2
-        expect(ccs_plant).to have_query_value(:direct_co2_output_production_emissions_fossil, 5.64)
+      it 'calculates fossil CO2 captured' do
+        # CO2 production (A - C): 100 MJ * 0.0564 kg/MJ - 0 = 5.64 kg CO2
+        # Captured: 5.64 * 0.85 = 4.794 kg CO2
+        expect(ccs_plant).to have_query_value(:direct_co2_output_production_capture_fossil, 4.794)
       end
 
-      it 'calculates captured emissions' do
-        # 5.64 * 0.85 = 4.794 kg CO2 captured
-        expect(ccs_plant).to have_query_value(:direct_co2_input_content_carriers_fossil_captured, 4.794)
-      end
-
-      it 'calculates net emissions (after capture)' do
-        # 5.64 * (1 - 0.85) = 0.846 kg CO2
-        expect(ccs_plant).to have_query_value(:direct_co2_input_content_carriers_fossil, 0.846)
-      end
-
-      it 'validates net = gross - captured' do
-        gross = ccs_plant.query.direct_co2_output_production_emissions_fossil
-        captured = ccs_plant.query.direct_co2_input_content_carriers_fossil_captured
-        net = ccs_plant.query.direct_co2_input_content_carriers_fossil
-
-        expect(net).to be_within(0.001).of(gross - captured)
+      it 'calculates biogenic CO2 captured as zero (no biogenic input)' do
+        expect(ccs_plant).to have_query_value(:direct_co2_output_production_capture_biogenic, 0.0)
       end
     end
 
-    context 'with no CCS (free_co2_factor = 0)' do
+    context 'with no CCS (ccs_capture_rate = 0)' do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 200)
-          builder.add(:coal_plant, groups: [:emissions], free_co2_factor: 0.0)
+          builder.add(:coal_plant, groups: [:emissions], ccs_capture_rate: 0.0)
           builder.add(:coal_producer, groups: [:primary_energy_demand])
 
           builder.connect(:coal_producer, :coal_plant, :coal, type: :share)
@@ -619,19 +606,96 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:graph) { builder.to_qernel }
       let(:coal_plant) { graph.node(:coal_plant) }
 
-      it 'has zero captured emissions' do
-        expect(coal_plant).to have_query_value(:direct_co2_input_content_carriers_fossil_captured, 0.0)
+      it 'has zero fossil captured emissions' do
+        expect(coal_plant).to have_query_value(:direct_co2_output_production_capture_fossil, 0.0)
       end
 
-      it 'has gross = net (no capture)' do
-        gross = coal_plant.query.direct_co2_output_production_emissions_fossil
-        net = coal_plant.query.direct_co2_input_content_carriers_fossil
-
-        expect(net).to eq(gross)
+      it 'has zero biogenic captured emissions' do
+        expect(coal_plant).to have_query_value(:direct_co2_output_production_capture_biogenic, 0.0)
       end
-  end
+    end
 
-  context 'with mixed carrier inputs (network gas blending)' do
+    context 'with nil ccs_capture_rate' do
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 150)
+          builder.add(:plant, groups: [:emissions])
+          builder.add(:producer, groups: [:primary_energy_demand])
+
+          builder.connect(:producer, :plant, :natural_gas, type: :share)
+          builder.connect(:plant, :terminus, :electricity, type: :share)
+
+          builder.carrier_attrs(:natural_gas, co2_conversion_per_mj: 0.0564)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:plant) { graph.node(:plant) }
+
+      it 'returns zero fossil captured emissions when capture rate not set' do
+        expect(plant).to have_query_value(:direct_co2_output_production_capture_fossil, 0.0)
+      end
+
+      it 'returns zero biogenic captured emissions when capture rate not set' do
+        expect(plant).to have_query_value(:direct_co2_output_production_capture_biogenic, 0.0)
+      end
+    end
+
+    context 'with biogenic CO2 input' do
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:bio_plant, groups: [:emissions], ccs_capture_rate: 0.90)
+          builder.add(:bio_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:bio_producer, :bio_plant, :biogenic_waste, type: :share)
+          builder.connect(:bio_plant, :terminus, :steam_hot_water, type: :share)
+
+          builder.carrier_attrs(:biogenic_waste, potential_co2_conversion_per_mj: 0.06)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:bio_plant) { graph.node(:bio_plant) }
+
+      it 'calculates biogenic CO2 captured' do
+        # CO2 production (A - C): 100 MJ * 0.06 kg/MJ - 0 = 6.0 kg CO2
+        # Captured: 6.0 * 0.90 = 5.4 kg CO2
+        expect(bio_plant).to have_query_value(:direct_co2_output_production_capture_biogenic, 5.4)
+      end
+
+      it 'has zero fossil captured emissions (no fossil input)' do
+        expect(bio_plant).to have_query_value(:direct_co2_output_production_capture_fossil, 0.0)
+      end
+    end
+
+    context 'with node not in emissions group' do
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:non_emissions_node, ccs_capture_rate: 0.85)
+          builder.add(:producer, groups: [:primary_energy_demand])
+
+          builder.connect(:producer, :non_emissions_node, :natural_gas, type: :share)
+          builder.connect(:non_emissions_node, :terminus, :electricity, type: :share)
+
+          builder.carrier_attrs(:natural_gas, co2_conversion_per_mj: 0.0564)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:non_emissions_node) { graph.node(:non_emissions_node) }
+
+      it 'returns nil for fossil capture when not in emissions group' do
+        expect(non_emissions_node.query.direct_co2_output_production_capture_fossil).to be_nil
+      end
+
+      it 'returns nil for biogenic capture when not in emissions group' do
+        expect(non_emissions_node.query.direct_co2_output_production_capture_biogenic).to be_nil
+      end
+    end
+
+    context 'with mixed carrier inputs (network gas blending)' do
       # Create a graph modeling network gas distribution:
       # [Natural Gas Producer] ---70%---> [Network Gas Distributor] -> [Gas Burner] -> [Terminus]
       # [Green Gas Producer]   ---30%--^
@@ -1389,19 +1453,19 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
         expect(synfuel_plant).to have_query_value(:direct_co2_input_utilisation_fossil, 2.0)
       end
 
-      it 'subtracts utilisation from production emissions' do
-        # Mass balance: E = A - C - U
-        # E = 5.64 - 0 - 2.0 = 3.64 kg CO2
-        expect(synfuel_plant).to have_query_value(:direct_co2_output_production_emissions_fossil, 3.64)
+      it 'adds utilisation to input in production emissions' do
+        # Mass balance: E = A + U - C
+        # E = 5.64 + 2.0 - 0 = 7.64 kg CO2
+        expect(synfuel_plant).to have_query_value(:direct_co2_output_production_emissions_fossil, 7.64)
       end
 
-      it 'validates complete mass balance equation A - C - U = E' do
+      it 'validates complete mass balance equation A + U - C = E' do
         input = synfuel_plant.query.direct_co2_input_content_carriers_fossil
         output = synfuel_plant.query.direct_co2_output_content_carriers_fossil
         utilisation = synfuel_plant.query.direct_co2_input_utilisation_fossil
         emissions = synfuel_plant.query.direct_co2_output_production_emissions_fossil
 
-        expect(emissions).to be_within(0.0000001).of(input - output - utilisation)
+        expect(emissions).to be_within(0.0000001).of(input + utilisation - output)
       end
 
       it 'reporting method reflects net emissions after utilisation' do
@@ -1409,7 +1473,7 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
         reporting = synfuel_plant.query.direct_reporting_emissions_co2_production
 
         expect(reporting).to eq(production)
-        expect(reporting).to be_within(0.0000001).of(3.64)
+        expect(reporting).to be_within(0.0000001).of(7.64)
       end
     end
 
@@ -1439,12 +1503,12 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
         expect(methanol_plant).to have_query_value(:direct_co2_input_utilisation_fossil, 8.0)
       end
 
-      it 'shows negative emissions when utilisation exceeds input content' do
+      it 'shows positive emissions when utilisation brings in external CO2' do
         # Input: 0 kg (hydrogen has no CO2)
         # Output: 0 kg
-        # Utilisation: 8.0 kg (CO2 sourced externally and incorporated)
-        # Emissions: 0 - 0 - 8.0 = -8.0 kg (net CO2 removal)
-        expect(methanol_plant).to have_query_value(:direct_co2_output_production_emissions_fossil, -8.0)
+        # Utilisation: 8.0 kg (CO2 sourced externally and brought in as feedstock)
+        # Emissions: 0 + 8.0 - 0 = 8.0 kg
+        expect(methanol_plant).to have_query_value(:direct_co2_output_production_emissions_fossil, 8.0)
       end
 
       it 'validates mass balance with external CO2 input' do
@@ -1453,8 +1517,8 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
         utilisation = methanol_plant.query.direct_co2_input_utilisation_fossil
         emissions = methanol_plant.query.direct_co2_output_production_emissions_fossil
 
-        expect(emissions).to be_within(0.0000001).of(input - output - utilisation)
-        expect(emissions).to eq(-8.0)
+        expect(emissions).to be_within(0.0000001).of(input + utilisation - output)
+        expect(emissions).to eq(8.0)
       end
     end
 
@@ -1530,9 +1594,9 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       it 'accounts for both output carbon content and utilisation' do
         # Input: 80 MJ * 0.0564 kg/MJ = 4.512 kg CO2
         # Output: 80 MJ * 0.0733 kg/MJ = 5.864 kg CO2
-        # Utilisation: 80 MJ * 0.03 kg/MJ = 2.4 kg CO2
-        # Emissions: 4.512 - 5.864 - 2.4 = -3.752 kg CO2 (net carbon removal)
-        expect(ccu_plant).to have_query_value(:direct_co2_output_production_emissions_fossil, -3.752)
+        # Utilisation: 80 MJ * 0.03 kg/MJ = 2.4 kg CO2 (brought in externally)
+        # Emissions: 4.512 + 2.4 - 5.864 = 1.048 kg CO2
+        expect(ccu_plant).to have_query_value(:direct_co2_output_production_emissions_fossil, 1.048)
       end
 
       it 'validates mass balance with carbon outputs and utilisation' do
@@ -1544,7 +1608,7 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
         expect(input).to be_within(0.0001).of(4.512)
         expect(output).to be_within(0.0001).of(5.864)
         expect(utilisation).to eq(2.4)
-        expect(emissions).to be_within(0.0001).of(input - output - utilisation)
+        expect(emissions).to be_within(0.0001).of(input + utilisation - output)
       end
     end
 
@@ -1582,13 +1646,13 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       end
 
       it 'calculates emissions correctly at first plant' do
-        # Plant 1: E = 2.82 - 0 - 1.0 = 1.82 kg CO2
-        expect(ccu_plant_1).to have_query_value(:direct_co2_output_production_emissions_fossil, 1.82)
+        # Plant 1: E = 2.82 + 1.0 - 0 = 3.82 kg CO2
+        expect(ccu_plant_1).to have_query_value(:direct_co2_output_production_emissions_fossil, 3.82)
       end
 
       it 'calculates emissions correctly at second plant' do
-        # Plant 2: E = 0 - 0 - 0.5 = -0.5 kg CO2 (net removal)
-        expect(ccu_plant_2).to have_query_value(:direct_co2_output_production_emissions_fossil, -0.5)
+        # Plant 2: E = 0 + 0.5 - 0 = 0.5 kg CO2
+        expect(ccu_plant_2).to have_query_value(:direct_co2_output_production_emissions_fossil, 0.5)
       end
 
       it 'validates mass balance at each plant independently' do
@@ -1598,7 +1662,7 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
         utilisation_1 = ccu_plant_1.query.direct_co2_input_utilisation_fossil
         emissions_1 = ccu_plant_1.query.direct_co2_output_production_emissions_fossil
 
-        expect(emissions_1).to be_within(0.0000001).of(input_1 - output_1 - utilisation_1)
+        expect(emissions_1).to be_within(0.0000001).of(input_1 + utilisation_1 - output_1)
 
         # Plant 2 mass balance
         input_2 = ccu_plant_2.query.direct_co2_input_content_carriers_fossil
@@ -1606,7 +1670,7 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
         utilisation_2 = ccu_plant_2.query.direct_co2_input_utilisation_fossil
         emissions_2 = ccu_plant_2.query.direct_co2_output_production_emissions_fossil
 
-        expect(emissions_2).to be_within(0.0000001).of(input_2 - output_2 - utilisation_2)
+        expect(emissions_2).to be_within(0.0000001).of(input_2 + utilisation_2 - output_2)
       end
     end
   end
