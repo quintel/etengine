@@ -1,18 +1,5 @@
 module Etsource
   class MeritOrder
-    class << self
-      attr_accessor :cache
-    end
-
-    CACHE_ATTRIBUTES = %i[
-      merit_order
-      hydrogen
-      heat_network_lt
-      heat_network_mt
-      heat_network_ht
-      agriculture_heat
-    ].freeze
-
     def initialize(etsource = Etsource::Base.instance)
       @etsource = etsource
     end
@@ -97,39 +84,21 @@ module Etsource
     #
     # Returns a hash.
     def import(attribute)
-      merit_order_cache[attribute]
-    end
+      NastyCache.instance.fetch("#{attribute}_hash") do
+        mo_nodes = Atlas::EnergyNode.all.select(&attribute).sort_by(&:key)
+        mo_data  = {}
 
-    def self.reset_cache!
-      self.cache = nil
-    end
+        mo_nodes.each do |node|
+          config = node.public_send(attribute)
+          type   = config.type.to_s
+          group  = config.group&.to_s
 
-    # Batches all MeritOrder cache reads into one SQL query per request, so
-    # subsequent fetch calls are served from memory instead of the database.
-    def merit_order_cache
-      self.class.cache ||= begin
-        cache_attr_by_key = CACHE_ATTRIBUTES.index_by { |a| "#{a}_hash" }
+          mo_data[type] ||= {}
+          mo_data[type][node.key.to_s] = group
+        end
 
-        Rails.cache.fetch_multi(*cache_attr_by_key.keys) do |cache_key|
-          compute(cache_attr_by_key[cache_key])
-        end.transform_keys { |k| cache_attr_by_key[k] }
+        mo_data
       end
-    end
-
-    def compute(attribute)
-      mo_nodes = Atlas::EnergyNode.all.select(&attribute).sort_by(&:key)
-      mo_data  = {}
-
-      mo_nodes.each do |node|
-        config = node.public_send(attribute)
-        type   = config.type.to_s
-        group  = config.group&.to_s
-
-        mo_data[type] ||= {}
-        mo_data[type][node.key.to_s] = group
-      end
-
-      mo_data
     end
   end
 end
