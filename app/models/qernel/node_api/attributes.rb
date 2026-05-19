@@ -16,6 +16,7 @@ module Qernel
           :hydrogen_output_capacity => ['', 'MW'],
           :free_co2_factor => ['', ''],
           :ccs_capture_rate => ['', ''],
+          :co2_utilisation_per_mj => ['', ''],
           :construction_time => ['', ''],
           :electrical_efficiency_when_using_coal => ['', ''],
           :electrical_efficiency_when_using_wood_pellets => ['', ''],
