@@ -1133,4 +1133,481 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       end
     end
   end
+
+  describe '#direct_co2_input_utilisation_fossil' do
+    context 'with node having co2_utilisation_per_mj attribute' do
+      # Create a graph:
+      # [Gas Producer] -> [Synfuel Plant] -> [Terminus]
+      # Synfuel plant utilises CO2 as feedstock
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:synfuel_plant, groups: [:emissions], co2_utilisation_per_mj: 0.02)
+          builder.add(:gas_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:gas_producer, :synfuel_plant, :natural_gas, type: :share)
+          builder.connect(:synfuel_plant, :terminus, :diesel, type: :share)
+
+          builder.carrier_attrs(:natural_gas, co2_conversion_per_mj: 0.0564)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:synfuel_plant) { graph.node(:synfuel_plant) }
+
+      it 'calculates CO2 utilisation from total output energy' do
+        # Total output: 100 MJ diesel
+        # Utilisation rate: 0.02 kg CO2/MJ
+        # Total utilised: 100 * 0.02 = 2.0 kg CO2
+        expect(synfuel_plant).to have_query_value(:direct_co2_input_utilisation_fossil, 2.0)
+      end
+
+      it 'aggregate method matches fossil method' do
+        fossil = synfuel_plant.query.direct_co2_input_utilisation_fossil
+        aggregate = synfuel_plant.query.direct_co2_input_utilisation
+
+        expect(aggregate).to eq(fossil)
+      end
+    end
+
+    context 'with node having multiple output edges' do
+      # Create a graph:
+      # [Gas Producer] -> [CHP Plant] -> [Electric Consumer]
+      #                       |
+      #                       +--------> [Heat Consumer]
+      # CHP plant outputs both electricity and heat
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:heat_consumer, demand: 60)
+          builder.add(:electric_consumer, demand: 40)
+          builder.add(:chp_plant, groups: [:emissions], co2_utilisation_per_mj: 0.01)
+          builder.add(:gas_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:gas_producer, :chp_plant, :natural_gas, type: :share)
+          builder.connect(:chp_plant, :electric_consumer, :electricity, type: :share)
+          builder.connect(:chp_plant, :heat_consumer, :steam_hot_water, type: :share)
+
+          builder.carrier_attrs(:natural_gas, co2_conversion_per_mj: 0.0564)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:chp_plant) { graph.node(:chp_plant) }
+
+      it 'sums utilisation across all output edges' do
+        # Total output: 40 MJ electricity + 60 MJ heat = 100 MJ
+        # Utilisation rate: 0.01 kg CO2/MJ
+        # Total utilised: 100 * 0.01 = 1.0 kg CO2
+        expect(chp_plant).to have_query_value(:direct_co2_input_utilisation_fossil, 1.0)
+      end
+    end
+
+    context 'with node without co2_utilisation_per_mj attribute' do
+      # Create a graph:
+      # [Coal Producer] -> [Power Plant] -> [Terminus]
+      # Power plant does not utilise CO2
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:power_plant, groups: [:emissions])
+          builder.add(:coal_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:coal_producer, :power_plant, :coal, type: :share)
+          builder.connect(:power_plant, :terminus, :electricity, type: :share)
+
+          builder.carrier_attrs(:coal, co2_conversion_per_mj: 0.09)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:power_plant) { graph.node(:power_plant) }
+
+      it 'returns zero when co2_utilisation_per_mj is not set' do
+        expect(power_plant).to have_query_value(:direct_co2_input_utilisation_fossil, 0.0)
+      end
+
+      it 'aggregate method also returns zero' do
+        expect(power_plant).to have_query_value(:direct_co2_input_utilisation, 0.0)
+      end
+    end
+
+    context 'with node without emissions group' do
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:non_emissions_node, co2_utilisation_per_mj: 0.02)
+          builder.add(:producer, groups: [:primary_energy_demand])
+
+          builder.connect(:producer, :non_emissions_node, :electricity, type: :share)
+          builder.connect(:non_emissions_node, :terminus, :electricity, type: :share)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:non_emissions_node) { graph.node(:non_emissions_node) }
+
+      it 'returns nil for direct_co2_input_utilisation_fossil' do
+        expect(non_emissions_node.query.direct_co2_input_utilisation_fossil).to be_nil
+      end
+
+      it 'returns nil for direct_co2_input_utilisation' do
+        expect(non_emissions_node.query.direct_co2_input_utilisation).to be_nil
+      end
+    end
+
+    context 'with zero demand' do
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 0)
+          builder.add(:synfuel_plant, groups: [:emissions], co2_utilisation_per_mj: 0.02)
+          builder.add(:gas_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:gas_producer, :synfuel_plant, :natural_gas, type: :share)
+          builder.connect(:synfuel_plant, :terminus, :diesel, type: :share)
+
+          builder.carrier_attrs(:natural_gas, co2_conversion_per_mj: 0.0564)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:synfuel_plant) { graph.node(:synfuel_plant) }
+
+      it 'returns zero when demand is zero' do
+        expect(synfuel_plant).to have_query_value(:direct_co2_input_utilisation_fossil, 0.0)
+      end
+    end
+
+    context 'with high utilisation rate' do
+      # Create a graph:
+      # [Methanol Producer] -> [Methanol Plant] -> [Terminus]
+      # Plant utilises significant CO2 for methanol synthesis
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 50)
+          builder.add(:methanol_plant, groups: [:emissions], co2_utilisation_per_mj: 0.15)
+          builder.add(:methanol_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:methanol_producer, :methanol_plant, :hydrogen, type: :share)
+          builder.connect(:methanol_plant, :terminus, :methanol, type: :share)
+
+          builder.carrier_attrs(:hydrogen, co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:methanol_plant) { graph.node(:methanol_plant) }
+
+      it 'calculates high utilisation correctly' do
+        # Total output: 50 MJ methanol
+        # Utilisation rate: 0.15 kg CO2/MJ
+        # Total utilised: 50 * 0.15 = 7.5 kg CO2
+        expect(methanol_plant).to have_query_value(:direct_co2_input_utilisation_fossil, 7.5)
+      end
+    end
+  end
+
+  describe '#direct_co2_input_utilisation' do
+    context 'with utilisation present' do
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:synfuel_plant, groups: [:emissions], co2_utilisation_per_mj: 0.02)
+          builder.add(:gas_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:gas_producer, :synfuel_plant, :natural_gas, type: :share)
+          builder.connect(:synfuel_plant, :terminus, :diesel, type: :share)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:synfuel_plant) { graph.node(:synfuel_plant) }
+
+      it 'returns the fossil utilisation value' do
+        fossil = synfuel_plant.query.direct_co2_input_utilisation_fossil
+        aggregate = synfuel_plant.query.direct_co2_input_utilisation
+
+        expect(aggregate).to eq(fossil)
+        expect(aggregate).to eq(2.0)
+      end
+    end
+
+    context 'with no utilisation' do
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:power_plant, groups: [:emissions])
+          builder.add(:coal_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:coal_producer, :power_plant, :coal, type: :share)
+          builder.connect(:power_plant, :terminus, :electricity, type: :share)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:power_plant) { graph.node(:power_plant) }
+
+      it 'returns zero when no utilisation occurs' do
+        expect(power_plant).to have_query_value(:direct_co2_input_utilisation, 0.0)
+      end
+    end
+  end
+
+  describe 'emissions with CO2 utilisation (CCU/CCR nodes)' do
+    context 'with CCU node utilising CO2 as feedstock' do
+      # Create a graph:
+      # [Gas Producer] -> [Synfuel Plant] -> [Terminus]
+      # Synfuel plant utilises CO2 in product synthesis
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:synfuel_plant, groups: [:emissions], co2_utilisation_per_mj: 0.02)
+          builder.add(:gas_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:gas_producer, :synfuel_plant, :natural_gas, type: :share)
+          builder.connect(:synfuel_plant, :terminus, :diesel, type: :share)
+
+          builder.carrier_attrs(:natural_gas, co2_conversion_per_mj: 0.0564)
+          builder.carrier_attrs(:diesel, co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:synfuel_plant) { graph.node(:synfuel_plant) }
+
+      it 'calculates input content correctly' do
+        # 100 MJ gas * 0.0564 kg/MJ = 5.64 kg CO2
+        expect(synfuel_plant).to have_query_value(:direct_co2_input_content_carriers_fossil, 5.64)
+      end
+
+      it 'calculates output content correctly' do
+        # Diesel has 0 CO2 content
+        expect(synfuel_plant).to have_query_value(:direct_co2_output_content_carriers_fossil, 0.0)
+      end
+
+      it 'calculates utilisation correctly' do
+        # 100 MJ output * 0.02 kg/MJ = 2.0 kg CO2 utilised
+        expect(synfuel_plant).to have_query_value(:direct_co2_input_utilisation_fossil, 2.0)
+      end
+
+      it 'subtracts utilisation from production emissions' do
+        # Mass balance: E = A - C - U
+        # E = 5.64 - 0 - 2.0 = 3.64 kg CO2
+        expect(synfuel_plant).to have_query_value(:direct_co2_output_production_emissions_fossil, 3.64)
+      end
+
+      it 'validates complete mass balance equation A - C - U = E' do
+        input = synfuel_plant.query.direct_co2_input_content_carriers_fossil
+        output = synfuel_plant.query.direct_co2_output_content_carriers_fossil
+        utilisation = synfuel_plant.query.direct_co2_input_utilisation_fossil
+        emissions = synfuel_plant.query.direct_co2_output_production_emissions_fossil
+
+        expect(emissions).to be_within(0.0000001).of(input - output - utilisation)
+      end
+
+      it 'reporting method reflects net emissions after utilisation' do
+        production = synfuel_plant.query.direct_co2_output_production_emissions_fossil
+        reporting = synfuel_plant.query.direct_reporting_emissions_co2_production
+
+        expect(reporting).to eq(production)
+        expect(reporting).to be_within(0.0000001).of(3.64)
+      end
+    end
+
+    context 'with high utilisation rate (methanol synthesis)' do
+      # Create a graph:
+      # [Hydrogen Producer] -> [Methanol Plant] -> [Terminus]
+      # Methanol synthesis utilises significant CO2
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:methanol_plant, groups: [:emissions], co2_utilisation_per_mj: 0.08)
+          builder.add(:hydrogen_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:hydrogen_producer, :methanol_plant, :hydrogen, type: :share)
+          builder.connect(:methanol_plant, :terminus, :methanol, type: :share)
+
+          builder.carrier_attrs(:hydrogen, co2_conversion_per_mj: 0.0)
+          builder.carrier_attrs(:methanol, co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:methanol_plant) { graph.node(:methanol_plant) }
+
+      it 'calculates high utilisation correctly' do
+        # 100 MJ output * 0.08 kg/MJ = 8.0 kg CO2 utilised
+        expect(methanol_plant).to have_query_value(:direct_co2_input_utilisation_fossil, 8.0)
+      end
+
+      it 'shows negative emissions when utilisation exceeds input content' do
+        # Input: 0 kg (hydrogen has no CO2)
+        # Output: 0 kg
+        # Utilisation: 8.0 kg (CO2 sourced externally and incorporated)
+        # Emissions: 0 - 0 - 8.0 = -8.0 kg (net CO2 removal)
+        expect(methanol_plant).to have_query_value(:direct_co2_output_production_emissions_fossil, -8.0)
+      end
+
+      it 'validates mass balance with external CO2 input' do
+        input = methanol_plant.query.direct_co2_input_content_carriers_fossil
+        output = methanol_plant.query.direct_co2_output_content_carriers_fossil
+        utilisation = methanol_plant.query.direct_co2_input_utilisation_fossil
+        emissions = methanol_plant.query.direct_co2_output_production_emissions_fossil
+
+        expect(emissions).to be_within(0.0000001).of(input - output - utilisation)
+        expect(emissions).to eq(-8.0)
+      end
+    end
+
+    context 'with backward compatibility (node without utilisation)' do
+      # Create a graph:
+      # [Coal Producer] -> [Power Plant] -> [Terminus]
+      # Traditional combustion plant (no CCU)
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:power_plant, groups: [:emissions])
+          builder.add(:coal_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:coal_producer, :power_plant, :coal, type: :share)
+          builder.connect(:power_plant, :terminus, :electricity, type: :share)
+
+          builder.carrier_attrs(:coal, co2_conversion_per_mj: 0.09)
+          builder.carrier_attrs(:electricity, co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:power_plant) { graph.node(:power_plant) }
+
+      it 'has zero utilisation' do
+        expect(power_plant).to have_query_value(:direct_co2_input_utilisation_fossil, 0.0)
+      end
+
+      it 'calculates emissions correctly without utilisation (U = 0)' do
+        # Input: 100 MJ * 0.09 kg/MJ = 9.0 kg CO2
+        # Output: 0 kg (electricity has no CO2)
+        # Utilisation: 0 kg (no CCU)
+        # Emissions: 9.0 - 0 - 0 = 9.0 kg CO2
+        expect(power_plant).to have_query_value(:direct_co2_output_production_emissions_fossil, 9.0)
+      end
+
+      it 'validates traditional mass balance equation A - C = E (when U = 0)' do
+        input = power_plant.query.direct_co2_input_content_carriers_fossil
+        output = power_plant.query.direct_co2_output_content_carriers_fossil
+        emissions = power_plant.query.direct_co2_output_production_emissions_fossil
+
+        # When utilisation is 0, E = A - C (traditional equation)
+        expect(emissions).to be_within(0.0000001).of(input - output)
+        expect(emissions).to eq(9.0)
+      end
+
+      it 'reporting method works correctly without utilisation' do
+        expect(power_plant).to have_query_value(:direct_reporting_emissions_co2_production, 9.0)
+      end
+    end
+
+    context 'with CCU node having both carbon output and utilisation' do
+      # Create a graph:
+      # [Gas Producer] -> [CCU Plant] -> [Terminus]
+      # Plant outputs carbon-containing product AND utilises CO2
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 80)
+          builder.add(:ccu_plant, groups: [:emissions], co2_utilisation_per_mj: 0.03)
+          builder.add(:gas_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:gas_producer, :ccu_plant, :natural_gas, type: :share)
+          builder.connect(:ccu_plant, :terminus, :diesel, type: :share)
+
+          builder.carrier_attrs(:natural_gas, co2_conversion_per_mj: 0.0564)
+          builder.carrier_attrs(:diesel, co2_conversion_per_mj: 0.0733) # diesel contains carbon
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:ccu_plant) { graph.node(:ccu_plant) }
+
+      it 'accounts for both output carbon content and utilisation' do
+        # Input: 80 MJ * 0.0564 kg/MJ = 4.512 kg CO2
+        # Output: 80 MJ * 0.0733 kg/MJ = 5.864 kg CO2
+        # Utilisation: 80 MJ * 0.03 kg/MJ = 2.4 kg CO2
+        # Emissions: 4.512 - 5.864 - 2.4 = -3.752 kg CO2 (net carbon removal)
+        expect(ccu_plant).to have_query_value(:direct_co2_output_production_emissions_fossil, -3.752)
+      end
+
+      it 'validates mass balance with carbon outputs and utilisation' do
+        input = ccu_plant.query.direct_co2_input_content_carriers_fossil
+        output = ccu_plant.query.direct_co2_output_content_carriers_fossil
+        utilisation = ccu_plant.query.direct_co2_input_utilisation_fossil
+        emissions = ccu_plant.query.direct_co2_output_production_emissions_fossil
+
+        expect(input).to be_within(0.0001).of(4.512)
+        expect(output).to be_within(0.0001).of(5.864)
+        expect(utilisation).to eq(2.4)
+        expect(emissions).to be_within(0.0001).of(input - output - utilisation)
+      end
+    end
+
+    context 'with multiple CCU plants in series' do
+      # Create a graph:
+      # [Gas Producer] -> [CCU Plant 1] -> [CCU Plant 2] -> [Terminus]
+      # Both plants utilise CO2
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 50)
+          builder.add(:ccu_plant_2, groups: [:emissions], co2_utilisation_per_mj: 0.01)
+          builder.add(:ccu_plant_1, groups: [:emissions], co2_utilisation_per_mj: 0.02)
+          builder.add(:gas_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:gas_producer, :ccu_plant_1, :natural_gas, type: :share)
+          builder.connect(:ccu_plant_1, :ccu_plant_2, :intermediate_fuel, type: :share)
+          builder.connect(:ccu_plant_2, :terminus, :final_product, type: :share)
+
+          builder.carrier_attrs(:natural_gas, co2_conversion_per_mj: 0.0564)
+          builder.carrier_attrs(:intermediate_fuel, co2_conversion_per_mj: 0.0)
+          builder.carrier_attrs(:final_product, co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:ccu_plant_1) { graph.node(:ccu_plant_1) }
+      let(:ccu_plant_2) { graph.node(:ccu_plant_2) }
+
+      it 'calculates utilisation independently at each plant' do
+        # Plant 1: 50 MJ * 0.02 kg/MJ = 1.0 kg CO2 utilised
+        expect(ccu_plant_1).to have_query_value(:direct_co2_input_utilisation_fossil, 1.0)
+
+        # Plant 2: 50 MJ * 0.01 kg/MJ = 0.5 kg CO2 utilised
+        expect(ccu_plant_2).to have_query_value(:direct_co2_input_utilisation_fossil, 0.5)
+      end
+
+      it 'calculates emissions correctly at first plant' do
+        # Plant 1: E = 2.82 - 0 - 1.0 = 1.82 kg CO2
+        expect(ccu_plant_1).to have_query_value(:direct_co2_output_production_emissions_fossil, 1.82)
+      end
+
+      it 'calculates emissions correctly at second plant' do
+        # Plant 2: E = 0 - 0 - 0.5 = -0.5 kg CO2 (net removal)
+        expect(ccu_plant_2).to have_query_value(:direct_co2_output_production_emissions_fossil, -0.5)
+      end
+
+      it 'validates mass balance at each plant independently' do
+        # Plant 1 mass balance
+        input_1 = ccu_plant_1.query.direct_co2_input_content_carriers_fossil
+        output_1 = ccu_plant_1.query.direct_co2_output_content_carriers_fossil
+        utilisation_1 = ccu_plant_1.query.direct_co2_input_utilisation_fossil
+        emissions_1 = ccu_plant_1.query.direct_co2_output_production_emissions_fossil
+
+        expect(emissions_1).to be_within(0.0000001).of(input_1 - output_1 - utilisation_1)
+
+        # Plant 2 mass balance
+        input_2 = ccu_plant_2.query.direct_co2_input_content_carriers_fossil
+        output_2 = ccu_plant_2.query.direct_co2_output_content_carriers_fossil
+        utilisation_2 = ccu_plant_2.query.direct_co2_input_utilisation_fossil
+        emissions_2 = ccu_plant_2.query.direct_co2_output_production_emissions_fossil
+
+        expect(emissions_2).to be_within(0.0000001).of(input_2 - output_2 - utilisation_2)
+      end
+    end
+  end
 end

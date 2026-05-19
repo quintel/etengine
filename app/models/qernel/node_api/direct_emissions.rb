@@ -41,16 +41,20 @@ module Qernel
       # CO2 emissions produced at this node (E).
       # TODO: extend once capture is included.
       #
+      # Calculates net emissions  after accounting for CO2 utilisation.
+      # Mass balance equation: Emissions = input co2 - output co2 - utilised co2
+      #
       # @return [Float, nil] Direct fossil CO2 emissions in kg, or nil if node is not in emissions group
       def direct_co2_output_production_emissions_fossil
         with_emissions_node do
           direct_co2_input_content_carriers_fossil -
-            direct_co2_output_content_carriers_fossil
+            direct_co2_output_content_carriers_fossil -
+            direct_co2_input_utilisation_fossil
         end
       end
 
       # CO2 production - for now equal to E
-      #
+
       # @return [Float, nil] Direct fossil CO2 production in kg, or nil if node is not in emissions group
       def direct_reporting_emissions_co2_production
         with_emissions_node do
@@ -91,6 +95,32 @@ module Qernel
         with_emissions_node do
           direct_co2_input_content_carriers_biogenic -
             direct_co2_output_content_carriers_biogenic
+        end
+      end
+
+      # Fossil CO2 utilised (consumed as feedstock) at this node.
+      #
+      # Calculates CO2 that is consumed as feedstock rather than emitted, based on the total
+      # output energy and the node's co2_utilisation_per_mj attribute.
+      #
+      # @return [Float, nil] Total fossil CO2 utilised in kg, or nil if node is not in emissions group
+      def direct_co2_input_utilisation_fossil
+        with_emissions_node do
+          total_output_energy = output_edges.sum { |edge| edge.net_demand || 0.0 }
+          utilisation_rate = dataset_get(:co2_utilisation_per_mj) || 0.0
+          total_output_energy * utilisation_rate
+        end
+      end
+
+      # Total CO2 utilised (consumed as feedstock) at this node.
+      #
+      # Currently returns only fossil utilisation, as biogenic utilisation is always 0.
+      #
+      # @return [Float, nil] Total CO2 utilised in kg, or nil if node is not in emissions group
+      def direct_co2_input_utilisation
+        with_emissions_node do
+          direct_co2_input_utilisation_fossil
+          # Potentially in the future: + direct_co2_input_utilisation_biogenic (currently 0)
         end
       end
 
