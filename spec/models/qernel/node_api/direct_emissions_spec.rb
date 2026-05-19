@@ -1674,4 +1674,261 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       end
     end
   end
+
+  describe '#direct_reporting_emissions_co2_production' do
+    context 'with mixed fossil and biogenic inputs' do
+      # Create a graph:
+      # [Gas Producer] -> [Mixed Combustion Plant] <- [Biogenic Waste Producer]
+      #                           |
+      #                           v
+      #                       [Terminus]
+      # Plant burns both natural gas (fossil) and biogenic waste
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:mixed_combustion_plant, groups: [:emissions])
+          builder.add(:gas_producer, groups: [:primary_energy_demand], demand: 60)
+          builder.add(:biogenic_waste_producer, groups: [:primary_energy_demand], demand: 40)
+
+          builder.connect(:gas_producer, :mixed_combustion_plant, :natural_gas, type: :share)
+          builder.connect(:biogenic_waste_producer, :mixed_combustion_plant, :biogenic_waste, type: :share)
+          builder.connect(:mixed_combustion_plant, :terminus, :electricity, type: :share)
+
+          builder.carrier_attrs(:natural_gas, co2_conversion_per_mj: 0.0564)
+          builder.carrier_attrs(:biogenic_waste, potential_co2_conversion_per_mj: 0.06)
+          builder.carrier_attrs(:electricity, co2_conversion_per_mj: 0.0, potential_co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:mixed_plant) { graph.node(:mixed_combustion_plant) }
+
+      it 'sums both fossil and biogenic production emissions' do
+        # Fossil: 60 MJ * 0.0564 kg/MJ = 3.384 kg CO2
+        # Biogenic: 40 MJ * 0.06 kg/MJ = 2.4 kg CO2
+        # Total reporting: 3.384 + 2.4 = 5.784 kg CO2
+        expect(mixed_plant).to have_query_value(:direct_reporting_emissions_co2_production, 5.784)
+      end
+
+      it 'fossil component matches fossil production emissions' do
+        fossil = mixed_plant.query.direct_co2_output_production_emissions_fossil
+        expect(fossil).to be_within(0.0001).of(3.384)
+      end
+
+      it 'biogenic component matches biogenic production emissions' do
+        biogenic = mixed_plant.query.direct_co2_output_production_emissions_biogenic
+        expect(biogenic).to be_within(0.0001).of(2.4)
+      end
+
+      it 'reporting equals sum of fossil and biogenic components' do
+        fossil = mixed_plant.query.direct_co2_output_production_emissions_fossil
+        biogenic = mixed_plant.query.direct_co2_output_production_emissions_biogenic
+        reporting = mixed_plant.query.direct_reporting_emissions_co2_production
+
+        expect(reporting).to be_within(0.0001).of(fossil + biogenic)
+      end
+    end
+
+    context 'with biogenic-only input' do
+      # Create a graph:
+      # [Biogenic Waste Producer] -> [Waste Burner] -> [Terminus]
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 150)
+          builder.add(:waste_burner, groups: [:emissions])
+          builder.add(:biogenic_waste_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:biogenic_waste_producer, :waste_burner, :biogenic_waste, type: :share)
+          builder.connect(:waste_burner, :terminus, :steam_hot_water, type: :share)
+
+          builder.carrier_attrs(:biogenic_waste, potential_co2_conversion_per_mj: 0.06)
+          builder.carrier_attrs(:steam_hot_water, potential_co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:waste_burner) { graph.node(:waste_burner) }
+
+      it 'reports only biogenic emissions when fossil is zero' do
+        # Fossil: 0 kg CO2
+        # Biogenic: 150 MJ * 0.06 kg/MJ = 9.0 kg CO2
+        # Total reporting: 0 + 9.0 = 9.0 kg CO2
+        expect(waste_burner).to have_query_value(:direct_reporting_emissions_co2_production, 9.0)
+      end
+
+      it 'has zero fossil production emissions' do
+        expect(waste_burner).to have_query_value(:direct_co2_output_production_emissions_fossil, 0.0)
+      end
+
+      it 'has non-zero biogenic production emissions' do
+        expect(waste_burner).to have_query_value(:direct_co2_output_production_emissions_biogenic, 9.0)
+      end
+
+      it 'reporting equals biogenic component only' do
+        biogenic = waste_burner.query.direct_co2_output_production_emissions_biogenic
+        reporting = waste_burner.query.direct_reporting_emissions_co2_production
+
+        expect(reporting).to eq(biogenic)
+      end
+    end
+
+    context 'with CCS capturing from mixed fossil and biogenic inputs' do
+      # Create a graph:
+      # [Gas Producer] -> [CCS Plant with Mixed Fuels] <- [Biogenic Waste Producer]
+      #                           |
+      #                           v
+      #                       [Terminus]
+      # CCS plant captures from both fossil and biogenic sources
+      # NOTE: Electricity carrier doesn't set CO2 values, so it inherits from supply mix
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:ccs_mixed_plant, groups: [:emissions], ccs_capture_rate: 0.90)
+          builder.add(:gas_producer, groups: [:primary_energy_demand], demand: 50)
+          builder.add(:biogenic_waste_producer, groups: [:primary_energy_demand], demand: 50)
+
+          builder.connect(:gas_producer, :ccs_mixed_plant, :natural_gas, type: :share)
+          builder.connect(:biogenic_waste_producer, :ccs_mixed_plant, :biogenic_waste, type: :share)
+          builder.connect(:ccs_mixed_plant, :terminus, :electricity, type: :share)
+
+          builder.carrier_attrs(:natural_gas, co2_conversion_per_mj: 0.0564)
+          builder.carrier_attrs(:biogenic_waste, potential_co2_conversion_per_mj: 0.06)
+          # electricity carrier not set - inherits CO2 from supply mix
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:ccs_mixed_plant) { graph.node(:ccs_mixed_plant) }
+
+      it 'captures from both fossil and biogenic sources' do
+        # Fossil input: 50 MJ * 0.0564 kg/MJ = 2.82 kg CO2
+        # Biogenic input: 50 MJ * 0.06 kg/MJ = 3.0 kg CO2
+        # Output inherits weighted mix: 100 MJ * ((2.82 + 3.0)/100) = 5.82 kg CO2
+
+        # Fossil output: 100 MJ * (2.82/100) = 2.82 kg CO2
+        # Fossil captured: 2.82 * 0.90 = 2.538 kg CO2
+        expect(ccs_mixed_plant).to have_query_value(:direct_co2_output_production_capture_fossil, 2.538)
+
+        # Biogenic output: 100 MJ * (3.0/100) = 3.0 kg CO2
+        # Biogenic captured: 3.0 * 0.90 = 2.7 kg CO2
+        expect(ccs_mixed_plant).to have_query_value(:direct_co2_output_production_capture_biogenic, 2.7)
+      end
+
+      it 'reports net emissions after capture from both sources' do
+        # Fossil: A - Capture - C = 2.82 - 2.538 - 2.82 = -2.538 kg
+        # Biogenic: A - Capture - C = 3.0 - 2.7 - 3.0 = -2.7 kg
+        # Total: -2.538 + -2.7 = -5.238 kg CO2
+        expect(ccs_mixed_plant).to have_query_value(:direct_reporting_emissions_co2_production, -5.238)
+      end
+
+      it 'fossil production emissions account for capture' do
+        # Fossil: A - Capture - C = 2.82 - 2.538 - 2.82 = -2.538 kg
+        expect(ccs_mixed_plant).to have_query_value(:direct_co2_output_production_emissions_fossil, -2.538)
+      end
+
+      it 'biogenic production emissions account for capture' do
+        # Biogenic: A - Capture - C = 3.0 - 2.7 - 3.0 = -2.7 kg
+        expect(ccs_mixed_plant).to have_query_value(:direct_co2_output_production_emissions_biogenic, -2.7)
+      end
+
+      it 'reporting equals sum of net fossil and net biogenic' do
+        fossil_net = ccs_mixed_plant.query.direct_co2_output_production_emissions_fossil
+        biogenic_net = ccs_mixed_plant.query.direct_co2_output_production_emissions_biogenic
+        reporting = ccs_mixed_plant.query.direct_reporting_emissions_co2_production
+
+        expect(reporting).to be_within(0.0001).of(fossil_net + biogenic_net)
+        expect(reporting).to be_within(0.0001).of(-5.238)
+      end
+    end
+
+    context 'with biogenic CCS plant (BECCS)' do
+      # Create a graph:
+      # [Biogenic Waste Producer] -> [BECCS Plant] -> [Terminus]
+      # BECCS captures 95% of biogenic CO2 (negative emissions scenario)
+      # NOTE: Electricity carrier doesn't set CO2 values, so it inherits from supply mix
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 200)
+          builder.add(:beccs_plant, groups: [:emissions], ccs_capture_rate: 0.95)
+          builder.add(:biogenic_waste_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:biogenic_waste_producer, :beccs_plant, :biogenic_waste, type: :share)
+          builder.connect(:beccs_plant, :terminus, :electricity, type: :share)
+
+          builder.carrier_attrs(:biogenic_waste, potential_co2_conversion_per_mj: 0.06)
+          # electricity carrier not set - inherits biogenic CO2 from supply mix
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:beccs_plant) { graph.node(:beccs_plant) }
+
+      it 'captures biogenic CO2 at high rate' do
+        # Biogenic input: 200 MJ * 0.06 kg/MJ = 12.0 kg CO2
+        # Biogenic output (inherited): 200 MJ * 0.06 kg/MJ = 12.0 kg CO2
+        # Captured: 12.0 * 0.95 = 11.4 kg CO2
+        expect(beccs_plant).to have_query_value(:direct_co2_output_production_capture_biogenic, 11.4)
+      end
+
+      it 'has zero fossil capture' do
+        expect(beccs_plant).to have_query_value(:direct_co2_output_production_capture_fossil, 0.0)
+      end
+
+      it 'reports net biogenic emissions after capture (negative emissions)' do
+        # Biogenic: A - Capture - C = 12.0 - 11.4 - 12.0 = -11.4 kg CO2
+        # Fossil: 0.0 kg CO2
+        # Total: -11.4 kg CO2 (negative = CO2 removed from atmosphere)
+        expect(beccs_plant).to have_query_value(:direct_reporting_emissions_co2_production, -11.4)
+      end
+
+      it 'net biogenic production shows negative emissions' do
+        # Biogenic: A - Capture - C = 12.0 - 11.4 - 12.0 = -11.4 kg CO2
+        expect(beccs_plant).to have_query_value(:direct_co2_output_production_emissions_biogenic, -11.4)
+      end
+    end
+
+    context 'with fossil-only input (backward compatibility)' do
+      # Verify existing behavior still works for fossil-only scenarios
+      # Create a graph:
+      # [Coal Producer] -> [Coal Plant] -> [Terminus]
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:coal_plant, groups: [:emissions])
+          builder.add(:coal_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:coal_producer, :coal_plant, :coal, type: :share)
+          builder.connect(:coal_plant, :terminus, :electricity, type: :share)
+
+          builder.carrier_attrs(:coal, co2_conversion_per_mj: 0.09)
+          builder.carrier_attrs(:electricity, co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:coal_plant) { graph.node(:coal_plant) }
+
+      it 'reports only fossil emissions when biogenic is zero' do
+        # Fossil: 100 MJ * 0.09 kg/MJ = 9.0 kg CO2
+        # Biogenic: 0 kg CO2
+        # Total reporting: 9.0 + 0 = 9.0 kg CO2
+        expect(coal_plant).to have_query_value(:direct_reporting_emissions_co2_production, 9.0)
+      end
+
+      it 'has non-zero fossil production emissions' do
+        expect(coal_plant).to have_query_value(:direct_co2_output_production_emissions_fossil, 9.0)
+      end
+
+      it 'has zero biogenic production emissions' do
+        expect(coal_plant).to have_query_value(:direct_co2_output_production_emissions_biogenic, 0.0)
+      end
+
+      it 'reporting equals fossil component only (backward compatible)' do
+        fossil = coal_plant.query.direct_co2_output_production_emissions_fossil
+        reporting = coal_plant.query.direct_reporting_emissions_co2_production
+
+        expect(reporting).to eq(fossil)
+      end
+    end
+  end
 end

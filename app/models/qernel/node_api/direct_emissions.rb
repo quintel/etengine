@@ -41,6 +41,7 @@ module Qernel
         with_emissions_node do
           direct_co2_input_content_carriers_fossil +
             direct_co2_input_utilisation_fossil -
+            direct_co2_output_production_capture_fossil -
             direct_co2_output_content_carriers_fossil
         end
       end
@@ -69,6 +70,7 @@ module Qernel
       def direct_co2_output_production_emissions_biogenic
         with_emissions_node do
           direct_co2_input_content_carriers_biogenic -
+            direct_co2_output_production_capture_biogenic -
             direct_co2_output_content_carriers_biogenic
         end
       end
@@ -123,16 +125,15 @@ module Qernel
         end
       end
 
-
       # Reporting Methods -------------------------------------------------------------------------------
-
 
       # CO2 production at this node - for now equal to emissions (E).
       #
       # @return [Float, nil] Direct fossil CO2 production in kg, or nil if node is not in emissions group
       def direct_reporting_emissions_co2_production
         with_emissions_node do
-          direct_co2_output_production_emissions_fossil
+          direct_co2_output_production_emissions_fossil +
+          direct_co2_output_production_emissions_biogenic
         end
       end
 
