@@ -39,8 +39,8 @@ module Qernel
       # @return [Float, nil] Direct fossil CO2 emissions in kg, or nil if node is not in emissions group
       def direct_co2_output_production_emissions_fossil
         with_emissions_node do
-          direct_co2_input_content_carriers_fossil +
-            direct_co2_input_utilisation_fossil -
+          direct_co2_input_content_carriers_fossil      +
+            direct_co2_input_utilisation_fossil         -
             direct_co2_output_production_capture_fossil -
             direct_co2_output_content_carriers_fossil
         end
@@ -69,7 +69,7 @@ module Qernel
       # @return [Float, nil] Direct biogenic CO2 emissions in kg, or nil if node is not in emissions group
       def direct_co2_output_production_emissions_biogenic
         with_emissions_node do
-          direct_co2_input_content_carriers_biogenic -
+          direct_co2_input_content_carriers_biogenic      -
             direct_co2_output_production_capture_biogenic -
             direct_co2_output_content_carriers_biogenic
         end
@@ -77,25 +77,32 @@ module Qernel
 
       # Fossil CO2 captured at this node.
       #
-      # Calculates the amount of fossil CO2 captured based on output CO2 content (C)
-      # multiplied by the CCS capture rate.
+      # Calculates the amount of fossil CO2 captured based on the mass balance
+      # (A + B - C) multiplied by the CCS capture rate.
       #
       # @return [Float, nil] Fossil CO2 captured in kg, or nil if node is not in emissions group
       def direct_co2_output_production_capture_fossil
         with_emissions_node do
-          calculate_capture(direct_co2_output_content_carriers_fossil)
+          calculate_capture(
+            direct_co2_input_content_carriers_fossil +
+              direct_co2_input_utilisation_fossil -
+              direct_co2_output_content_carriers_fossil
+          )
         end
       end
 
       # Biogenic CO2 captured at this node.
       #
-      # Calculates the amount of biogenic CO2 captured based on output CO2 content (C)
-      # multiplied by the CCS capture rate.
+      # Calculates the amount of biogenic CO2 captured based on the mass balance
+      # (A - C) multiplied by the CCS capture rate.
       #
       # @return [Float, nil] Biogenic CO2 captured in kg, or nil if node is not in emissions group
       def direct_co2_output_production_capture_biogenic
         with_emissions_node do
-          calculate_capture(direct_co2_output_content_carriers_biogenic)
+          calculate_capture(
+            direct_co2_input_content_carriers_biogenic -
+              direct_co2_output_content_carriers_biogenic
+          )
         end
       end
 
@@ -127,13 +134,16 @@ module Qernel
 
       # Reporting Methods -------------------------------------------------------------------------------
 
-      # CO2 production at this node - for now equal to emissions (E).
+      # Fossil CO2 production at this node
+      #
+      # Input content + utilisation - output co2 content
       #
       # @return [Float, nil] Direct fossil CO2 production in kg, or nil if node is not in emissions group
       def direct_reporting_emissions_co2_production
         with_emissions_node do
-          direct_co2_output_production_emissions_fossil +
-          direct_co2_output_production_emissions_biogenic
+          direct_co2_input_content_carriers_fossil  +
+            direct_co2_input_utilisation_fossil     -
+            direct_co2_output_content_carriers_fossil
         end
       end
 
@@ -145,7 +155,31 @@ module Qernel
       def direct_reporting_emissions_co2_capture
         with_emissions_node do
           direct_co2_output_production_capture_fossil +
-            direct_co2_output_production_capture_biogenic
+          direct_co2_output_production_capture_biogenic
+        end
+      end
+
+      # Other GHG emissions (non-CO2) at this node.
+      #
+      # Currently returns 0 as a placeholder
+      #
+      # @return [Float, nil] Other GHG emissions in kg CO2-equivalent, or nil if node is not in emissions group
+      def direct_reporting_emissions_other_ghg_emissions
+        with_emissions_node do
+          0.0
+        end
+      end
+
+      # Total GHG emissions at this node.
+      #
+      # Total co2 and other_ghg emissions - capture
+      #
+      # @return [Float, nil] Total GHG emissions in kg, or nil if node is not in emissions group
+      def direct_reporting_emissions_total_ghg_emissions
+        with_emissions_node do
+          direct_reporting_emissions_co2_production -
+            direct_reporting_emissions_co2_capture  +
+            direct_reporting_emissions_other_ghg_emissions
         end
       end
 
