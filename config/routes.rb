@@ -26,6 +26,8 @@ Rails.application.routes.draw do
           get :costs_parameters,       to: 'export#costs_parameters'
           get :sankey,                 to: 'export#sankey'
           get :storage_parameters,     to: 'export#storage_parameters'
+          get :direct_emissions_present, to: 'export#direct_emissions_present'
+          get :direct_emissions_future,  to: 'export#direct_emissions_future'
           get :merit
           get :dump
           put :dashboard

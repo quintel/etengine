@@ -77,4 +77,42 @@ describe Api::V3::ExportController do
       )
     end
   end
+
+  describe 'GET direct_emissions_present.csv' do
+    before do
+      request.headers.merge!(headers)
+      get :direct_emissions_present, params: { id: scenario.id }, format: :csv
+    end
+
+    it 'is successful' do
+      expect(response).to be_ok
+    end
+
+    it 'sets the content type to text/csv' do
+      expect(response.media_type).to eq('text/csv')
+    end
+
+    it 'sets the CSV filename' do
+      expect(response.headers['Content-Disposition']).to include("direct_emissions_present.#{scenario.id}.csv")
+    end
+  end
+
+  describe 'GET direct_emissions_future.csv' do
+    before do
+      request.headers.merge!(headers)
+      get :direct_emissions_future, params: { id: scenario.id }, format: :csv
+    end
+
+    it 'is successful' do
+      expect(response).to be_ok
+    end
+
+    it 'sets the content type to text/csv' do
+      expect(response.media_type).to eq('text/csv')
+    end
+
+    it 'sets the CSV filename' do
+      expect(response.headers['Content-Disposition']).to include("direct_emissions_future.#{scenario.id}.csv")
+    end
+  end
 end
