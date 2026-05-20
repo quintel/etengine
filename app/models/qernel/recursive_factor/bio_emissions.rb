@@ -8,8 +8,9 @@ module Qernel
       #
       # Returns a numeric in kg.
       def captured_bio_emissions
-        if ccs_capture_rate&.positive?
-          primary_co2_emission_of_bio_carriers * ccs_capture_rate
+        if ccs_capture_rate
+          capture_rate = dataset_get(:free_co2_factor)
+          primary_co2_emission_of_bio_carriers * capture_rate
         else
           0.0
         end
