@@ -119,6 +119,7 @@ class Node
   alias bio_resources_demand? bio_resources_demand
   alias emissions? emissions
 
+
   # --------- Initializing ----------------------------------------------------
 
   # @example Initialize a new node
@@ -519,6 +520,8 @@ public
     key.to_s
   end
 
+  # Groups representing CO2 capture (LULUCF removals and CCUS capture)
+  CAPTURE_GROUPS = [:emissions_lulucf_removals, :ccus_captured].freeze
 
   # Lazy memoized group check for emissions_lulucf_removals.
   #
@@ -528,6 +531,25 @@ public
   def emissions_lulucf_removals?
     return @emissions_lulucf_removals if defined?(@emissions_lulucf_removals)
     @emissions_lulucf_removals = @groups.include?(:emissions_lulucf_removals)
+  end
+
+  # Uses lazy memoization instead of eager (in memoize_for_cache) because this is an edge case (called infrequently)
+  #
+  # @return [Boolean] true if node belongs to ccus_captured group
+  def ccus_captured?
+    return @ccus_captured if defined?(@ccus_captured)
+    @ccus_captured = @groups.include?(:ccus_captured)
+  end
+
+  # Checks if node represents any type of CO2 capture (LULUCF or CCUS).
+  #
+  # Uses lazy memoization for performance. Returns true if the node belongs to any
+  # of the capture groups defined in CAPTURE_GROUPS.
+  #
+  # @return [Boolean] true if node belongs to any capture group
+  def emissions_capture?
+    return @emissions_capture if defined?(@emissions_capture)
+    @emissions_capture = CAPTURE_GROUPS.any? { |g| @groups.include?(g) }
   end
 
   # --------- Debug -----------------------------------------------------------
