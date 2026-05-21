@@ -72,7 +72,7 @@ class Graph
   def initialize(nodes = [], name = :anonymous)
     @logger = Qernel::Logger.new
     @area   = Qernel::Area.new(self)
-    @emissions = Qernel::Emissions.new(self)
+    @emissions = {}
     @name   = name.to_sym
 
     @nodes_by_group = {}
@@ -164,7 +164,7 @@ class Graph
   def call_on_each_qernel_object(method_name)
     self.send(method_name)
     area.send(method_name)
-    emissions.send(method_name)
+    # emissions is a plain hash, skip it
     carriers.each(&method_name)
 
     nodes.each do |n|
@@ -192,6 +192,8 @@ class Graph
   def refresh_dataset_attributes
     # See Qernel::Dataset#assign_dataset_attributes to understand what's going on:
     call_on_each_qernel_object(:assign_dataset_attributes)
+    # Manually assign emissions hash (it's plain data, not a DatasetAttributes object)
+    @emissions = dataset&.data&.[](:emissions) || {}
     reset_goals
   end
 
