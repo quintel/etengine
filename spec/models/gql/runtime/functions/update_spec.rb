@@ -53,11 +53,12 @@ describe Gql::Runtime::Functions::Update, :etsource_fixture do
   # UPDATE with EMISSIONS
   # ---------------------
 
-  describe 'UPDATE(EMISSIONS(households_non_specified), energetic_other_ghg, 100.0)' do
+  describe 'UPDATE(EMISSIONS(), buildings_non_specified_energetic_other_ghg, 100.0)' do
     before { result }
 
     it 'sets the emissions to 100.0' do
-      expect(gql.query_future('EMISSIONS(households_non_specified, energetic, other_ghg)')).to eq(100.0)
+      expect(gql.query_future('EMISSIONS(buildings_non_specified, energetic, other_ghg)')).to eq(100.0)
     end
   end
+
 end
