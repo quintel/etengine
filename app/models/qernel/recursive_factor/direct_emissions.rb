@@ -33,7 +33,7 @@ module Qernel::RecursiveFactor::DirectEmissions
     # mixed biogenic carriers represent a blend of different biogenic sources.
     if edge.emissions_skip_crude_oil_mix?
       # Continue traversing right to calculate weighted composition
-    elsif edge.carrier.potential_co2_conversion_per_mj || edge.carrier.co2_conversion_per_mj || right_dead_end?
+    elsif !edge.carrier.potential_co2_conversion_per_mj.nil? || !edge.carrier.co2_conversion_per_mj.nil? || right_dead_end?
       edge.carrier.potential_co2_conversion_per_mj || 0.0
     end
 
