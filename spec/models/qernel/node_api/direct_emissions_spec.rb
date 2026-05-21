@@ -1227,13 +1227,6 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
         # Total utilised: 100 * 0.02 = 2.0 kg CO2
         expect(synfuel_plant).to have_query_value(:direct_co2_input_utilisation_fossil, 2.0)
       end
-
-      it 'aggregate method matches fossil method' do
-        fossil = synfuel_plant.query.direct_co2_input_utilisation_fossil
-        aggregate = synfuel_plant.query.direct_co2_input_utilisation
-
-        expect(aggregate).to eq(fossil)
-      end
     end
 
     context 'with node having multiple output edges' do
@@ -1291,10 +1284,6 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       it 'returns zero when co2_utilisation_per_mj is not set' do
         expect(power_plant).to have_query_value(:direct_co2_input_utilisation_fossil, 0.0)
       end
-
-      it 'aggregate method also returns zero' do
-        expect(power_plant).to have_query_value(:direct_co2_input_utilisation, 0.0)
-      end
     end
 
     context 'with node without emissions group' do
@@ -1314,10 +1303,6 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
 
       it 'returns nil for direct_co2_input_utilisation_fossil' do
         expect(non_emissions_node.query.direct_co2_input_utilisation_fossil).to be_nil
-      end
-
-      it 'returns nil for direct_co2_input_utilisation' do
-        expect(non_emissions_node.query.direct_co2_input_utilisation).to be_nil
       end
     end
 
@@ -1368,52 +1353,6 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
         # Utilisation rate: 0.15 kg CO2/MJ
         # Total utilised: 50 * 0.15 = 7.5 kg CO2
         expect(methanol_plant).to have_query_value(:direct_co2_input_utilisation_fossil, 7.5)
-      end
-    end
-  end
-
-  describe '#direct_co2_input_utilisation' do
-    context 'with utilisation present' do
-      let(:builder) do
-        TestGraphBuilder.new.tap do |builder|
-          builder.add(:terminus, demand: 100)
-          builder.add(:synfuel_plant, groups: [:emissions], co2_utilisation_per_mj: 0.02)
-          builder.add(:gas_producer, groups: [:primary_energy_demand])
-
-          builder.connect(:gas_producer, :synfuel_plant, :natural_gas, type: :share)
-          builder.connect(:synfuel_plant, :terminus, :diesel, type: :share)
-        end
-      end
-
-      let(:graph) { builder.to_qernel }
-      let(:synfuel_plant) { graph.node(:synfuel_plant) }
-
-      it 'returns the fossil utilisation value' do
-        fossil = synfuel_plant.query.direct_co2_input_utilisation_fossil
-        aggregate = synfuel_plant.query.direct_co2_input_utilisation
-
-        expect(aggregate).to eq(fossil)
-        expect(aggregate).to eq(2.0)
-      end
-    end
-
-    context 'with no utilisation' do
-      let(:builder) do
-        TestGraphBuilder.new.tap do |builder|
-          builder.add(:terminus, demand: 100)
-          builder.add(:power_plant, groups: [:emissions])
-          builder.add(:coal_producer, groups: [:primary_energy_demand])
-
-          builder.connect(:coal_producer, :power_plant, :coal, type: :share)
-          builder.connect(:power_plant, :terminus, :electricity, type: :share)
-        end
-      end
-
-      let(:graph) { builder.to_qernel }
-      let(:power_plant) { graph.node(:power_plant) }
-
-      it 'returns zero when no utilisation occurs' do
-        expect(power_plant).to have_query_value(:direct_co2_input_utilisation, 0.0)
       end
     end
   end

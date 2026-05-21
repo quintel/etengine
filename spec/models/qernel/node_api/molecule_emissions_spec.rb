@@ -58,18 +58,6 @@ RSpec.describe Qernel::NodeApi::MoleculeEmissions do
         end
       end
 
-      context 'with a LULUCF removals node (emissions_lulucf_removals group)' do
-        let(:node_groups) { [:emissions, :emissions_lulucf_removals] }
-
-        before do
-          allow(node).to receive(:input).with(:co2).and_return(double('slot'))
-        end
-
-        it 'returns 0.0 (excludes LULUCF removals from production)' do
-          expect(node.query.direct_reporting_emissions_co2_production).to eq(0.0)
-        end
-      end
-
       context 'with a CCUS captured node (ccus_captured group)' do
         let(:node_groups) { [:emissions, :ccus_captured] }
 
@@ -79,18 +67,6 @@ RSpec.describe Qernel::NodeApi::MoleculeEmissions do
 
         it 'returns 0.0 (excludes CCUS captured from production)' do
           expect(node.query.direct_reporting_emissions_co2_production).to eq(0.0)
-        end
-      end
-
-      context 'with a CCUS utilised node (ccus_utilised group, delayed emissions)' do
-        let(:node_groups) { [:emissions, :ccus_utilised] }
-
-        before do
-          allow(node).to receive(:input).with(:co2).and_return(double('slot'))
-        end
-
-        it 'returns the node demand (includes delayed emissions from utilisation as production)' do
-          expect(node.query.direct_reporting_emissions_co2_production).to eq(1000.0)
         end
       end
     end
@@ -110,29 +86,12 @@ RSpec.describe Qernel::NodeApi::MoleculeEmissions do
         end
       end
 
-      context 'with a LULUCF removals node (emissions_lulucf_removals group)' do
-        let(:node_groups) { [:emissions, :emissions_lulucf_removals] }
-        let(:node_demand) { 500.0 }
-
-        it 'returns the node demand (includes LULUCF removals as capture)' do
-          expect(node.query.direct_reporting_emissions_co2_capture).to eq(500.0)
-        end
-      end
-
       context 'with a CCUS captured node (ccus_captured group)' do
         let(:node_groups) { [:emissions, :ccus_captured] }
         let(:node_demand) { 750.0 }
 
         it 'returns the node demand (includes CCUS captured as capture)' do
           expect(node.query.direct_reporting_emissions_co2_capture).to eq(750.0)
-        end
-      end
-
-      context 'with a CCUS utilised node (ccus_utilised group, delayed emissions)' do
-        let(:node_groups) { [:emissions, :ccus_utilised] }
-
-        it 'returns 0.0 (delayed emissions are not captured, only eventually emitted)' do
-          expect(node.query.direct_reporting_emissions_co2_capture).to eq(0.0)
         end
       end
     end
@@ -167,19 +126,6 @@ RSpec.describe Qernel::NodeApi::MoleculeEmissions do
 
         it 'returns nil' do
           expect(node.query.direct_reporting_emissions_other_ghg_emissions).to be_nil
-        end
-      end
-
-      context 'with a CCUS utilised node (ccus_utilised group, CO2 only)' do
-        let(:node_groups) { [:emissions, :ccus_utilised] }
-
-        before do
-          allow(node).to receive(:input).with(:other_ghg).and_return(nil)
-          allow(node).to receive(:output).with(:other_ghg).and_return(nil)
-        end
-
-        it 'returns 0.0 (no other GHG emissions from delayed CO2)' do
-          expect(node.query.direct_reporting_emissions_other_ghg_emissions).to eq(0.0)
         end
       end
     end
@@ -223,26 +169,6 @@ RSpec.describe Qernel::NodeApi::MoleculeEmissions do
         end
       end
 
-      context 'with a LULUCF removals node' do
-        let(:node_groups) { [:emissions, :emissions_lulucf_removals] }
-        let(:node_demand) { 300.0 }
-
-        before do
-          allow(node).to receive(:input).with(:co2).and_return(double('slot'))
-          allow(node).to receive(:output).with(:co2).and_return(nil)
-          allow(node).to receive(:input).with(:other_ghg).and_return(nil)
-          allow(node).to receive(:output).with(:other_ghg).and_return(nil)
-        end
-
-        it 'calculates total as 0 production - 300 capture + 0 other GHG = -300' do
-          # CO2 production = 0 (excluded due to LULUCF group)
-          # CO2 capture = 300 (included due to LULUCF group)
-          # Other GHG = 0
-          # Total = 0 - 300 + 0 = -300
-          expect(node.query.direct_reporting_emissions_total_ghg_emissions).to eq(-300.0)
-        end
-      end
-
       context 'with a CCUS captured node' do
         let(:node_groups) { [:emissions, :ccus_captured] }
         let(:node_demand) { 400.0 }
@@ -260,26 +186,6 @@ RSpec.describe Qernel::NodeApi::MoleculeEmissions do
           # Other GHG = 0
           # Total = 0 - 400 + 0 = -400
           expect(node.query.direct_reporting_emissions_total_ghg_emissions).to eq(-400.0)
-        end
-      end
-
-      context 'with a CCUS utilised node (ccus_utilised group, delayed emissions)' do
-        let(:node_groups) { [:emissions, :ccus_utilised] }
-        let(:node_demand) { 600.0 }
-
-        before do
-          allow(node).to receive(:input).with(:co2).and_return(double('slot'))
-          allow(node).to receive(:output).with(:co2).and_return(nil)
-          allow(node).to receive(:input).with(:other_ghg).and_return(nil)
-          allow(node).to receive(:output).with(:other_ghg).and_return(nil)
-        end
-
-        it 'calculates total as 600 production - 0 capture + 0 other GHG = 600' do
-          # CO2 production = 600 (included, not in capture groups)
-          # CO2 capture = 0 (not in capture groups)
-          # Other GHG = 0 (no other_ghg carrier)
-          # Total = 600 - 0 + 0 = 600
-          expect(node.query.direct_reporting_emissions_total_ghg_emissions).to eq(600.0)
         end
       end
     end

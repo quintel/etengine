@@ -9,7 +9,7 @@ module Qernel
     # For molecule nodes:
     # - CO2 production = node demand (already in kg CO2/year from emissions.csv)
     # - Other GHG = sum of connected other_ghg nodes via EMISSIONS() function
-    # - CO2 capture = node demand for capture groups (LULUCF and CCUS)
+    # - CO2 capture = node demand for CCUS captured nodes
     # - Total GHG = CO2 production - capture + other GHG
     module MoleculeEmissions
       # CO2 production at this molecule node.
@@ -18,13 +18,13 @@ module Qernel
       # For molecule nodes representing CO2 flows, the demand directly represents
       # the amount of CO2 in kg/year.
       #
-      # Excludes nodes in capture groups (LULUCF removals and CCUS captured),
-      # as these represent capture rather than production.
+      # Excludes nodes in the CCUS captured group, as these represent capture
+      # rather than production.
       #
       # @return [Float, nil] CO2 production in kg, or nil if node is not in emissions group
       def direct_reporting_emissions_co2_production
         with_emissions_node do
-          return 0.0 if node.emissions_capture?
+          return 0.0 if node.ccus_captured?
           node.input(:co2) ? node.demand : 0.0
         end
       end
@@ -44,14 +44,13 @@ module Qernel
 
       # CO2 capture at this molecule node.
       #
-      # Returns the node demand for nodes in capture groups (LULUCF removals or
-      # CCUS captured), which represent CO2 removals from biological or technological
-      # capture respectively.
+      # Returns the node demand for nodes in the CCUS captured group, which
+      # represent CO2 removals from technological capture.
       #
       # @return [Float, nil] CO2 capture in kg, or nil if node is not in emissions group
       def direct_reporting_emissions_co2_capture
         with_emissions_node do
-          node.emissions_capture? ? node.demand : 0.0
+          node.ccus_captured? ? node.demand : 0.0
         end
       end
 
