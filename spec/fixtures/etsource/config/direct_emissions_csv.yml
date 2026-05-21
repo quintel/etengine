@@ -20,8 +20,156 @@ schema:
     type: node_attribute
     value: direct_reporting_emissions_co2_capture
     transform: "value * 1e-6"
+  - name: Other_GHG_emissions
+    label: "Other GHG emissions [kton CO2-eq]"
+    type: node_attribute
+    value: direct_reporting_emissions_other_ghg_emissions
+    transform: "value * 1e-6"
+  - name: Total_GHG_emissions
+    label: "Total GHG emissions[kton CO2-eq]"
+    type: node_attribute
+    value: direct_reporting_emissions_total_ghg_emissions
+    transform: "value * 1e-6"
 
 rows:
+  - Group: emissions_agriculture_electricity_and_heat_production
+    Sector: Agriculture
+    Subsector: Electricity and heat production
+  - Group: emissions_agriculture_heating
+    Sector: Agriculture
+    Subsector: Heating
+  - Group: emissions_agriculture_non_specified
+    Sector: Agriculture
+    Subsector: Non-specified
+  - Group: emissions_buildings_appliances
+    Sector: Buildings
+    Subsector: Appliances
+  - Group: emissions_buildings_cooling
+    Sector: Buildings
+    Subsector: Cooling
+  - Group: emissions_buildings_non_specified
+    Sector: Buildings
+    Subsector: Non-specified
+  - Group: emissions_buildings_space_heating
+    Sector: Buildings
+    Subsector: Space heating
+  - Group: emissions_energy_ccus
+    Sector: Energy
+    Subsector: CCUS
+  - Group: emissions_energy_electricity_and_heat_production
+    Sector: Energy
+    Subsector: Electricity and heat production
+  - Group: emissions_energy_fuels_production
+    Sector: Energy
+    Subsector: Fuels production
+  - Group: emissions_energy_fugitive_emissions
+    Sector: Energy
+    Subsector: Fugitive emissions
+  - Group: emissions_energy_hydrogen_production
+    Sector: Energy
+    Subsector: Hydrogen production
+  - Group: emissions_energy_methanol_production
+    Sector: Energy
+    Subsector: Methanol production
+  - Group: emissions_energy_steel
+    Sector: Energy
+    Subsector: Steel
+  - Group: emissions_households_cooking
+    Sector: Households
+    Subsector: Cooking
+  - Group: emissions_households_hot_water
+    Sector: Households
+    Subsector: Hot water
+  - Group: emissions_households_non_specified
+    Sector: Households
+    Subsector: Non-specified
+  - Group: emissions_households_space_heating
+    Sector: Households
+    Subsector: Space heating
+  - Group: emissions_industry_aluminium
+    Sector: Industry
+    Subsector: Aluminium
   - Group: emissions_industry_chemicals
     Sector: Industry
     Subsector: Chemicals
+  - Group: emissions_industry_electricity_and_heat_production
+    Sector: Industry
+    Subsector: Electricity and heat production
+  - Group: emissions_industry_fertilizers
+    Sector: Industry
+    Subsector: Fertilizers
+  - Group: emissions_industry_food
+    Sector: Industry
+    Subsector: Food
+  - Group: emissions_industry_non_specified
+    Sector: Industry
+    Subsector: Non-specified
+  - Group: emissions_industry_other
+    Sector: Industry
+    Subsector: Other
+  - Group: emissions_industry_other_metals
+    Sector: Industry
+    Subsector: Other metals
+  - Group: emissions_industry_paper
+    Sector: Industry
+    Subsector: Paper
+  - Group: emissions_industry_refineries
+    Sector: Industry
+    Subsector: Refineries
+  - Group: emissions_industry_steel
+    Sector: Industry
+    Subsector: Steel
+  - Group: emissions_international_transport_international_aviation
+    Sector: International transport
+    Subsector: International aviation
+  - Group: emissions_international_transport_international_navigation
+    Sector: International transport
+    Subsector: International navigation
+  - Group: emissions_lulucf_emissions
+    Sector: LULUCF
+    Subsector: Emissions
+  - Group: emissions_lulucf_removals
+    Sector: LULUCF
+    Subsector: Removals
+  - Group: emissions_national_transport_buses
+    Sector: National transport
+    Subsector: Buses
+  - Group: emissions_national_transport_cars
+    Sector: National transport
+    Subsector: Cars
+  - Group: emissions_national_transport_domestic_aviation
+    Sector: National transport
+    Subsector: Domestic aviation
+  - Group: emissions_national_transport_domestic_navigation
+    Sector: National transport
+    Subsector: Domestic navigation
+  - Group: emissions_national_transport_motorcycles
+    Sector: National transport
+    Subsector: Motorcycles
+  - Group: emissions_national_transport_non_specified
+    Sector: National transport
+    Subsector: Non-specified
+  - Group: emissions_national_transport_trains
+    Sector: National transport
+    Subsector: Trains
+  - Group: emissions_national_transport_trucks
+    Sector: National transport
+    Subsector: Trucks
+  - Group: emissions_national_transport_vans
+    Sector: National transport
+    Subsector: Vans
+  - Group: emissions_other_heating
+    Sector: Other
+    Subsector: Heating
+  - Group: emissions_other_indirect_emissions
+    Sector: Other
+    Subsector: Indirect emissions
+  - Group: emissions_other_non_specified
+    Sector: Other
+    Subsector: Non-specified
+  - Group: emissions_other_other_transportation
+    Sector: Other
+    Subsector: Other transportation
+  - Group: emissions_waste_non_specified
+    Sector: Waste
+    Subsector: Non-specified
