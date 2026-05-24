@@ -22,7 +22,9 @@ class NodePositions
     :buildings    => '#FF6666',
     :neighbor     => '#87CEEB',
     :bunkers      => '#5CD0A5',
-    :molecules    => '#4A69BD'
+    :molecules    => '#4A69BD',
+    :waste        => '#969A99',
+    :lulucf       => '#C377C3'
   }.with_indifferent_access
 
   def initialize(path, node_class)
