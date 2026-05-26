@@ -31,10 +31,9 @@ module Qernel
       end
 
       # CO2 emissions produced at this node (E).
-      # TODO: extend once capture is included.
       #
       # Calculates net emissions after accounting for CO2 utilisation.
-      # Mass balance equation: Emissions = input co2 + utilised co2 - output co2
+      # Mass balance equation: Emissions = input co2 + utilised co2 - captured co2 - output co2
       #
       # @return [Float, nil] Direct fossil CO2 emissions in kg, or nil if node is not in emissions group
       def direct_co2_output_production_emissions_fossil
@@ -65,6 +64,8 @@ module Qernel
       end
 
       # Biogenic CO2 emissions produced at this node (E).
+      #
+      #TODO: Write out formula in a comment like for fossil
       #
       # @return [Float, nil] Direct biogenic CO2 emissions in kg, or nil if node is not in emissions group
       def direct_co2_output_production_emissions_biogenic
@@ -107,6 +108,7 @@ module Qernel
       end
 
       # Fossil CO2 utilised (consumed as feedstock) at this node.
+      # TODO: Make more beautiful
       #
       # Calculates CO2 that is consumed as feedstock rather than emitted, based on the total
       # output energy and the node's co2_utilisation_per_mj attribute.
@@ -120,17 +122,6 @@ module Qernel
         end
       end
 
-      # Total CO2 utilised (consumed as feedstock) at this node.
-      #
-      # Currently returns only fossil utilisation, as biogenic utilisation is always 0.
-      #
-      # @return [Float, nil] Total CO2 utilised in kg, or nil if node is not in emissions group
-      def direct_co2_input_utilisation
-        with_emissions_node do
-          direct_co2_input_utilisation_fossil
-          # Potentially in the future: + direct_co2_input_utilisation_biogenic (currently 0)
-        end
-      end
 
       # Reporting Methods -------------------------------------------------------------------------------
 

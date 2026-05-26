@@ -119,6 +119,7 @@ class Node
   alias bio_resources_demand? bio_resources_demand
   alias emissions? emissions
 
+
   # --------- Initializing ----------------------------------------------------
 
   # @example Initialize a new node
@@ -519,15 +520,14 @@ public
     key.to_s
   end
 
-
-  # Lazy memoized group check for emissions_lulucf_removals.
+  # Uses lazy memoization to avoid Marshal serialization issues with Node↔NodeApi
+  # circular references. Eager memoization (in memoize_for_cache) causes stack
+  # overflow during graph cloning.
   #
-  # Uses lazy memoization instead of eager (in memoize_for_cache) because this is an edge case (called infrequently)
-  #
-  # @return [Boolean] true if node belongs to emissions_lulucf_removals group
-  def emissions_lulucf_removals?
-    return @emissions_lulucf_removals if defined?(@emissions_lulucf_removals)
-    @emissions_lulucf_removals = @groups.include?(:emissions_lulucf_removals)
+  # @return [Boolean] true if node belongs to ccus_captured group
+  def ccus_captured?
+    return @ccus_captured if defined?(@ccus_captured)
+    @ccus_captured = @groups.include?(:ccus_captured)
   end
 
   # --------- Debug -----------------------------------------------------------

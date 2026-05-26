@@ -119,7 +119,7 @@ module Etsource
     #
     # Returns a hash.
     def load_emission_data
-      { emissions_data: @atlas_ds.emissions.to_hash }
+      @atlas_ds.emissions.to_hash
     end
 
     # Internal: Loads the carrier data.

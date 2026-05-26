@@ -45,14 +45,8 @@ module Gql::Runtime::Functions
     # ---------
 
     describe 'EMISSIONS()' do
-      it 'returns a Qernel::Emissions object' do
-        expect(result).to be_a(Qernel::Emissions)
-      end
-    end
-
-    describe 'EMISSIONS(households_non_specified)' do
-      it 'returns a Qernel::Emissions::ScopedSector object' do
-        expect(result).to be_a(Qernel::Emissions::ScopedSector)
+      it 'returns a Hash' do
+        expect(result).to be_a(Hash)
       end
     end
 
