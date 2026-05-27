@@ -1125,6 +1125,64 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
         expect(input).to be_within(0.0000001).of(output)
       end
     end
+
+    context 'with output carriers having fossil but no biogenic CO2' do
+      # Create a graph modeling a CHP plant with biogenic waste input
+      # [Biogenic Waste] -> [Waste Mix] -> [CHP Plant] -> [electricity output]
+      #                                                 -> [heat output]
+      # Electricity and heat have fossil CO2 (0.0) but no biogenic CO2 (nil)
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus_elec, demand: 60)
+          builder.add(:terminus_heat, demand: 40)
+          builder.add(:chp_plant, groups: [:emissions])
+          builder.add(:waste_mix, groups: [:emissions])
+          builder.add(:biogenic_producer, groups: [:primary_energy_demand], demand: 60)
+          builder.add(:non_biogenic_producer, groups: [:primary_energy_demand], demand: 40)
+
+          # Biogenic waste (60% of mix)
+          builder.connect(:biogenic_producer, :waste_mix, :biogenic_waste, type: :share)
+          # Non-biogenic waste (40% of mix)
+          builder.connect(:non_biogenic_producer, :waste_mix, :non_biogenic_waste, type: :share)
+          # Mixed waste to CHP
+          builder.connect(:waste_mix, :chp_plant, :waste_mix_carrier, type: :share)
+          # CHP outputs
+          builder.connect(:chp_plant, :terminus_elec, :electricity, type: :share)
+          builder.connect(:chp_plant, :terminus_heat, :steam_hot_water, type: :share)
+
+          # Carrier attributes
+          builder.carrier_attrs(:biogenic_waste, potential_co2_conversion_per_mj: 0.06)
+          builder.carrier_attrs(:non_biogenic_waste, potential_co2_conversion_per_mj: 0.0)
+          builder.carrier_attrs(:waste_mix_carrier, potential_co2_conversion_per_mj: 0.036) # weighted avg
+          # Electricity and heat have fossil CO2 defined but biogenic CO2 is nil
+          builder.carrier_attrs(:electricity, co2_conversion_per_mj: 0.0)
+          builder.carrier_attrs(:steam_hot_water, co2_conversion_per_mj: 0.0)
+          # NOTE: potential_co2_conversion_per_mj is intentionally NOT set (nil)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:chp_plant) { graph.node(:chp_plant) }
+
+      it 'returns zero for output edges when carriers have nil potential_co2_conversion_per_mj' do
+        # CHP outputs electricity (60 MJ) and heat (40 MJ)
+        # Both carriers have co2_conversion_per_mj = 0.0 but potential_co2_conversion_per_mj = nil
+        # Expected: 0.0 (not inherited from biogenic waste input)
+        expect(chp_plant).to have_query_value(:direct_co2_output_content_carriers_biogenic, 0.0)
+      end
+
+      it 'calculates input biogenic content from waste mix' do
+        # Input: 100 MJ waste_mix @ 0.036 kg/MJ = 3.6 kg biogenic CO2
+        expect(chp_plant).to have_query_value(:direct_co2_input_content_carriers_biogenic, 3.6)
+      end
+
+      it 'calculates biogenic emissions as input minus output' do
+        # Input: 3.6 kg biogenic CO2
+        # Output: 0.0 kg (electricity and heat have no biogenic content)
+        # Emissions: 3.6 - 0.0 = 3.6 kg biogenic CO2
+        expect(chp_plant).to have_query_value(:direct_co2_output_production_emissions_biogenic, 3.6)
+      end
+    end
   end
 
   describe '#direct_co2_output_production_emissions_biogenic' do
