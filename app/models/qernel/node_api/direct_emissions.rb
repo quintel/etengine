@@ -65,7 +65,10 @@ module Qernel
 
       # Biogenic CO2 emissions produced at this node (E).
       #
-      #TODO: Write out formula in a comment like for fossil
+      # Emissions = input biogenic co2 - captured biogenic co2 - output biogenic co2
+      #
+      # Note: Unlike fossil emissions, biogenic CO2 utilisation is not included as
+      # feedstock utilisation typically involves fossil CO2.
       #
       # @return [Float, nil] Direct biogenic CO2 emissions in kg, or nil if node is not in emissions group
       def direct_co2_output_production_emissions_biogenic
@@ -108,7 +111,6 @@ module Qernel
       end
 
       # Fossil CO2 utilised (consumed as feedstock) at this node.
-      # TODO: Make more beautiful
       #
       # Calculates CO2 that is consumed as feedstock rather than emitted, based on the total
       # output energy and the node's co2_utilisation_per_mj attribute.
@@ -116,12 +118,9 @@ module Qernel
       # @return [Float, nil] Total fossil CO2 utilised in kg, or nil if node is not in emissions group
       def direct_co2_input_utilisation_fossil
         with_emissions_node do
-          total_output_energy = output_edges.sum { |edge| edge.net_demand || 0.0 }
-          utilisation_rate = dataset_get(:co2_utilisation_per_mj) || 0.0
-          total_output_energy * utilisation_rate
+          output_edges.sum { |edge| edge.net_demand || 0.0 } * (dataset_get(:co2_utilisation_per_mj) || 0.0)
         end
       end
-
 
       # Reporting Methods -------------------------------------------------------------------------------
 

@@ -119,7 +119,6 @@ class Node
   alias bio_resources_demand? bio_resources_demand
   alias emissions? emissions
 
-
   # --------- Initializing ----------------------------------------------------
 
   # @example Initialize a new node
