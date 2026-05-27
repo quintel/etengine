@@ -17,7 +17,7 @@ module Qernel
       # @return [Float, nil] Total CO2 content from input carriers in kg, or nil if node is not in emissions group
       def direct_co2_input_content_carriers_fossil
         with_emissions_node do
-          sum_carbon_content(inputs.flat_map(&:edges), :fossil, is_output: false)
+          sum_carbon_content(inputs.flat_map(&:edges), :fossil)
         end
       end
 
@@ -26,7 +26,7 @@ module Qernel
       # @return [Float, nil] Total CO2 content from output carriers in kg, or nil if node is not in emissions group
       def direct_co2_output_content_carriers_fossil
         with_emissions_node do
-          sum_carbon_content(output_edges, :fossil, is_output: true)
+          sum_carbon_content(output_edges, :fossil)
         end
       end
 
@@ -50,7 +50,7 @@ module Qernel
       # @return [Float, nil] Total biogenic CO2 content from input carriers in kg, or nil if node is not in emissions group
       def direct_co2_input_content_carriers_biogenic
         with_emissions_node do
-          sum_carbon_content(inputs.flat_map(&:edges), :biogenic, is_output: false)
+          sum_carbon_content(inputs.flat_map(&:edges), :biogenic)
         end
       end
 
@@ -59,7 +59,7 @@ module Qernel
       # @return [Float, nil] Total biogenic CO2 content from output carriers in kg, or nil if node is not in emissions group
       def direct_co2_output_content_carriers_biogenic
         with_emissions_node do
-          sum_carbon_content(output_edges, :biogenic, is_output: true)
+          sum_carbon_content(output_edges, :biogenic)
         end
       end
 
@@ -187,11 +187,10 @@ module Qernel
       #
       # @param edges [Array<Edge>] The edges to sum carbon content for
       # @param carbon_type [Symbol] Either :fossil or :biogenic
-      # @param is_output [Boolean] Whether these are output edges (true) or input edges (false)
       # @return [Float] Total carbon content in kg
-      def sum_carbon_content(edges, carbon_type, is_output: false)
+      def sum_carbon_content(edges, carbon_type)
         edges.sum do |edge|
-          carbon_content = direct_edge_carbon_content(edge, carbon_type, is_output: is_output)
+          carbon_content = direct_edge_carbon_content(edge, carbon_type)
           (edge.net_demand || 0.0) * carbon_content
         end
       end
@@ -204,9 +203,8 @@ module Qernel
       #
       # @param edge [Edge] The edge to calculate carbon content for
       # @param carbon_type [Symbol] Either :fossil or :biogenic
-      # @param is_output [Boolean] Whether this is an output edge (true) or input edge (false)
       # @return [Float] CO2 content in kg/MJ
-      def direct_edge_carbon_content(edge, carbon_type, is_output: false)
+      def direct_edge_carbon_content(edge, carbon_type)
         attribute, fallback_method = carbon_type_attributes(carbon_type)
 
         # Check if carrier has intrinsic CO2 value and edge doesn't skip it
@@ -214,11 +212,16 @@ module Qernel
           return edge.carrier.public_send(attribute)
         end
 
+        # For biogenic: if carrier has fossil CO2 defined but no biogenic CO2, return 0.0
+        # This prevents recursing when the carrier explicitly has no biogenic content
+        if carbon_type == :biogenic && !edge.carrier.co2_conversion_per_mj.nil?
+          return 0.0
+        end
+
         # Fallback: calculate from weighted supply mix using recursive factor
-        # For input edges: query the supplier (rgt_node)
-        # For output edges: query the source/current node (lft_node)
-        source_node = is_output ? edge.lft_node : edge.rgt_node
-        source_node&.query&.public_send(fallback_method) || 0.0
+        # Always query the supplier (rgt_node) - the recursion factor handles stopping conditions
+        supplier = edge.rgt_node
+        supplier&.query&.public_send(fallback_method) || 0.0
       end
 
       # Calculates the amount of CO2 captured based on the CCS capture rate.
