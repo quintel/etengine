@@ -12,7 +12,7 @@ module Qernel
     # For mixed carriers (network gas, crude oil, carrier_mix), composition tracking
     # uses RecursiveFactor::WeightedCarrier to recursively trace CO2 content through the supply chain.
     module DirectEmissions
-      # CO2 content of all carriers entering the node (A).
+      # CO2 content of all carriers entering the node.
       #
       # @return [Float, nil] Total CO2 content from input carriers in kg, or nil if node is not in emissions group
       def direct_co2_input_content_carriers_fossil
@@ -21,7 +21,7 @@ module Qernel
         end
       end
 
-      # CO2 content of all carriers leaving the node (C).
+      # CO2 content of all carriers leaving the node.
       #
       # @return [Float, nil] Total CO2 content from output carriers in kg, or nil if node is not in emissions group
       def direct_co2_output_content_carriers_fossil
@@ -30,10 +30,10 @@ module Qernel
         end
       end
 
-      # CO2 emissions produced at this node (E).
+      # CO2 emissions produced at this node.
       #
       # Calculates net emissions after accounting for CO2 utilisation.
-      # Mass balance equation: Emissions = input co2 + utilised co2 - captured co2 - output co2
+      # Emissions = input co2 + utilised co2 - captured co2 - output co2
       #
       # @return [Float, nil] Direct fossil CO2 emissions in kg, or nil if node is not in emissions group
       def direct_co2_output_production_emissions_fossil
@@ -45,7 +45,7 @@ module Qernel
         end
       end
 
-      # Biogenic CO2 content of all carriers entering the node (A).
+      # Biogenic CO2 content of all carriers entering the node.
       #
       # @return [Float, nil] Total biogenic CO2 content from input carriers in kg, or nil if node is not in emissions group
       def direct_co2_input_content_carriers_biogenic
@@ -54,7 +54,7 @@ module Qernel
         end
       end
 
-      # Biogenic CO2 content of all carriers leaving the node (C).
+      # Biogenic CO2 content of all carriers leaving the node.
       #
       # @return [Float, nil] Total biogenic CO2 content from output carriers in kg, or nil if node is not in emissions group
       def direct_co2_output_content_carriers_biogenic
@@ -63,7 +63,7 @@ module Qernel
         end
       end
 
-      # Biogenic CO2 emissions produced at this node (E).
+      # Biogenic CO2 emissions produced at this node.
       #
       # Emissions = input biogenic co2 - captured biogenic co2 - output biogenic co2
       #
@@ -81,8 +81,8 @@ module Qernel
 
       # Fossil CO2 captured at this node.
       #
-      # Calculates the amount of fossil CO2 captured based on the mass balance
-      # (A + B - C) multiplied by the CCS capture rate.
+      # Calculates the amount of fossil CO2 captured based on the total CO2 available
+      # (input content + utilised CO2 - output content) multiplied by the CCS capture rate.
       #
       # @return [Float, nil] Fossil CO2 captured in kg, or nil if node is not in emissions group
       def direct_co2_output_production_capture_fossil
@@ -97,8 +97,8 @@ module Qernel
 
       # Biogenic CO2 captured at this node.
       #
-      # Calculates the amount of biogenic CO2 captured based on the mass balance
-      # (A - C) multiplied by the CCS capture rate.
+      # Calculates the amount of biogenic CO2 captured based on the total biogenic CO2
+      # available (input content - output content) multiplied by the CCS capture rate.
       #
       # @return [Float, nil] Biogenic CO2 captured in kg, or nil if node is not in emissions group
       def direct_co2_output_production_capture_biogenic
