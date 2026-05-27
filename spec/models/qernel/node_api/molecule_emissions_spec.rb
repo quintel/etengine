@@ -190,6 +190,30 @@ RSpec.describe Qernel::NodeApi::MoleculeEmissions do
       end
     end
 
+    describe '#ghg_carrier' do
+      context 'with a co2 input slot' do
+        before do
+          co2_carrier = double('carrier', key: :co2)
+          allow(node).to receive(:inputs).and_return([double('slot', carrier: co2_carrier)])
+        end
+
+        it 'returns CO2' do
+          expect(node.query.ghg_carrier).to eq('CO2')
+        end
+      end
+
+      context 'with an other_ghg input slot' do
+        before do
+          ghg_carrier = double('carrier', key: :other_ghg)
+          allow(node).to receive(:inputs).and_return([double('slot', carrier: ghg_carrier)])
+        end
+
+        it 'returns Other GHG' do
+          expect(node.query.ghg_carrier).to eq('Other GHG')
+        end
+      end
+    end
+
     describe 'guard behavior' do
       let(:node_groups) { [] }
 

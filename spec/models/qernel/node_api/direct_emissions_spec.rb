@@ -1952,47 +1952,25 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
   end
 
   describe '#ghg_carrier' do
+    let(:node) { Qernel::Node.new(key: :test_node, graph_name: :energy, groups: [:emissions]).with(demand: 100.0) }
+
     context 'with a co2 input slot' do
-      let(:builder) do
-        TestGraphBuilder.new.tap do |builder|
-          builder.add(:terminus, demand: 100)
-          builder.add(:co2_node, groups: [:emissions])
-          builder.add(:producer, groups: [:primary_energy_demand])
-
-          builder.connect(:producer, :co2_node, :co2, type: :share)
-          builder.connect(:co2_node, :terminus, :electricity, type: :share)
-
-          builder.carrier_attrs(:co2, co2_conversion_per_mj: 0.0)
-        end
+      before do
+        allow(node).to receive(:inputs).and_return([double('slot', carrier: double('carrier', key: :co2))])
       end
 
-      let(:graph) { builder.to_qernel }
-      let(:co2_node) { graph.node(:co2_node) }
-
       it 'returns CO2' do
-        expect(co2_node.query.ghg_carrier).to eq('CO2')
+        expect(node.query.ghg_carrier).to eq('CO2')
       end
     end
 
     context 'with an other_ghg input slot' do
-      let(:builder) do
-        TestGraphBuilder.new.tap do |builder|
-          builder.add(:terminus, demand: 100)
-          builder.add(:ghg_node, groups: [:emissions])
-          builder.add(:producer, groups: [:primary_energy_demand])
-
-          builder.connect(:producer, :ghg_node, :other_ghg, type: :share)
-          builder.connect(:ghg_node, :terminus, :electricity, type: :share)
-
-          builder.carrier_attrs(:other_ghg, co2_conversion_per_mj: 0.0)
-        end
+      before do
+        allow(node).to receive(:inputs).and_return([double('slot', carrier: double('carrier', key: :other_ghg))])
       end
 
-      let(:graph) { builder.to_qernel }
-      let(:ghg_node) { graph.node(:ghg_node) }
-
       it 'returns Other GHG' do
-        expect(ghg_node.query.ghg_carrier).to eq('Other GHG')
+        expect(node.query.ghg_carrier).to eq('Other GHG')
       end
     end
   end
