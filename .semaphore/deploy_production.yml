@@ -23,7 +23,7 @@ blocks:
             - cache store
             - echo $SSH_FINGERPRINT >> ~/.ssh/known_hosts
             - 'ssh -i ~/.ssh/id_deploy "${SSH_USER}@${SSH_HOST}" -p $SSH_PORT "cd /var/www/etengine && ./deploy.sh"'
-            - curl -s -X POST https://quintel.grafana.net/api/annotations -H "Content-Type: application/json" -H "Authorization: Bearer $GRAFANA_API_TOKEN" -d "{\"text\": \"ETM ${SEMAPHORE_GIT_TAG_NAME:-$SEMAPHORE_GIT_SHA}\", \"tags\": [\"deploy\"]}"
+            - 'curl -s -X POST https://quintel.grafana.net/api/annotations -H "Content-Type: application/json" -H "Authorization: Bearer $GRAFANA_API_TOKEN" -d "{\"text\": \"ETM ${SEMAPHORE_GIT_TAG_NAME:-$SEMAPHORE_GIT_SHA}\", \"tags\": [\"deploy\"]}"'
       secrets:
         - name: Docker Hub credentials
         - name: Production SSH settings
