@@ -2,38 +2,40 @@
 
 module Qernel
   module NodeApi
-    # Calculates direct CO2 emissions from fossil fuels using a mass balance approach.
+    # Calculates direct CO2 emissions from fossil and biogenic carriers using a mass balance approach.
     #
     # Direct emissions measure the change in carbon stock at a specific node:
     # - Carbon enters via input carriers
+    # - Carbon enters via CO2 utilisation
     # - Carbon leaves via output carriers
+    # - Carbon leaves via CO2 capture
     # - Direct emissions = CO2 released to atmosphere at this location (input - output)
     #
     # For mixed carriers (network gas, crude oil, carrier_mix), composition tracking
     # uses RecursiveFactor::WeightedCarrier to recursively trace CO2 content through the supply chain.
     module DirectEmissions
-      # CO2 content of all carriers entering the node.
+      # Fossil CO2 content of all carriers entering the node.
       #
-      # @return [Float, nil] Total CO2 content from input carriers in kg, or nil if node is not in emissions group
+      # @return [Float, nil] Total fossil CO2 content from input carriers in kg, or nil if node is not in emissions group
       def direct_co2_input_content_carriers_fossil
         with_emissions_node do
           sum_carbon_content(inputs.flat_map(&:edges), :fossil)
         end
       end
 
-      # CO2 content of all carriers leaving the node.
+      # Fossil CO2 content of all carriers leaving the node.
       #
-      # @return [Float, nil] Total CO2 content from output carriers in kg, or nil if node is not in emissions group
+      # @return [Float, nil] Total fossil CO2 content from output carriers in kg, or nil if node is not in emissions group
       def direct_co2_output_content_carriers_fossil
         with_emissions_node do
           sum_carbon_content(output_edges, :fossil)
         end
       end
 
-      # CO2 emissions produced at this node.
+      # Fossil CO2 emissions produced at this node.
       #
-      # Calculates net emissions after accounting for CO2 utilisation.
-      # Emissions = input co2 + utilised co2 - captured co2 - output co2
+      # Calculates net emissions after accounting for CO2 utilisation and CO2 capture.
+      # Emissions = input carriers co2 + utilised co2 - captured co2 - output carriers co2
       #
       # @return [Float, nil] Direct fossil CO2 emissions in kg, or nil if node is not in emissions group
       def direct_co2_output_production_emissions_fossil
@@ -65,10 +67,10 @@ module Qernel
 
       # Biogenic CO2 emissions produced at this node.
       #
-      # Emissions = input biogenic co2 - captured biogenic co2 - output biogenic co2
+      # Emissions = input carriers biogenic co2 - captured biogenic co2 - output carriers biogenic co2
       #
-      # Note: Unlike fossil emissions, biogenic CO2 utilisation is not included as
-      # feedstock utilisation typically involves fossil CO2.
+      # Note: Unlike fossil emissions, biogenic CO2 utilisation is not included as 
+      # the model does not distinguish biogenic CO2 utilisation. 
       #
       # @return [Float, nil] Direct biogenic CO2 emissions in kg, or nil if node is not in emissions group
       def direct_co2_output_production_emissions_biogenic
@@ -113,7 +115,7 @@ module Qernel
       # Fossil CO2 utilised (consumed as feedstock) at this node.
       #
       # Calculates CO2 that is consumed as feedstock rather than emitted, based on the total
-      # output energy and the node's co2_utilisation_per_mj attribute.
+      # useful carrier output in MJ and the node's co2_utilisation_per_mj attribute.
       #
       # @return [Float, nil] Total fossil CO2 utilised in kg, or nil if node is not in emissions group
       def direct_co2_input_utilisation_fossil
