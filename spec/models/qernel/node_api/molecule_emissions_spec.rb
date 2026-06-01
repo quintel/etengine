@@ -197,8 +197,8 @@ RSpec.describe Qernel::NodeApi::MoleculeEmissions do
           allow(node).to receive(:inputs).and_return([double('slot', carrier: co2_carrier)])
         end
 
-        it 'returns CO2' do
-          expect(node.query.ghg_carrier).to eq('CO2')
+        it 'returns :co2' do
+          expect(node.query.ghg_carrier).to eq(:co2)
         end
       end
 
@@ -208,8 +208,8 @@ RSpec.describe Qernel::NodeApi::MoleculeEmissions do
           allow(node).to receive(:inputs).and_return([double('slot', carrier: ghg_carrier)])
         end
 
-        it 'returns Other GHG' do
-          expect(node.query.ghg_carrier).to eq('Other GHG')
+        it 'returns :other_ghg' do
+          expect(node.query.ghg_carrier).to eq(:other_ghg)
         end
       end
     end

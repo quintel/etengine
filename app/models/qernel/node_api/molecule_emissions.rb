@@ -12,12 +12,12 @@ module Qernel
     # - CO2 capture = node demand for CCUS captured nodes
     # - Total GHG = CO2 production - capture + other GHG
     module MoleculeEmissions
-      # The GHG carrier type for this node: 'Other GHG' for molecule nodes whose input slot
-      # carries other_ghg, 'CO2' for all others.
+      # The GHG carrier key for this node: :other_ghg for molecule nodes whose input slot
+      # carries other_ghg, :co2 for all others.
       #
-      # @return [String] 'Other GHG' or 'CO2'
+      # @return [Symbol] :other_ghg or :co2
       def ghg_carrier
-        inputs.map { |s| s.carrier&.key }.include?(:other_ghg) ? 'Other GHG' : 'CO2'
+        inputs.map { |s| s.carrier&.key }.include?(:other_ghg) ? :other_ghg : :co2
       end
 
       # CO2 production at this molecule node.

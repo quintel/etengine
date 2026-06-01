@@ -1959,8 +1959,8 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
         allow(node).to receive(:inputs).and_return([double('slot', carrier: double('carrier', key: :co2))])
       end
 
-      it 'returns CO2' do
-        expect(node.query.ghg_carrier).to eq('CO2')
+      it 'returns :co2' do
+        expect(node.query.ghg_carrier).to eq(:co2)
       end
     end
 
@@ -1969,8 +1969,8 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
         allow(node).to receive(:inputs).and_return([double('slot', carrier: double('carrier', key: :other_ghg))])
       end
 
-      it 'returns Other GHG' do
-        expect(node.query.ghg_carrier).to eq('Other GHG')
+      it 'returns :other_ghg' do
+        expect(node.query.ghg_carrier).to eq(:other_ghg)
       end
     end
   end

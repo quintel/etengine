@@ -125,12 +125,12 @@ module Qernel
 
       # Reporting Methods -------------------------------------------------------------------------------
 
-      # The GHG carrier type for this node: 'Other GHG' for molecule nodes whose input slot
-      # carries other_ghg, 'CO2' for all others (energy nodes always emit CO2).
+      # The GHG carrier key for this node: :other_ghg for molecule nodes whose input slot
+      # carries other_ghg, :co2 for all others (energy nodes always emit CO2).
       #
-      # @return [String] 'Other GHG' or 'CO2'
+      # @return [Symbol] :other_ghg or :co2
       def ghg_carrier
-        inputs.map { |s| s.carrier&.key }.include?(:other_ghg) ? 'Other GHG' : 'CO2'
+        inputs.map { |s| s.carrier&.key }.include?(:other_ghg) ? :other_ghg : :co2
       end
 
       # Fossil CO2 production at this node
