@@ -122,7 +122,27 @@ module Qernel
         end
       end
 
+      # Total CO2 utilised (consumed as feedstock) at this node.
+      #
+      # Currently returns only fossil utilisation, as biogenic utilisation is always 0.
+      #
+      # @return [Float, nil] Total CO2 utilised in kg, or nil if node is not in emissions group
+      def direct_co2_input_utilisation
+        with_emissions_node do
+          direct_co2_input_utilisation_fossil
+          # Potentially in the future: + direct_co2_input_utilisation_biogenic (currently 0)
+        end
+      end
+
       # Reporting Methods -------------------------------------------------------------------------------
+
+      # The GHG carrier key for this node: :other_ghg for molecule nodes whose input slot
+      # carries other_ghg, :co2 for all others (energy nodes always emit CO2).
+      #
+      # @return [Symbol] :other_ghg or :co2
+      def ghg_carrier
+        inputs.map { |s| s.carrier&.key }.include?(:other_ghg) ? :other_ghg : :co2
+      end
 
       # Fossil CO2 production at this node
       #

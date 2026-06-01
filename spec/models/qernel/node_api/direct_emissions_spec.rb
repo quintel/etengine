@@ -2438,4 +2438,28 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       end
     end
   end
+
+  describe '#ghg_carrier' do
+    let(:node) { Qernel::Node.new(key: :test_node, graph_name: :energy, groups: [:emissions]).with(demand: 100.0) }
+
+    context 'with a co2 input slot' do
+      before do
+        allow(node).to receive(:inputs).and_return([double('slot', carrier: double('carrier', key: :co2))])
+      end
+
+      it 'returns :co2' do
+        expect(node.query.ghg_carrier).to eq(:co2)
+      end
+    end
+
+    context 'with an other_ghg input slot' do
+      before do
+        allow(node).to receive(:inputs).and_return([double('slot', carrier: double('carrier', key: :other_ghg))])
+      end
+
+      it 'returns :other_ghg' do
+        expect(node.query.ghg_carrier).to eq(:other_ghg)
+      end
+    end
+  end
 end

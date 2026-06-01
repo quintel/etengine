@@ -63,6 +63,26 @@ module Api
         )
       end
 
+      # GET /api/v3/scenarios/:id/direct_emissions_present
+      #
+      # Returns a CSV of emissions data for all nodes in each configured node group, present graph.
+      def direct_emissions_present
+        send_csv(
+          ConfiguredCSVSerializer.new(Etsource::Config.direct_emissions_csv, @scenario.gql, period: :present),
+          'direct_emissions_present.%d.csv'
+        )
+      end
+
+      # GET /api/v3/scenarios/:id/direct_emissions_future
+      #
+      # Returns a CSV of emissions data for all nodes in each configured node group, future graph.
+      def direct_emissions_future
+        send_csv(
+          ConfiguredCSVSerializer.new(Etsource::Config.direct_emissions_csv, @scenario.gql, period: :future),
+          'direct_emissions_future.%d.csv'
+        )
+      end
+
       # GET /api/v3/scenarios/:id/costs_parameters
       #
       # Returns a CSV file containing the cost paramaters of nodes belonging to costs groups.

@@ -10,7 +10,8 @@ module Qernel
       'electricity'      => Carrier.new(id: 5, key: 'electricity', infinite: false),
       'cooling'          => Carrier.new(id: 6, key: 'cooling', infinite: false),
       'useable_heat'     => Carrier.new(id: 7, key: 'useable_heat', infinite: false),
-      'coupling_carrier' => Carrier.new(id: 8, key: 'coupling_carrier', infinite: false)
+      'coupling_carrier' => Carrier.new(id: 8, key: 'coupling_carrier', infinite: false),
+      'other_ghg'        => Carrier.new(id: 9, key: 'other_ghg',        infinite: false)
     }
 
     CARRIERS = {}.merge(CARRIERS_FOR_SPECS)
