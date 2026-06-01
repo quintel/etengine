@@ -45,8 +45,8 @@ module Gql::Runtime::Functions
     # ---------
 
     describe 'EMISSIONS()' do
-      it 'returns a Hash' do
-        expect(result).to be_a(Hash)
+      it 'returns an Emissions object' do
+        expect(result).to be_a(Qernel::Emissions)
       end
     end
 
