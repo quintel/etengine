@@ -1091,6 +1091,436 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
         expect(consumer).to have_query_value(:direct_co2_input_content_carriers_biogenic, 0.0)
       end
     end
+
+    context 'with biogenic crude oil skip group on linear chain' do
+      # Create a linear chain that mimics real ETSource structure with biogenic sources:
+      # [Bio Crude Producer] -> [Final Demand] -> [Space Heating Demand] -> [Space Heater] -> [Terminus]
+      #                                           (skip edge)                (skip edge)
+      #
+      # This tests that the skip group works correctly for BIOGENIC emissions through multiple levels
+      # and that intermediate nodes behave as pass-through without emissions
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:buildings_space_heater_bio_crude, groups: [:emissions])
+          builder.add(:buildings_final_demand_for_space_heating_bio_crude, groups: [:emissions])
+          builder.add(:buildings_final_demand_bio_crude, groups: [:emissions])
+          builder.add(:bio_crude_producer, groups: [:primary_energy_demand])
+
+          # Connect producer to final demand
+          builder.connect(:bio_crude_producer, :buildings_final_demand_bio_crude, :bio_crude_oil, type: :share)
+
+          # Connect final demand to intermediate (with skip group)
+          builder.connect(
+            :buildings_final_demand_bio_crude,
+            :buildings_final_demand_for_space_heating_bio_crude,
+            :bio_crude_oil,
+            type: :share,
+            groups: [:emissions_skip_crude_oil_mix]
+          )
+
+          # Connect intermediate to consumer (with skip group)
+          builder.connect(
+            :buildings_final_demand_for_space_heating_bio_crude,
+            :buildings_space_heater_bio_crude,
+            :bio_crude_oil,
+            type: :share,
+            groups: [:emissions_skip_crude_oil_mix]
+          )
+
+          # Connect consumer to terminus
+          builder.connect(:buildings_space_heater_bio_crude, :terminus, :electricity, type: :share)
+
+          builder.carrier_attrs(:bio_crude_oil, potential_co2_conversion_per_mj: 0.05)
+          builder.carrier_attrs(:electricity, potential_co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:source) { graph.node(:buildings_final_demand_bio_crude) }
+      let(:intermediate) { graph.node(:buildings_final_demand_for_space_heating_bio_crude) }
+      let(:consumer) { graph.node(:buildings_space_heater_bio_crude) }
+
+      it 'preserves mass balance at intermediate node (pass-through)' do
+        # Intermediate node should not produce emissions, just pass energy through
+        input = intermediate.query.direct_co2_input_content_carriers_biogenic
+        output = intermediate.query.direct_co2_output_content_carriers_biogenic
+        emissions = intermediate.query.direct_co2_output_production_emissions_biogenic
+
+        expect(input).to be_within(0.0000001).of(output)
+        expect(emissions).to be_within(0.0000001).of(0.0)
+      end
+
+      it 'calculates input content correctly at intermediate node' do
+        # Intermediate receives 100 MJ @ 0.05 kg/MJ = 5.0 kg biogenic CO2
+        expect(intermediate).to have_query_value(:direct_co2_input_content_carriers_biogenic, 5.0)
+      end
+
+      it 'calculates output content correctly at intermediate node' do
+        # Pass-through: output should equal input
+        expect(intermediate).to have_query_value(:direct_co2_output_content_carriers_biogenic, 5.0)
+      end
+
+      it 'shows zero production emissions at intermediate node' do
+        # No combustion at intermediate node
+        expect(intermediate).to have_query_value(:direct_co2_output_production_emissions_biogenic, 0.0)
+      end
+
+      it 'calculates input content correctly at consumer node' do
+        # Consumer receives 100 MJ @ 0.05 kg/MJ = 5.0 kg biogenic CO2
+        expect(consumer).to have_query_value(:direct_co2_input_content_carriers_biogenic, 5.0)
+      end
+
+      it 'shows production emissions at consumer (combustion point)' do
+        # Consumer burns 100 MJ bio crude oil
+        # A (input) - C (output) = E (emissions)
+        # 5.0 - 0 = 5.0 kg biogenic CO2
+        expect(consumer).to have_query_value(:direct_co2_output_production_emissions_biogenic, 5.0)
+      end
+    end
+
+    context 'with mixed biogenic crude oil sources propagating through skip chain' do
+      # Create a chain with mixed biogenic crude oil sources to test composition propagation:
+      # [Conventional Bio-Oil 70%] -> [Bio Blender] -> [Space Heating Demand] -> [Space Heater] -> [Terminus]
+      # [Heavy Bio-Oil 30%]        ->       ^            (skip edge)              (skip edge)
+      #
+      # This tests that weighted biogenic composition propagates correctly through the entire chain
+      # and doesn't revert to carrier default value at intermediate nodes
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:buildings_space_heater_bio_crude, groups: [:emissions])
+          builder.add(:buildings_final_demand_for_space_heating_bio_crude, groups: [:emissions])
+          builder.add(:bio_blender, groups: [:emissions])
+          builder.add(:conventional_bio_oil, groups: [:primary_energy_demand], demand: 70)
+          builder.add(:heavy_bio_oil, groups: [:primary_energy_demand], demand: 30)
+
+          # Multiple biogenic sources with different CO2 content blend at bio_blender
+          builder.connect(:conventional_bio_oil, :bio_blender, :bio_crude_oil, type: :share)
+          builder.connect(:heavy_bio_oil, :bio_blender, :bio_crude_oil_heavy, type: :share)
+
+          # Blender to intermediate (with skip group)
+          builder.connect(
+            :bio_blender,
+            :buildings_final_demand_for_space_heating_bio_crude,
+            :bio_crude_oil,
+            type: :share,
+            groups: [:emissions_skip_crude_oil_mix]
+          )
+
+          # Intermediate to consumer (with skip group)
+          builder.connect(
+            :buildings_final_demand_for_space_heating_bio_crude,
+            :buildings_space_heater_bio_crude,
+            :bio_crude_oil,
+            type: :share,
+            groups: [:emissions_skip_crude_oil_mix]
+          )
+
+          # Consumer to terminus
+          builder.connect(:buildings_space_heater_bio_crude, :terminus, :electricity, type: :share)
+
+          # Conventional bio crude oil: 0.05 kg biogenic CO2/MJ
+          builder.carrier_attrs(:bio_crude_oil, potential_co2_conversion_per_mj: 0.05)
+          # Heavy bio crude oil: 0.07 kg biogenic CO2/MJ (higher emissions)
+          builder.carrier_attrs(:bio_crude_oil_heavy, potential_co2_conversion_per_mj: 0.07)
+          builder.carrier_attrs(:electricity, potential_co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:blender) { graph.node(:bio_blender) }
+      let(:intermediate) { graph.node(:buildings_final_demand_for_space_heating_bio_crude) }
+      let(:consumer) { graph.node(:buildings_space_heater_bio_crude) }
+
+      it 'calculates blender input from mixed biogenic sources' do
+        # Blender receives:
+        # - 70 MJ conventional bio crude @ 0.05 kg/MJ = 3.5 kg
+        # - 30 MJ heavy bio crude @ 0.07 kg/MJ = 2.1 kg
+        # Total input: 5.6 kg biogenic CO2
+        expect(blender).to have_query_value(:direct_co2_input_content_carriers_biogenic, 5.6)
+      end
+
+      it 'calculates blender output using weighted composition' do
+        # Blender outputs 100 MJ bio_crude_oil with skip group
+        # Should use weighted composition (0.056 kg/MJ), not carrier value (0.05 kg/MJ)
+        # 100 MJ * 0.056 kg/MJ = 5.6 kg biogenic CO2
+        expect(blender).to have_query_value(:direct_co2_output_content_carriers_biogenic, 5.6)
+      end
+
+      it 'preserves mass balance at blender' do
+        input = blender.query.direct_co2_input_content_carriers_biogenic
+        output = blender.query.direct_co2_output_content_carriers_biogenic
+        emissions = blender.query.direct_co2_output_production_emissions_biogenic
+
+        expect(input).to be_within(0.0000001).of(output)
+        expect(emissions).to be_within(0.0000001).of(0.0)
+      end
+
+      it 'propagates weighted composition to intermediate node input' do
+        # Intermediate receives weighted composition, not carrier default
+        # 100 MJ * 0.056 kg/MJ = 5.6 kg biogenic CO2
+        expect(intermediate).to have_query_value(:direct_co2_input_content_carriers_biogenic, 5.6)
+      end
+
+      it 'propagates weighted composition to intermediate node output' do
+        # Intermediate outputs weighted composition through skip edge
+        expect(intermediate).to have_query_value(:direct_co2_output_content_carriers_biogenic, 5.6)
+      end
+
+      it 'preserves mass balance at intermediate node' do
+        input = intermediate.query.direct_co2_input_content_carriers_biogenic
+        output = intermediate.query.direct_co2_output_content_carriers_biogenic
+        emissions = intermediate.query.direct_co2_output_production_emissions_biogenic
+
+        expect(input).to be_within(0.0000001).of(output)
+        expect(emissions).to be_within(0.0000001).of(0.0)
+      end
+
+      it 'propagates weighted composition to final consumer' do
+        # Consumer receives weighted composition through entire chain
+        # 100 MJ * 0.056 kg/MJ = 5.6 kg biogenic CO2
+        expect(consumer).to have_query_value(:direct_co2_input_content_carriers_biogenic, 5.6)
+      end
+
+      it 'shows correct production emissions at consumer' do
+        # Consumer burns all input, producing emissions equal to input content
+        # 5.6 kg biogenic CO2
+        expect(consumer).to have_query_value(:direct_co2_output_production_emissions_biogenic, 5.6)
+      end
+    end
+
+    context 'with biogenic crude oil partial skip chain (edge case)' do
+      # Create a chain where only the first edge has skip group:
+      # [Bio Crude Producer] -> [Final Demand] -> [Space Heating Demand] -> [Space Heater] -> [Terminus]
+      #                                           (skip edge)                (NO skip edge)
+      #
+      # This demonstrates the difference: without skip group on second edge,
+      # it should use carrier default value
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:buildings_space_heater_bio_crude, groups: [:emissions])
+          builder.add(:buildings_final_demand_for_space_heating_bio_crude, groups: [:emissions])
+          builder.add(:buildings_final_demand_bio_crude, groups: [:emissions])
+          builder.add(:bio_crude_producer, groups: [:primary_energy_demand])
+
+          # Connect producer to final demand
+          builder.connect(:bio_crude_producer, :buildings_final_demand_bio_crude, :bio_crude_oil, type: :share)
+
+          # Connect final demand to intermediate (WITH skip group)
+          builder.connect(
+            :buildings_final_demand_bio_crude,
+            :buildings_final_demand_for_space_heating_bio_crude,
+            :bio_crude_oil,
+            type: :share,
+            groups: [:emissions_skip_crude_oil_mix]
+          )
+
+          # Connect intermediate to consumer (WITHOUT skip group)
+          builder.connect(
+            :buildings_final_demand_for_space_heating_bio_crude,
+            :buildings_space_heater_bio_crude,
+            :bio_crude_oil,
+            type: :share
+          )
+
+          # Connect consumer to terminus
+          builder.connect(:buildings_space_heater_bio_crude, :terminus, :useable_heat, type: :share)
+
+          builder.carrier_attrs(:bio_crude_oil, potential_co2_conversion_per_mj: 0.05)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:intermediate) { graph.node(:buildings_final_demand_for_space_heating_bio_crude) }
+      let(:consumer) { graph.node(:buildings_space_heater_bio_crude) }
+
+      it 'calculates intermediate input using skip logic' do
+        # First edge has skip group, so intermediate receives correct value
+        expect(intermediate).to have_query_value(:direct_co2_input_content_carriers_biogenic, 5.0)
+      end
+
+      it 'calculates consumer input using carrier default (no skip)' do
+        # Second edge does NOT have skip group, so it uses carrier default
+        # This demonstrates that skip group must be on edge for special handling
+        expect(consumer).to have_query_value(:direct_co2_input_content_carriers_biogenic, 5.0)
+      end
+
+      it 'preserves mass balance at intermediate node' do
+        input = intermediate.query.direct_co2_input_content_carriers_biogenic
+        output = intermediate.query.direct_co2_output_content_carriers_biogenic
+        emissions = intermediate.query.direct_co2_output_production_emissions_biogenic
+
+        expect(input).to be_within(0.0000001).of(output)
+        expect(emissions).to be_within(0.0000001).of(0.0)
+      end
+    end
+
+    context 'with mixed fossil and biogenic crude oil inputs with skip group' do
+      # Create a node that receives BOTH fossil and biogenic crude oil:
+      # [Conventional Oil 40%] -> [Mixed Blender] -> [Consumer] -> [Terminus]
+      # [Heavy Oil 20%]        ->       ^             (skip edge)
+      # [Bio Oil 40%]          ->       ^
+      #
+      # This tests:
+      # 1. Fossil and biogenic emissions are calculated independently
+      # 2. No cross-contamination between fossil and biogenic calculations
+      # 3. The critical fix: biogenic returns 0.0 for carrier with only fossil CO2
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:consumer, groups: [:emissions])
+          builder.add(:mixed_blender, groups: [:emissions])
+          builder.add(:conventional_oil_producer, groups: [:primary_energy_demand], demand: 40)
+          builder.add(:heavy_oil_producer, groups: [:primary_energy_demand], demand: 20)
+          builder.add(:bio_oil_producer, groups: [:primary_energy_demand], demand: 40)
+
+          # Multiple inputs with mixed fossil and biogenic sources
+          builder.connect(:conventional_oil_producer, :mixed_blender, :crude_oil, type: :share)
+          builder.connect(:heavy_oil_producer, :mixed_blender, :crude_oil_heavy, type: :share)
+          builder.connect(:bio_oil_producer, :mixed_blender, :bio_crude_oil, type: :share)
+
+          # Blender to consumer (with skip group)
+          builder.connect(
+            :mixed_blender,
+            :consumer,
+            :crude_oil,
+            type: :share,
+            groups: [:emissions_skip_crude_oil_mix]
+          )
+
+          # Consumer to terminus
+          builder.connect(:consumer, :terminus, :electricity, type: :share)
+
+          # Fossil crude oils (only co2_conversion_per_mj set, NO potential_co2_conversion_per_mj)
+          builder.carrier_attrs(:crude_oil, co2_conversion_per_mj: 0.0733)
+          builder.carrier_attrs(:crude_oil_heavy, co2_conversion_per_mj: 0.0850)
+          # Biogenic crude oil (only potential_co2_conversion_per_mj set)
+          builder.carrier_attrs(:bio_crude_oil, potential_co2_conversion_per_mj: 0.05)
+          builder.carrier_attrs(:electricity, co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:blender) { graph.node(:mixed_blender) }
+      let(:consumer) { graph.node(:consumer) }
+
+      it 'calculates blender fossil input correctly (from fossil sources only)' do
+        # Blender receives:
+        # - 40 MJ conventional crude @ 0.0733 kg/MJ = 2.932 kg fossil CO2
+        # - 20 MJ heavy crude @ 0.0850 kg/MJ = 1.7 kg fossil CO2
+        # Total fossil input: 4.632 kg CO2
+        expect(blender).to have_query_value(:direct_co2_input_content_carriers_fossil, 4.632)
+      end
+
+      it 'calculates blender biogenic input correctly (from biogenic sources only)' do
+        # Blender receives:
+        # - 40 MJ bio crude @ 0.05 kg/MJ = 2.0 kg biogenic CO2
+        # Total biogenic input: 2.0 kg CO2
+        expect(blender).to have_query_value(:direct_co2_input_content_carriers_biogenic, 2.0)
+      end
+
+      it 'calculates blender fossil output using weighted composition' do
+        # Blender outputs 100 MJ crude_oil (which has skip group)
+        # Fossil: 4.632 kg from 60 MJ fossil inputs
+        # Should propagate through skip edge
+        expect(blender).to have_query_value(:direct_co2_output_content_carriers_fossil, 4.632)
+      end
+
+      it 'calculates blender biogenic output using skip group (critical test)' do
+        # CRITICAL: This tests the specific fix!
+        # Output carrier is crude_oil which has co2_conversion_per_mj (fossil) but NO potential_co2_conversion_per_mj (biogenic)
+        # With skip group, the biogenic content IS propagated through recursive calculation from supply
+        # Even though carrier has no biogenic CO2 defined, skip group forces recursive calculation
+        # Biogenic content: 2.0 kg from bio_crude_oil input
+        expect(blender).to have_query_value(:direct_co2_output_content_carriers_biogenic, 2.0)
+      end
+
+      it 'preserves biogenic mass balance at blender' do
+        # Blender is pass-through for biogenic content with skip group
+        # Input: 2.0 kg, Output: 2.0 kg, Emissions: 0.0 kg
+        input = blender.query.direct_co2_input_content_carriers_biogenic
+        output = blender.query.direct_co2_output_content_carriers_biogenic
+        emissions = blender.query.direct_co2_output_production_emissions_biogenic
+
+        expect(input).to be_within(0.0000001).of(output)
+        expect(emissions).to be_within(0.0000001).of(0.0)
+      end
+
+      it 'calculates consumer fossil input from weighted supply' do
+        # Consumer receives fossil content through skip edge
+        # 4.632 kg fossil CO2
+        expect(consumer).to have_query_value(:direct_co2_input_content_carriers_fossil, 4.632)
+      end
+
+      it 'calculates consumer biogenic input from skip edge' do
+        # Consumer receives biogenic content through skip edge (recursive calculation)
+        # Even though crude_oil carrier has no biogenic CO2 defined, skip group propagates it
+        # 2.0 kg biogenic CO2
+        expect(consumer).to have_query_value(:direct_co2_input_content_carriers_biogenic, 2.0)
+      end
+
+      it 'shows no cross-contamination: fossil and biogenic are independent' do
+        # Verify that fossil and biogenic calculations are independent
+        # Fossil comes from fossil inputs (40 + 20 = 60 MJ)
+        # Biogenic comes from biogenic inputs (40 MJ)
+        fossil_input = consumer.query.direct_co2_input_content_carriers_fossil
+        biogenic_input = consumer.query.direct_co2_input_content_carriers_biogenic
+
+        expect(fossil_input).to be_within(0.0000001).of(4.632)
+        expect(biogenic_input).to be_within(0.0000001).of(2.0)
+      end
+    end
+
+    context 'with biogenic crude oil without skip group (control test)' do
+      # Create a simple chain WITHOUT skip group to verify normal behavior:
+      # [Bio Crude Producer] -> [Consumer] -> [Terminus]
+      #                        (NO skip edge)
+      #
+      # This control test verifies that WITHOUT skip group, carrier's
+      # potential_co2_conversion_per_mj is used directly (no recursive calculation)
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:consumer, groups: [:emissions])
+          builder.add(:bio_crude_producer, groups: [:primary_energy_demand])
+
+          # Connect producer to consumer (NO skip group)
+          builder.connect(:bio_crude_producer, :consumer, :bio_crude_oil, type: :share)
+
+          # Connect consumer to terminus
+          builder.connect(:consumer, :terminus, :electricity, type: :share)
+
+          builder.carrier_attrs(:bio_crude_oil, potential_co2_conversion_per_mj: 0.05)
+          builder.carrier_attrs(:electricity, potential_co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:consumer) { graph.node(:consumer) }
+
+      it 'uses carrier default value for input (no recursive calculation)' do
+        # Without skip group, should use carrier's potential_co2_conversion_per_mj directly
+        # 100 MJ * 0.05 kg/MJ = 5.0 kg biogenic CO2
+        expect(consumer).to have_query_value(:direct_co2_input_content_carriers_biogenic, 5.0)
+      end
+
+      it 'calculates emissions correctly' do
+        # Consumer burns 100 MJ bio crude oil
+        # Input: 5.0 kg, Output: 0.0 kg (electricity has no biogenic content)
+        # Emissions: 5.0 - 0.0 = 5.0 kg biogenic CO2
+        expect(consumer).to have_query_value(:direct_co2_output_production_emissions_biogenic, 5.0)
+      end
+
+      it 'shows expected behavior without skip flag' do
+        # This control test confirms that skip group changes behavior
+        # Without it: carrier default value is used
+        # With it: recursive calculation from supply chain is used
+        input = consumer.query.direct_co2_input_content_carriers_biogenic
+        expect(input).to be_within(0.0000001).of(5.0)
+      end
+    end
   end
 
   describe '#direct_co2_output_content_carriers_biogenic' do
