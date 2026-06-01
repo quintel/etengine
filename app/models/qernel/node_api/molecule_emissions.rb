@@ -39,7 +39,7 @@ module Qernel
 
       # Other greenhouse gas emissions (non-CO2) at this molecule node.
       #
-      # Returns the node demand if the node has other_ghg as a carrier (input or output).
+      # Returns the node demand if the node has other_ghg as an input carrier.
       # For molecule nodes representing other GHG flows (CH4, N2O, etc.), the demand
       # represents the amount in kg CO2-equivalent/year.
       #

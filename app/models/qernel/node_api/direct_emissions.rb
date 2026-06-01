@@ -12,7 +12,7 @@ module Qernel
     # For mixed carriers (network gas, crude oil, carrier_mix), composition tracking
     # uses RecursiveFactor::WeightedCarrier to recursively trace CO2 content through the supply chain.
     module DirectEmissions
-      # CO2 content of all carriers entering the node (A).
+      # CO2 content of all carriers entering the node.
       #
       # @return [Float, nil] Total CO2 content from input carriers in kg, or nil if node is not in emissions group
       def direct_co2_input_content_carriers_fossil
@@ -21,7 +21,7 @@ module Qernel
         end
       end
 
-      # CO2 content of all carriers leaving the node (C).
+      # CO2 content of all carriers leaving the node.
       #
       # @return [Float, nil] Total CO2 content from output carriers in kg, or nil if node is not in emissions group
       def direct_co2_output_content_carriers_fossil
@@ -30,10 +30,10 @@ module Qernel
         end
       end
 
-      # CO2 emissions produced at this node (E).
+      # CO2 emissions produced at this node.
       #
       # Calculates net emissions after accounting for CO2 utilisation.
-      # Mass balance equation: Emissions = input co2 + utilised co2 - captured co2 - output co2
+      # Emissions = input co2 + utilised co2 - captured co2 - output co2
       #
       # @return [Float, nil] Direct fossil CO2 emissions in kg, or nil if node is not in emissions group
       def direct_co2_output_production_emissions_fossil
@@ -45,7 +45,7 @@ module Qernel
         end
       end
 
-      # Biogenic CO2 content of all carriers entering the node (A).
+      # Biogenic CO2 content of all carriers entering the node.
       #
       # @return [Float, nil] Total biogenic CO2 content from input carriers in kg, or nil if node is not in emissions group
       def direct_co2_input_content_carriers_biogenic
@@ -54,7 +54,7 @@ module Qernel
         end
       end
 
-      # Biogenic CO2 content of all carriers leaving the node (C).
+      # Biogenic CO2 content of all carriers leaving the node.
       #
       # @return [Float, nil] Total biogenic CO2 content from output carriers in kg, or nil if node is not in emissions group
       def direct_co2_output_content_carriers_biogenic
@@ -63,9 +63,12 @@ module Qernel
         end
       end
 
-      # Biogenic CO2 emissions produced at this node (E).
+      # Biogenic CO2 emissions produced at this node.
       #
-      #TODO: Write out formula in a comment like for fossil
+      # Emissions = input biogenic co2 - captured biogenic co2 - output biogenic co2
+      #
+      # Note: Unlike fossil emissions, biogenic CO2 utilisation is not included as
+      # feedstock utilisation typically involves fossil CO2.
       #
       # @return [Float, nil] Direct biogenic CO2 emissions in kg, or nil if node is not in emissions group
       def direct_co2_output_production_emissions_biogenic
@@ -78,8 +81,8 @@ module Qernel
 
       # Fossil CO2 captured at this node.
       #
-      # Calculates the amount of fossil CO2 captured based on the mass balance
-      # (A + B - C) multiplied by the CCS capture rate.
+      # Calculates the amount of fossil CO2 captured based on the total CO2 available
+      # (input content + utilised CO2 - output content) multiplied by the CCS capture rate.
       #
       # @return [Float, nil] Fossil CO2 captured in kg, or nil if node is not in emissions group
       def direct_co2_output_production_capture_fossil
@@ -94,8 +97,8 @@ module Qernel
 
       # Biogenic CO2 captured at this node.
       #
-      # Calculates the amount of biogenic CO2 captured based on the mass balance
-      # (A - C) multiplied by the CCS capture rate.
+      # Calculates the amount of biogenic CO2 captured based on the total biogenic CO2
+      # available (input content - output content) multiplied by the CCS capture rate.
       #
       # @return [Float, nil] Biogenic CO2 captured in kg, or nil if node is not in emissions group
       def direct_co2_output_production_capture_biogenic
@@ -108,7 +111,6 @@ module Qernel
       end
 
       # Fossil CO2 utilised (consumed as feedstock) at this node.
-      # TODO: Make more beautiful
       #
       # Calculates CO2 that is consumed as feedstock rather than emitted, based on the total
       # output energy and the node's co2_utilisation_per_mj attribute.
@@ -116,12 +118,21 @@ module Qernel
       # @return [Float, nil] Total fossil CO2 utilised in kg, or nil if node is not in emissions group
       def direct_co2_input_utilisation_fossil
         with_emissions_node do
-          total_output_energy = output_edges.sum { |edge| edge.net_demand || 0.0 }
-          utilisation_rate = dataset_get(:co2_utilisation_per_mj) || 0.0
-          total_output_energy * utilisation_rate
+          output_edges.sum { |edge| edge.net_demand || 0.0 } * (dataset_get(:co2_utilisation_per_mj) || 0.0)
         end
       end
 
+      # Total CO2 utilised (consumed as feedstock) at this node.
+      #
+      # Currently returns only fossil utilisation, as biogenic utilisation is always 0.
+      #
+      # @return [Float, nil] Total CO2 utilised in kg, or nil if node is not in emissions group
+      def direct_co2_input_utilisation
+        with_emissions_node do
+          direct_co2_input_utilisation_fossil
+          # Potentially in the future: + direct_co2_input_utilisation_biogenic (currently 0)
+        end
+      end
 
       # Reporting Methods -------------------------------------------------------------------------------
 
@@ -220,7 +231,14 @@ module Qernel
           return edge.carrier.public_send(attribute)
         end
 
+        # For biogenic: if carrier has fossil CO2 defined but no biogenic CO2, return 0.0
+        # This prevents recursing when the carrier explicitly has no biogenic content
+        if carbon_type == :biogenic && !edge.carrier.co2_conversion_per_mj.nil? && !edge.emissions_skip_crude_oil_mix?
+          return 0.0
+        end
+
         # Fallback: calculate from weighted supply mix using recursive factor
+        # Always query the supplier (rgt_node) - the recursion factor handles stopping conditions
         supplier = edge.rgt_node
         supplier&.query&.public_send(fallback_method) || 0.0
       end
