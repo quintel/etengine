@@ -69,8 +69,8 @@ module Qernel
       #
       # Emissions = input carriers biogenic co2 - captured biogenic co2 - output carriers biogenic co2
       #
-      # Note: Unlike fossil emissions, biogenic CO2 utilisation is not included as 
-      # the model does not distinguish biogenic CO2 utilisation. 
+      # Note: Unlike fossil emissions, biogenic CO2 utilisation is not included as
+      # the model does not distinguish biogenic CO2 utilisation.
       #
       # @return [Float, nil] Direct biogenic CO2 emissions in kg, or nil if node is not in emissions group
       def direct_co2_output_production_emissions_biogenic
@@ -121,18 +121,6 @@ module Qernel
       def direct_co2_input_utilisation_fossil
         with_emissions_node do
           output_edges.sum { |edge| edge.net_demand || 0.0 } * (dataset_get(:co2_utilisation_per_mj) || 0.0)
-        end
-      end
-
-      # Total CO2 utilised (consumed as feedstock) at this node.
-      #
-      # Currently returns only fossil utilisation, as biogenic utilisation is always 0.
-      #
-      # @return [Float, nil] Total CO2 utilised in kg, or nil if node is not in emissions group
-      def direct_co2_input_utilisation
-        with_emissions_node do
-          direct_co2_input_utilisation_fossil
-          # Potentially in the future: + direct_co2_input_utilisation_biogenic (currently 0)
         end
       end
 
