@@ -121,4 +121,110 @@ RSpec.describe ConfiguredCSVSerializer do
       expect(serializer.data[1]).to eq(%w[G1 C1 1 10])
     end
   end
+
+  context 'when given a "node_group" column' do
+    let(:node_api_1) { instance_double('Qernel::NodeApi::EnergyApi', key: 'node_a') }
+    let(:node_api_2) { instance_double('Qernel::NodeApi::EnergyApi', key: 'node_b') }
+    let(:node_1)     { instance_double('Qernel::Node', node_api: node_api_1) }
+    let(:node_2)     { instance_double('Qernel::Node', node_api: node_api_2) }
+
+    let(:config) do
+      {
+        schema: [
+          { name: 'Group', type: 'node_group' },
+          { name: 'Sector' },
+          { name: 'Node', type: 'node_attribute', value: 'key' }
+        ],
+        rows: [
+          { 'Group' => 'some_group', 'Sector' => 'Industry' }
+        ]
+      }
+    end
+
+    let(:node_api_3) { instance_double('Qernel::NodeApi::MoleculeApi', key: 'node_c') }
+    let(:node_3)     { instance_double('Qernel::Node', node_api: node_api_3) }
+
+    let(:gql)        { Scenario.default.gql }
+    let(:serializer) { described_class.new(config, gql, period: :future) }
+
+    before do
+      allow(gql.future).to receive(:group_energy_nodes).with('some_group').and_return([node_1, node_2])
+      allow(gql.future).to receive(:group_molecule_nodes).with('some_group').and_return([node_3])
+    end
+
+    it 'excludes the node_group column from the header' do
+      expect(serializer.data[0]).to eq(%w[Sector Node])
+    end
+
+    it 'expands the row into one row per node from both graphs' do
+      expect(serializer.data.length).to eq(4) # header + 2 energy + 1 molecule
+    end
+
+    it 'includes the literal column value on each expanded row' do
+      expect(serializer.data[1][0]).to eq('Industry')
+      expect(serializer.data[2][0]).to eq('Industry')
+      expect(serializer.data[3][0]).to eq('Industry')
+    end
+
+    it 'includes energy node_attribute values' do
+      expect(serializer.data[1][1]).to eq('node_a')
+      expect(serializer.data[2][1]).to eq('node_b')
+    end
+
+    it 'includes molecule node_attribute values' do
+      expect(serializer.data[3][1]).to eq('node_c')
+    end
+
+    context 'with a transform for numeric conversion' do
+      let(:node_api_1) { instance_double('Qernel::NodeApi::EnergyApi', key: 'node_a', demand: 1_000_000.0) }
+
+      let(:config) do
+        {
+          schema: [
+            { name: 'Group', type: 'node_group' },
+            { name: 'Demand', type: 'node_attribute', value: 'demand', transform: 'value * 1e-6' }
+          ],
+          rows: [{ 'Group' => 'some_group' }]
+        }
+      end
+
+      before do
+        allow(gql.future).to receive(:group_energy_nodes).with('some_group').and_return([node_1])
+        allow(gql.future).to receive(:group_molecule_nodes).with('some_group').and_return([])
+      end
+
+      it 'applies the transform to the value' do
+        expect(serializer.data[1][0]).to eq('1.0')
+      end
+    end
+
+    context 'with a transform for conditional mapping' do
+      let(:node_api_1) { double('node_api', key: 'node_a', is_special: true) }
+      let(:node_api_2) { double('node_api', key: 'node_b', is_special: false) }
+
+      let(:config) do
+        {
+          schema: [
+            { name: 'Group', type: 'node_group' },
+            { name: 'Type', type: 'node_attribute', value: 'is_special',
+              transform: "value ? 'other_ghg' : 'co2'" }
+          ],
+          rows: [{ 'Group' => 'some_group' }]
+        }
+      end
+
+      before do
+        allow(gql.future).to receive(:group_energy_nodes).with('some_group').and_return([node_1, node_2])
+        allow(gql.future).to receive(:group_molecule_nodes).with('some_group').and_return([])
+      end
+
+      it 'maps a truthy result via transform' do
+        expect(serializer.data[1][0]).to eq('other_ghg')
+      end
+
+      it 'maps a falsy result via transform' do
+        expect(serializer.data[2][0]).to eq('co2')
+      end
+    end
+  end
 end

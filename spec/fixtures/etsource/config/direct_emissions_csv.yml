@@ -1,0 +1,36 @@
+schema:
+  - name: Group
+    type: node_group
+  - name: Sector
+  - name: Subsector
+  - name: Key
+    type: node_attribute
+    value: key
+  - name: GHG
+    type: node_attribute
+    value: ghg_carrier
+  - name: CO2_production
+    label: "CO2 production [kton CO2-eq]"
+    type: node_attribute
+    value: direct_reporting_emissions_co2_production
+    transform: "(value * 1e-6).round(6)"
+  - name: CO2_capture
+    label: "CO2 capture [kton CO2-eq]"
+    type: node_attribute
+    value: direct_reporting_emissions_co2_capture
+    transform: "(value * 1e-6).round(6)"
+  - name: Other_GHG_emissions
+    label: "Other GHG emissions [kton CO2-eq]"
+    type: node_attribute
+    value: direct_reporting_emissions_other_ghg_emissions
+    transform: "(value * 1e-6).round(6)"
+  - name: Total_GHG_emissions
+    label: "Total GHG emissions[kton CO2-eq]"
+    type: node_attribute
+    value: direct_reporting_emissions_total_ghg_emissions
+    transform: "(value * 1e-6).round(6)"
+
+rows:
+  - Group: emissions_industry_chemicals
+    Sector: Industry
+    Subsector: Chemicals
