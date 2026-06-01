@@ -213,7 +213,7 @@ module Qernel
 
         # For biogenic: if carrier has fossil CO2 defined but no biogenic CO2, return 0.0
         # This prevents recursing when the carrier explicitly has no biogenic content
-        if carbon_type == :biogenic && !edge.carrier.co2_conversion_per_mj.nil?
+        if carbon_type == :biogenic && !edge.carrier.co2_conversion_per_mj.nil? && !edge.emissions_skip_crude_oil_mix?
           return 0.0
         end
 
