@@ -48,13 +48,13 @@ module Qernel
       let(:emissions) { Emissions.new.with({}) }
       let(:scoped) { emissions.scope(:households_energetic) }
 
-      describe '#method_missing' do
-        before do
-          attrs = emissions.instance_variable_get(:@dataset_attributes)
-          attrs['households_energetic_co2'] = 50.0
-          attrs['households_energetic_other_ghg'] = 25.0
-        end
+      before do
+        attrs = emissions.instance_variable_get(:@dataset_attributes)
+        attrs['households_energetic_co2'] = 50.0
+        attrs['households_energetic_other_ghg'] = 25.0
+      end
 
+      describe '#method_missing' do
         it 'delegates getter methods to emissions with scoped prefix' do
           expect(scoped.co2).to eq(50.0)
         end
@@ -81,6 +81,8 @@ module Qernel
         end
 
         it 'delegates setter with year suffix' do
+          attrs = emissions.instance_variable_get(:@dataset_attributes)
+          attrs['households_energetic_co2_1990'] = 0.0  # Pre-create the key
           scoped.co2_1990 = 200.0
           expect(emissions.dataset_get(:households_energetic_co2_1990)).to eq(200.0)
         end
@@ -89,26 +91,24 @@ module Qernel
           expect(scoped.nonexistent_attribute).to be_nil
         end
 
-        it 'raises NoMethodError for invalid setter keys' do
-          expect { scoped.invalid_key = 100.0 }.to raise_error(NoMethodError)
+        it 'raises NoMethodError for setter keys that do not exist in the dataset' do
+          expect { scoped.arbitrary_key = 100.0 }.to raise_error(NoMethodError, /not found in dataset/)
+          expect { scoped.custom_emission_type = 200.0 }.to raise_error(NoMethodError, /not found in dataset/)
+          expect { scoped.nonexistent = 300.0 }.to raise_error(NoMethodError, /not found in dataset/)
         end
 
-        it 'raises NoMethodError for setter with typo in GHG type' do
-          expect { scoped.co2_typo = 100.0 }.to raise_error(NoMethodError)
-        end
-
-        it 'allows all valid GHG types' do
+        it 'allows setters for emission keys that exist in the dataset' do
           expect { scoped.co2 = 1.0 }.not_to raise_error
           expect { scoped.other_ghg = 2.0 }.not_to raise_error
-          expect { scoped.n2o = 3.0 }.not_to raise_error
-          expect { scoped.ch4 = 4.0 }.not_to raise_error
-          expect { scoped.hfc = 5.0 }.not_to raise_error
-          expect { scoped.pfc = 6.0 }.not_to raise_error
-          expect { scoped.sf6 = 7.0 }.not_to raise_error
-          expect { scoped.nf3 = 8.0 }.not_to raise_error
+          expect(emissions.dataset_get(:households_energetic_co2)).to eq(1.0)
+          expect(emissions.dataset_get(:households_energetic_other_ghg)).to eq(2.0)
         end
 
-        it 'allows GHG types with year suffix' do
+        it 'allows GHG types with year suffix when keys exist in dataset' do
+          attrs = emissions.instance_variable_get(:@dataset_attributes)
+          attrs['households_energetic_co2_1990'] = 0.0
+          attrs['households_energetic_other_ghg_2020'] = 0.0
+
           expect { scoped.co2_1990 = 100.0 }.not_to raise_error
           expect { scoped.other_ghg_2020 = 200.0 }.not_to raise_error
         end
@@ -126,38 +126,21 @@ module Qernel
           expect(scoped.respond_to?(:other_ghg_2020)).to be true
         end
 
-        it 'returns true for valid setter methods' do
+        it 'returns true for setter methods where the key exists in dataset' do
           expect(scoped.respond_to?(:co2=)).to be true
           expect(scoped.respond_to?(:other_ghg=)).to be true
         end
 
-        it 'returns false for invalid attribute names' do
-          expect(scoped.respond_to?(:invalid_key)).to be false
-          expect(scoped.respond_to?(:co2_typo)).to be false
-        end
-      end
-
-      describe '#valid_emission_key?' do
-        it 'returns true for valid GHG types' do
-          expect(scoped.valid_emission_key?('co2')).to be true
-          expect(scoped.valid_emission_key?('other_ghg')).to be true
-          expect(scoped.valid_emission_key?('n2o')).to be true
-          expect(scoped.valid_emission_key?('ch4')).to be true
+        it 'returns false for setter methods where the key does not exist in dataset' do
+          expect(scoped.respond_to?(:invalid_key=)).to be false
+          expect(scoped.respond_to?(:co2_typo=)).to be false
+          expect(scoped.respond_to?(:arbitrary_name=)).to be false
         end
 
-        it 'returns true for GHG types with year suffix' do
-          expect(scoped.valid_emission_key?('co2_1990')).to be true
-          expect(scoped.valid_emission_key?('other_ghg_2020')).to be true
-        end
-
-        it 'returns false for invalid keys' do
-          expect(scoped.valid_emission_key?('invalid')).to be false
-          expect(scoped.valid_emission_key?('co2_typo')).to be false
-          expect(scoped.valid_emission_key?('random_string')).to be false
-        end
-
-        it 'returns false for empty strings' do
-          expect(scoped.valid_emission_key?('')).to be false
+        it 'returns true for any getter method (may return nil if key does not exist)' do
+          expect(scoped.respond_to?(:invalid_key)).to be true
+          expect(scoped.respond_to?(:co2_typo)).to be true
+          expect(scoped.respond_to?(:arbitrary_name)).to be true
         end
       end
 
@@ -197,6 +180,13 @@ module Qernel
       describe 'edge cases based on actual CSV data' do
         let(:scoped) { emissions.scope(:energy_non_energetic) }
 
+        before do
+          attrs = emissions.instance_variable_get(:@dataset_attributes)
+          attrs['energy_non_energetic_co2'] = 0.0
+          attrs['energy_non_energetic_other_ghg'] = 0.0
+          attrs['energy_electricity_and_heat_production_energetic_other_ghg'] = 0.0
+        end
+
         it 'handles zero values' do
           scoped.co2 = 0.0
           expect(emissions.dataset_get(:energy_non_energetic_co2)).to eq(0.0)
@@ -220,10 +210,6 @@ module Qernel
           scoped.other_ghg = 200.0
           expect(emissions.dataset_get(:energy_non_energetic_co2)).to eq(100.0)
           expect(emissions.dataset_get(:energy_non_energetic_other_ghg)).to eq(200.0)
-        end
-
-        it 'rejects invalid GHG types' do
-          expect { scoped.invalid_ghg = 100.0 }.to raise_error(NoMethodError)
         end
       end
     end

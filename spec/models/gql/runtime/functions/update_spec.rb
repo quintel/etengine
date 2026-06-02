@@ -69,39 +69,10 @@ describe Gql::Runtime::Functions::Update, :etsource_fixture do
     end
   end
 
-  # Validation tests for nonexistent keys
-  # ----
-
-  describe 'UPDATE(EMISSIONS(households, energetic), nonexistent_key, 100.0)' do
-    it 'raises an error when updating a nonexistent emission key' do
-      expect { result }.to raise_error(Gql::CommandError, /undefined method/)
-    end
-  end
-
-  describe 'UPDATE(EMISSIONS(households, energetic), co2_typo, 100.0)' do
-    it 'raises an error for typos in emission keys' do
-      expect { result }.to raise_error(Gql::CommandError, /undefined method/)
-    end
-  end
-
   describe 'UPDATE(EMISSIONS(invalid_sector, energetic), co2, 100.0)' do
-    it 'allows creating new valid emission keys for any sector' do
-      # Sector validation is not UPDATE's responsibility
-      # UPDATE validates GHG type only
-      expect { result }.not_to raise_error
-      expect(gql.query_future('EMISSIONS(invalid_sector, energetic, co2)')).to eq(100.0)
-    end
-  end
-
-  describe 'UPDATE(EMISSIONS(households, energetic), random_string, 42.0)' do
-    it 'raises an error for completely invalid keys' do
-      expect { result }.to raise_error(Gql::CommandError, /undefined method/)
-    end
-  end
-
-  describe 'UPDATE(EMISSIONS(households, energetic), invalid_ghg, 42.0)' do
-    it 'raises an error for invalid GHG types' do
-      expect { result }.to raise_error(Gql::CommandError, /undefined method/)
+    it 'raises an error when the emission key does not exist in the dataset' do
+      # The full key 'invalid_sector_energetic_co2' must exist in the dataset
+      expect { result }.to raise_error(Gql::CommandError, /not found in dataset/)
     end
   end
 
