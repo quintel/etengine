@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-# Deletes a saved scenario in MyETM.
-class DeleteSavedScenario
+# Discards a saved scenario in MyETM (soft-delete).
+class DiscardSavedScenario
   include Dry::Monads[:result]
 
   def call(id:, client:)
-    Success(client.delete("/api/v1/saved_scenarios/#{id}").body)
+    Success(client.put("/api/v1/saved_scenarios/#{id}/discard").body)
   rescue Faraday::ResourceNotFound
     Failure(ServiceResponse.not_found)
   end

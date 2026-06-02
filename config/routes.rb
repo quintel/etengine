@@ -115,6 +115,10 @@ Rails.application.routes.draw do
       end
 
       resources :saved_scenarios, except: %i[new edit] do
+        member do
+          put :discard
+        end
+
         resources :users, only: %i[index create update destroy], controller: 'saved_scenario_users' do
           collection do
             post :create

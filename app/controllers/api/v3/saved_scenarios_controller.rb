@@ -73,6 +73,18 @@ module Api
         render_not_found
       end
 
+      def discard
+        DiscardSavedScenario.new.call(
+          id: params.require(:id),
+          client: my_etm_client
+        ).either(
+          ->((data, *)) { render json: data },
+          ->(error)     { service_error_response(error) }
+        )
+      rescue Faraday::ResourceNotFound
+        render_not_found
+      end
+
       private
 
       def hydrate_scenarios(saved_scenarios)

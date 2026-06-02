@@ -216,4 +216,44 @@ describe Api::V3::SavedScenariosController, type: :controller do
       end
     end
   end
+
+  describe 'PUT #discard' do
+    let(:discard_service) { instance_double(DiscardSavedScenario) }
+
+    before do
+      allow(DiscardSavedScenario).to receive(:new).and_return(discard_service)
+    end
+
+    context 'with a valid ID' do
+      before do
+        allow(discard_service).to receive(:call)
+          .with(id: '1', client: idp_client)
+          .and_return(Dry::Monads::Success([{ 'message' => 'Scenario discarded successfully' }, nil]))
+
+        put :discard, params: { id: 1 }
+      end
+
+      it 'responds successfully' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'returns the response data' do
+        parsed = JSON.parse(response.body)
+        expect(parsed).to include('message' => 'Scenario discarded successfully')
+      end
+    end
+
+    context 'with an invalid ID' do
+      before do
+        allow(discard_service).to receive(:call)
+          .and_raise(Faraday::ResourceNotFound)
+
+        put :discard, params: { id: 999 }
+      end
+
+      it 'responds with not found' do
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
 end
