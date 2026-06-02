@@ -46,127 +46,96 @@ module Qernel
 
     describe Emissions::ScopedSector do
       let(:emissions) { Emissions.new.with({}) }
-      let(:scoped) { emissions.scope(:households_energetic) }
+      let(:scoped) { emissions.scope(:households_non_specified_energetic) }
 
       before do
-        attrs = emissions.instance_variable_get(:@dataset_attributes)
-        attrs['households_energetic_co2'] = 50.0
-        attrs['households_energetic_other_ghg'] = 25.0
+        emissions[:households_non_specified_energetic_other_ghg] = 50.0
+        emissions[:agriculture_non_specified_energetic_other_ghg] = 25.0
       end
 
       describe '#method_missing' do
         it 'delegates getter methods to emissions with scoped prefix' do
-          expect(scoped.co2).to eq(50.0)
+          expect(scoped.other_ghg).to eq(50.0)
         end
 
-        it 'delegates getter for other_ghg' do
-          expect(scoped.other_ghg).to eq(25.0)
-        end
-
-        it 'delegates getter with year suffix' do
-          attrs = emissions.instance_variable_get(:@dataset_attributes)
-          attrs['households_energetic_co2_1990'] = 100.0
-          expect(scoped.co2_1990).to eq(100.0)
+        it 'delegates getter for a different scope' do
+          other_scoped = emissions.scope(:agriculture_non_specified_energetic)
+          expect(other_scoped.other_ghg).to eq(25.0)
         end
 
         it 'delegates setter methods to emissions with scoped prefix' do
-          scoped.co2 = 75.0
+          scoped.other_ghg = 75.0
           # Setters convert to symbol keys via dataset_set
-          expect(emissions.dataset_get(:households_energetic_co2)).to eq(75.0)
+          expect(emissions.dataset_get(:households_non_specified_energetic_other_ghg)).to eq(75.0)
         end
 
-        it 'delegates setter for other_ghg' do
-          scoped.other_ghg = 30.0
-          expect(emissions.dataset_get(:households_energetic_other_ghg)).to eq(30.0)
+        it 'delegates setter for a different scope' do
+          other_scoped = emissions.scope(:agriculture_non_specified_energetic)
+          other_scoped.other_ghg = 30.0
+          expect(emissions.dataset_get(:agriculture_non_specified_energetic_other_ghg)).to eq(30.0)
         end
 
-        it 'delegates setter with year suffix' do
-          attrs = emissions.instance_variable_get(:@dataset_attributes)
-          attrs['households_energetic_co2_1990'] = 0.0  # Pre-create the key
-          scoped.co2_1990 = 200.0
-          expect(emissions.dataset_get(:households_energetic_co2_1990)).to eq(200.0)
-        end
-
-        it 'returns nil for undefined getter methods' do
-          expect(scoped.nonexistent_attribute).to be_nil
+        it 'raises NoMethodError for undefined getter methods' do
+          expect { scoped.nonexistent_attribute }.to raise_error(NoMethodError)
+          expect { scoped.invalid_emission }.to raise_error(NoMethodError)
         end
 
         it 'raises NoMethodError for setter keys that do not exist in the dataset' do
-          expect { scoped.arbitrary_key = 100.0 }.to raise_error(NoMethodError, /not found in dataset/)
-          expect { scoped.custom_emission_type = 200.0 }.to raise_error(NoMethodError, /not found in dataset/)
-          expect { scoped.nonexistent = 300.0 }.to raise_error(NoMethodError, /not found in dataset/)
+          expect { scoped.arbitrary_key = 100.0 }.to raise_error(NoMethodError)
+          expect { scoped.custom_emission_type = 200.0 }.to raise_error(NoMethodError)
+          expect { scoped.nonexistent = 300.0 }.to raise_error(NoMethodError)
         end
 
         it 'allows setters for emission keys that exist in the dataset' do
-          expect { scoped.co2 = 1.0 }.not_to raise_error
           expect { scoped.other_ghg = 2.0 }.not_to raise_error
-          expect(emissions.dataset_get(:households_energetic_co2)).to eq(1.0)
-          expect(emissions.dataset_get(:households_energetic_other_ghg)).to eq(2.0)
-        end
-
-        it 'allows GHG types with year suffix when keys exist in dataset' do
-          attrs = emissions.instance_variable_get(:@dataset_attributes)
-          attrs['households_energetic_co2_1990'] = 0.0
-          attrs['households_energetic_other_ghg_2020'] = 0.0
-
-          expect { scoped.co2_1990 = 100.0 }.not_to raise_error
-          expect { scoped.other_ghg_2020 = 200.0 }.not_to raise_error
+          expect(emissions.dataset_get(:households_non_specified_energetic_other_ghg)).to eq(2.0)
         end
       end
 
       describe '#respond_to_missing?' do
-        it 'returns true for valid GHG types' do
-          expect(scoped.respond_to?(:co2)).to be true
+        it 'returns true for valid GHG types that exist' do
           expect(scoped.respond_to?(:other_ghg)).to be true
-          expect(scoped.respond_to?(:n2o)).to be true
-        end
-
-        it 'returns true for valid GHG types with year suffix' do
-          expect(scoped.respond_to?(:co2_1990)).to be true
-          expect(scoped.respond_to?(:other_ghg_2020)).to be true
         end
 
         it 'returns true for setter methods where the key exists in dataset' do
-          expect(scoped.respond_to?(:co2=)).to be true
           expect(scoped.respond_to?(:other_ghg=)).to be true
         end
 
         it 'returns false for setter methods where the key does not exist in dataset' do
           expect(scoped.respond_to?(:invalid_key=)).to be false
-          expect(scoped.respond_to?(:co2_typo=)).to be false
+          expect(scoped.respond_to?(:co2=)).to be false  # co2 doesn't exist for this scope
           expect(scoped.respond_to?(:arbitrary_name=)).to be false
         end
 
-        it 'returns true for any getter method (may return nil if key does not exist)' do
-          expect(scoped.respond_to?(:invalid_key)).to be true
-          expect(scoped.respond_to?(:co2_typo)).to be true
-          expect(scoped.respond_to?(:arbitrary_name)).to be true
+        it 'returns false for getter methods where the key does not exist in dataset' do
+          expect(scoped.respond_to?(:invalid_key)).to be false
+          expect(scoped.respond_to?(:co2)).to be false  # co2 doesn't exist for this scope
+          expect(scoped.respond_to?(:nonexistent_attribute)).to be false
         end
       end
 
       describe '[]' do
         before do
-          attrs = emissions.instance_variable_get(:@dataset_attributes)
-          attrs['agriculture_energetic_co2'] = 123.45
+          emissions[:agriculture_non_specified_energetic_other_ghg] = 123.45
         end
 
-        let(:scoped) { emissions.scope(:agriculture_energetic) }
+        let(:scoped) { emissions.scope(:agriculture_non_specified_energetic) }
 
         it 'returns the value for existing keys' do
-          expect(scoped[:co2]).to eq(123.45)
+          expect(scoped[:other_ghg]).to eq(123.45)
         end
 
         it 'returns nil for non-existing keys' do
-          expect(scoped[:other_ghg]).to be_nil
+          expect(scoped[:co2]).to be_nil
         end
       end
 
       describe '[]=' do
-        let(:scoped) { emissions.scope(:industry_energetic) }
+        let(:scoped) { emissions.scope(:industry_non_specified_energetic) }
 
         it 'sets the value' do
-          scoped[:co2] = 999.0
-          expect(emissions.dataset_get(:industry_energetic_co2)).to eq(999.0)
+          scoped[:other_ghg] = 999.0
+          expect(emissions.dataset_get(:industry_non_specified_energetic_other_ghg)).to eq(999.0)
         end
       end
 
@@ -178,23 +147,23 @@ module Qernel
       end
 
       describe 'edge cases based on actual CSV data' do
-        let(:scoped) { emissions.scope(:energy_non_energetic) }
+        let(:scoped) { emissions.scope(:energy_fugitive_emissions_non_energetic) }
 
         before do
-          attrs = emissions.instance_variable_get(:@dataset_attributes)
-          attrs['energy_non_energetic_co2'] = 0.0
-          attrs['energy_non_energetic_other_ghg'] = 0.0
-          attrs['energy_electricity_and_heat_production_energetic_other_ghg'] = 0.0
+          emissions[:energy_fugitive_emissions_non_energetic_co2] = 0.0
+          emissions[:energy_electricity_and_heat_production_energetic_other_ghg] = 0.0
+          emissions[:buildings_non_specified_energetic_other_ghg] = 0.0
         end
 
         it 'handles zero values' do
           scoped.co2 = 0.0
-          expect(emissions.dataset_get(:energy_non_energetic_co2)).to eq(0.0)
+          expect(emissions.dataset_get(:energy_fugitive_emissions_non_energetic_co2)).to eq(0.0)
         end
 
         it 'handles large values' do
-          scoped.other_ghg = 9999999.0
-          expect(emissions.dataset_get(:energy_non_energetic_other_ghg)).to eq(9999999.0)
+          buildings_scoped = emissions.scope(:buildings_non_specified_energetic)
+          buildings_scoped.other_ghg = 9999999.0
+          expect(emissions.dataset_get(:buildings_non_specified_energetic_other_ghg)).to eq(9999999.0)
         end
 
         it 'handles multi-word subsector scopes' do
@@ -205,11 +174,18 @@ module Qernel
           expect(emissions.dataset_get(:energy_electricity_and_heat_production_energetic_other_ghg)).to eq(275.0)
         end
 
-        it 'allows both co2 and other_ghg for same scope' do
+        it 'works with multi-part keys from real dataset' do
           scoped.co2 = 100.0
-          scoped.other_ghg = 200.0
-          expect(emissions.dataset_get(:energy_non_energetic_co2)).to eq(100.0)
-          expect(emissions.dataset_get(:energy_non_energetic_other_ghg)).to eq(200.0)
+          expect(emissions.dataset_get(:energy_fugitive_emissions_non_energetic_co2)).to eq(100.0)
+
+          # Test agriculture keys that actually exist in default dataset
+          ag_energetic = emissions.scope(:agriculture_non_specified_energetic)
+          ag_energetic.other_ghg = 200.0
+          expect(emissions.dataset_get(:agriculture_non_specified_energetic_other_ghg)).to eq(200.0)
+
+          ag_non_energetic = emissions.scope(:agriculture_non_specified_non_energetic)
+          ag_non_energetic.co2 = 300.0
+          expect(emissions.dataset_get(:agriculture_non_specified_non_energetic_co2)).to eq(300.0)
         end
       end
     end
