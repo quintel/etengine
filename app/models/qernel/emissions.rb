@@ -11,6 +11,7 @@ module Qernel
   class Emissions
     include DatasetAttributes
 
+    dataset_accessors ::Etsource::Dataset.emissions_keys
     attr_accessor :graph
 
     # Queryable object that provides scoped access to emissions data
@@ -28,11 +29,11 @@ module Qernel
       end
 
       def [](attr_name)
-        @emissions[scoped_method(attr_name)]
+        @emissions[scoped_method(attr_name).to_sym]
       end
 
       def []=(attr_name, value)
-        @emissions[scoped_method(attr_name)] = value
+        @emissions[scoped_method(attr_name).to_sym] = value
       end
 
       def inspect
@@ -43,37 +44,24 @@ module Qernel
         "#{@scope}_#{method_name}"
       end
 
-      def method_missing(method_name, *args)
-        data_key = scoped_method(method_name.to_s.sub(/=$/, ''))
-        is_setter = method_name.to_s.end_with?('=')
+      def respond_to_missing?(method_name, include_private = false)
+        data_key = scoped_method(method_name).split('=').first
 
-        if is_setter
-          # Validate that the emission key exists in the dataset
-          unless @emissions.dataset_has_key?(data_key)
-            raise NoMethodError,
-              "undefined method `#{method_name}' for #{inspect} - " \
-              "emission key '#{data_key}' not found in dataset"
-          end
-
-          # Setters use dataset_set which converts to symbol internally
-          @emissions[data_key] = args.first
-        else
-          # Getters use dataset_get which works with the key as-is
-          @emissions[data_key]
-        end
+        @emissions.respond_to?(data_key) || super
       end
 
-      def respond_to_missing?(method_name, include_private = false)
-        # Don't claim to respond to :query - UPDATE uses this to unwrap objects
-        return false if method_name.to_sym == :query
+      def method_missing(method_name, *args)
+        data_key = scoped_method(method_name).split('=').first.to_sym
 
-        # For setters, check if the emission key exists in the dataset
-        if method_name.to_s.end_with?('=')
-          data_key = scoped_method(method_name.to_s.sub(/=$/, ''))
-          @emissions.dataset_has_key?(data_key)
+        # Validate the key exists for both getters and setters
+        unless @emissions.respond_to?(data_key)
+          raise NoMethodError, "undefined method `#{method_name}' for #{inspect}"
+        end
+
+        if data_key.to_s == scoped_method(method_name)
+          @emissions[data_key]
         else
-          # Getters always respond (may return nil if key doesn't exist)
-          true
+          @emissions[data_key] = args.first
         end
       end
     end
@@ -89,18 +77,6 @@ module Qernel
     # Returns a scoped version of the emissions data
     def scope(sector)
       ScopedSector.new(self, sector)
-    end
-
-    # Public: Check if a key exists in the loaded emissions dataset
-    #
-    # key - String or Symbol representing the emission key
-    #
-    # Returns Boolean
-    def dataset_has_key?(key)
-      return false unless dataset_attributes
-
-      # Check both string and symbol keys since datasets may use either
-      dataset_attributes.key?(key.to_s) || dataset_attributes.key?(key.to_sym)
     end
   end
 end

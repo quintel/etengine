@@ -62,9 +62,9 @@ module Gql::Runtime::Functions
       end
     end
 
-    describe 'EMISSIONS(households, energetic, co2)' do
+    describe 'EMISSIONS(households_non_specified, energetic, other_ghg)' do
       it 'returns the emission value' do
-        expect(result).to eq(12.0)
+        expect(result).to eq(7.0)
       end
     end
   end
