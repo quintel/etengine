@@ -22,10 +22,6 @@ module Qernel
     #   EMISSIONS(households, energetic) returns a ScopedSector
     #   Then UPDATE can call: scoped.co2 = 100.0
     class ScopedSector
-      # Valid GHG types that can be used in emission keys
-      VALID_GHG_TYPES = %w[co2 other_ghg n2o ch4 hfc pfc sf6 nf3].freeze
-      VALID_GHG_PATTERN = /^(#{VALID_GHG_TYPES.join('|')})(_\d{4})?$/.freeze
-
       def initialize(emissions, scope)
         @emissions = emissions
         @scope = scope
@@ -47,25 +43,9 @@ module Qernel
         "#{@scope}_#{method_name}"
       end
 
-      def valid_emission_key?(attr_name)
-        # Check if attribute name matches valid GHG pattern (e.g., co2, other_ghg, co2_1990)
-        attr_name.to_s.match?(VALID_GHG_PATTERN)
-      end
-
-      def respond_to_missing?(method_name, include_private = false)
-        attr_name = method_name.to_s.sub(/=$/, '')
-        valid_emission_key?(attr_name) || super
-      end
-
       def method_missing(method_name, *args)
-        attr_name = method_name.to_s.sub(/=$/, '')
-        data_key = scoped_method(attr_name)  # Keep as string for compatibility
+        data_key = scoped_method(method_name.to_s.sub(/=$/, ''))
         is_setter = method_name.to_s.end_with?('=')
-
-        # Only validate setters - getters can return nil for any key
-        if is_setter && !valid_emission_key?(attr_name)
-          super
-        end
 
         if is_setter
           # Setters use dataset_set which converts to symbol internally
@@ -74,6 +54,10 @@ module Qernel
           # Getters use dataset_get which works with the key as-is
           @emissions[data_key]
         end
+      end
+
+      def respond_to_missing?(method_name, include_private = false)
+        true
       end
     end
 
