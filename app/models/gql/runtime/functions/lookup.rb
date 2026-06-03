@@ -367,6 +367,101 @@ module Gql::Runtime
         # EMISSIONS(sector, use, ghg [, year]) -> return value
         scope.graph.emissions[keys.join('_').to_sym]
       end
+
+      # Returns an Array of {Qernel::Node} matching a CRT/IPCC code.
+      #
+      # Looks up the CRT code in the generic crt_mapping.csv file to find the
+      # corresponding ETM sector, subsector, and use. Then returns all nodes
+      # (from both energy and molecule graphs) that match those attributes.
+      #
+      # No crt_code attribute is needed on nodes - matching is inferred from
+      # the mapping based on node sector, key (containing subsector), and use.
+      #
+      # crt_code - String or Symbol CRT code (e.g., '1.A.2', '2.B.10.a')
+      #
+      # Examples
+      #
+      #   EMISSIONS_MAP('1.A.4.a')
+      #   # => [<Node>, <Node>, ...]
+      #
+      #   SUM(V(EMISSIONS_MAP('1.A.4.a'), demand))
+      #   # => Sum demand from all nodes matching CRT code 1.A.4.a
+      #
+      #   UPDATE(EMISSIONS_MAP('1.A.4.a'), some_attribute, value)
+      #   # => Update all matching nodes
+      #
+      # Returns an Array of Qernel::Nodes, or empty array if no mapping found.
+      def EMISSIONS_MAP(crt_code)
+        normalized_code = normalize_crt_code(crt_code)
+        mapping = load_crt_mapping(normalized_code)
+
+        return [] unless mapping
+
+        find_nodes_by_mapping(mapping)
+      end
+
+      private
+
+      # Internal: Normalizes a string for key matching.
+      # Converts to lowercase, replaces spaces/hyphens with underscores.
+      #
+      # Returns a String.
+      def normalize_key(str)
+        str.to_s.downcase.tr(' -', '_')
+      end
+
+      # Internal: Normalizes CRT code for lookup.
+      # Converts dots/hyphens to underscores, lowercase.
+      #
+      # Returns a Symbol.
+      def normalize_crt_code(code)
+        code.to_s.downcase.tr('-.', '_').to_sym
+      end
+
+      # Internal: Loads CRT mapping from dataset.
+      #
+      # Returns a CSV::Row or nil.
+      def load_crt_mapping(normalized_code)
+        dataset = Atlas::Dataset.find(scope.graph.area.area_code)
+        dataset.crt_mapping[normalized_code]
+      end
+
+      # Internal: Finds all nodes matching the CRT mapping.
+      #
+      # Returns an Array of Qernel::Nodes.
+      def find_nodes_by_mapping(mapping)
+        sector = normalize_key(mapping[:etm_sector])
+        subsector = normalize_key(mapping[:etm_subsector])
+        use = normalize_key(mapping[:use])
+
+        all_nodes.select { |node| node_matches_mapping?(node, sector, subsector, use) }
+      end
+
+      # Internal: Returns all nodes from both graphs.
+      #
+      # Returns an Array of Qernel::Nodes.
+      def all_nodes
+        scope.all_energy_nodes + scope.all_molecule_nodes
+      end
+
+      # Internal: Checks if a node matches the mapping criteria.
+      #
+      # Returns Boolean.
+      def node_matches_mapping?(node, sector, subsector, use)
+        return false unless node.sector_key.to_s == sector
+        return false unless subsector_matches?(node, subsector)
+        return false unless node.use_key.to_s == use
+
+        true
+      end
+
+      # Internal: Checks if subsector matches node key.
+      # Expects the subsector to be included in the node key.
+      #
+      # Returns Boolean.
+      def subsector_matches?(node, subsector)
+        node.key.to_s.include?(subsector)
+      end
     end
   end
 end
