@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe Api::V3::SavedScenariosController, type: :controller do
@@ -7,10 +9,7 @@ describe Api::V3::SavedScenariosController, type: :controller do
   let(:response_body) { { 'data' => [], 'links' => {} } }
 
   before do
-    allow(controller).to receive(:current_user).and_return(user)
-    allow(controller).to receive(:current_ability).and_return(Ability.new(user))
-    allow(controller).to receive(:authorize!).and_return(true)
-    allow(controller).to receive(:my_etm_client).and_return(idp_client)
+    allow(controller).to receive_messages(current_user: user, current_ability: Ability.new(user), authorize!: true, my_etm_client: idp_client)
 
     request.headers.merge!(access_token_header(user, :read))
   end
@@ -30,7 +29,7 @@ describe Api::V3::SavedScenariosController, type: :controller do
     end
 
     it 'renders the JSON response' do
-      parsed = JSON.parse(response.body)
+      parsed = response.parsed_body
       expect(parsed).to include('data', 'links')
     end
   end
@@ -41,7 +40,7 @@ describe Api::V3::SavedScenariosController, type: :controller do
 
       before do
         allow(idp_client).to receive(:get)
-          .with("/api/v1/saved_scenarios/1")
+          .with('/api/v1/saved_scenarios/1')
           .and_return(double(body: saved_scenario_data))
 
         get :show, params: { id: 1 }
@@ -52,7 +51,7 @@ describe Api::V3::SavedScenariosController, type: :controller do
       end
 
       it 'renders the saved scenario data' do
-        parsed = JSON.parse(response.body)
+        parsed = response.parsed_body
         expect(parsed).to include('scenario_id' => scenario.id)
       end
     end
@@ -93,8 +92,8 @@ describe Api::V3::SavedScenariosController, type: :controller do
       before do
         allow(create_service).to receive(:call)
           .with(params: hash_including('scenario_id'),
-                ability: instance_of(Ability),
-                client: idp_client)
+            ability: instance_of(Ability),
+            client: idp_client)
           .and_return(Dry::Monads::Success([created_data, nil]))
 
         post :create, params: params
@@ -105,7 +104,7 @@ describe Api::V3::SavedScenariosController, type: :controller do
       end
 
       it 'returns the created data' do
-        parsed = JSON.parse(response.body)
+        parsed = response.parsed_body
         expect(parsed).to include('title' => 'New Saved Scenario', 'scenario_id' => scenario.id)
       end
     end
@@ -123,7 +122,7 @@ describe Api::V3::SavedScenariosController, type: :controller do
       end
 
       it 'returns the errors' do
-        parsed = JSON.parse(response.body)
+        parsed = response.parsed_body
         expect(parsed).to include('errors' => ['Invalid data'])
       end
     end
@@ -153,7 +152,7 @@ describe Api::V3::SavedScenariosController, type: :controller do
       end
 
       it 'returns the updated data' do
-        parsed = JSON.parse(response.body)
+        parsed = response.parsed_body
         expect(parsed).to include('title' => 'Updated Saved Scenario', 'scenario_id' => scenario.id)
       end
     end
@@ -171,7 +170,7 @@ describe Api::V3::SavedScenariosController, type: :controller do
       end
 
       it 'returns the errors' do
-        parsed = JSON.parse(response.body)
+        parsed = response.parsed_body
         expect(parsed).to include('errors' => ['Invalid data'])
       end
     end
@@ -198,7 +197,7 @@ describe Api::V3::SavedScenariosController, type: :controller do
       end
 
       it 'returns the response data' do
-        parsed = JSON.parse(response.body)
+        parsed = response.parsed_body
         expect(parsed).to include('data', 'links')
       end
     end
@@ -228,7 +227,8 @@ describe Api::V3::SavedScenariosController, type: :controller do
       before do
         allow(discard_service).to receive(:call)
           .with(id: '1', client: idp_client)
-          .and_return(Dry::Monads::Success([{ 'message' => 'Scenario discarded successfully' }, nil]))
+          .and_return(Dry::Monads::Success([{ 'message' => 'Scenario discarded successfully' },
+                                            nil]))
 
         put :discard, params: { id: 1 }
       end
@@ -238,7 +238,7 @@ describe Api::V3::SavedScenariosController, type: :controller do
       end
 
       it 'returns the response data' do
-        parsed = JSON.parse(response.body)
+        parsed = response.parsed_body
         expect(parsed).to include('message' => 'Scenario discarded successfully')
       end
     end
@@ -253,6 +253,67 @@ describe Api::V3::SavedScenariosController, type: :controller do
 
       it 'responds with not found' do
         expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context 'authorization check' do
+      it 'calls authorize! with destroy permission' do
+        allow(discard_service).to receive(:call)
+          .with(id: '1', client: idp_client)
+          .and_return(Dry::Monads::Success([{ 'message' => 'Scenario discarded successfully' },
+                                            nil]))
+
+        expect(controller).to receive(:authorize!).with(:destroy, Scenario)
+
+        put :discard, params: { id: 1 }
+      end
+    end
+
+    context 'integration test without service mocking' do
+      before do
+        allow(DiscardSavedScenario).to receive(:new).and_call_original
+      end
+
+      context 'with successful discard' do
+        before do
+          allow(idp_client).to receive(:put)
+            .with('/api/v1/saved_scenarios/1/discard')
+            .and_return(double(body: { 'message' => 'Scenario discarded successfully' }))
+
+          put :discard, params: { id: 1 }
+        end
+
+        it 'responds successfully' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'returns the response data' do
+          parsed = response.parsed_body
+          expect(parsed).to include('message' => 'Scenario discarded successfully')
+        end
+      end
+
+      context 'with validation errors from MyETM' do
+        before do
+          error_response = {
+            body: { 'errors' => { 'scenario' => ['already discarded'] } },
+            status: 422
+          }
+          error = Faraday::UnprocessableEntityError.new(error_response)
+          allow(error).to receive(:response).and_return(error_response)
+          allow(idp_client).to receive(:put).and_raise(error)
+
+          put :discard, params: { id: 1 }
+        end
+
+        it 'responds with unprocessable entity' do
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+
+        it 'returns the error messages' do
+          parsed = response.parsed_body
+          expect(parsed['errors']).to eq({ 'scenario' => ['already discarded'] })
+        end
       end
     end
   end

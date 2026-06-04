@@ -12,7 +12,8 @@ RSpec.describe DiscardSavedScenario do
       Faraday.new do |builder|
         builder.adapter(:test) do |stub|
           stub.put('/api/v1/saved_scenarios/123/discard') do
-            [200, { 'Content-Type' => 'application/json' }, { 'message' => 'Scenario discarded successfully' }]
+            [200, { 'Content-Type' => 'application/json' },
+             { 'message' => 'Scenario discarded successfully' }]
           end
         end
       end
@@ -44,6 +45,32 @@ RSpec.describe DiscardSavedScenario do
 
     it 'returns an error' do
       expect(result.failure).to eq(ServiceResponse.not_found)
+    end
+  end
+
+  context 'when MyETM returns validation errors' do
+    let(:client) do
+      Faraday.new do |builder|
+        builder.adapter(:test) do |stub|
+          stub.put('/api/v1/saved_scenarios/123/discard') do
+            error_response = {
+              body: { 'errors' => { 'scenario' => ['already discarded'] } },
+              status: 422
+            }
+            error = Faraday::UnprocessableEntityError.new(error_response)
+            allow(error).to receive(:response).and_return(error_response)
+            raise error
+          end
+        end
+      end
+    end
+
+    it 'returns a Failure' do
+      expect(result).to be_failure
+    end
+
+    it 'returns the validation errors' do
+      expect(result.failure).to eq({ 'scenario' => ['already discarded'] })
     end
   end
 end

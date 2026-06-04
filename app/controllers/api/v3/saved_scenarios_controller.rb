@@ -15,6 +15,10 @@ module Api
         authorize!(:update, Scenario)
       end
 
+      before_action(only: %i[discard]) do
+        authorize!(:destroy, Scenario)
+      end
+
       def index
         query    = { page: params[:page], limit: params[:limit] }.compact.to_query
         response = my_etm_client.get("/api/v1/saved_scenarios?#{query}")
@@ -92,7 +96,7 @@ module Api
 
         scenarios = Scenario
           .accessible_by(current_ability)
-          .where(id: saved_scenarios.map { |s| s['scenario_id'] })
+          .where(id: saved_scenarios.pluck('scenario_id'))
           .includes(:scaler, :users)
           .index_by(&:id)
 
@@ -126,7 +130,7 @@ module Api
       end
 
       def saved_scenario_params
-        params.require(:saved_scenario).permit(:scenario_id, :title, :description, :private)
+        params.expect(saved_scenario: %i[scenario_id title description private])
       end
 
       def service_error_response(failure)

@@ -6,6 +6,8 @@ class DiscardSavedScenario
 
   def call(id:, client:)
     Success(client.put("/api/v1/saved_scenarios/#{id}/discard").body)
+  rescue Faraday::UnprocessableEntityError => e
+    Failure(e.response[:body]['errors'])
   rescue Faraday::ResourceNotFound
     Failure(ServiceResponse.not_found)
   end
