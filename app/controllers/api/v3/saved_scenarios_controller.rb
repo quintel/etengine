@@ -15,6 +15,10 @@ module Api
         authorize!(:update, Scenario)
       end
 
+      before_action(only: %i[discard]) do
+        authorize!(:destroy, Scenario)
+      end
+
       def index
         query    = { page: params[:page], limit: params[:limit] }.compact.to_query
         response = my_etm_client.get("/api/v1/saved_scenarios?#{query}")
@@ -25,6 +29,10 @@ module Api
           data: hydrate_scenarios(data),
           links: {}
         }
+      rescue Faraday::ResourceNotFound
+        render_not_found
+      rescue Faraday::Error => e
+        handle_faraday_error(e)
       end
 
       def show
@@ -73,6 +81,18 @@ module Api
         render_not_found
       end
 
+      def discard
+        DiscardSavedScenario.new.call(
+          id: params.require(:id),
+          client: my_etm_client
+        ).either(
+          ->((data, *)) { render json: data },
+          ->(error)     { service_error_response(error) }
+        )
+      rescue Faraday::ResourceNotFound
+        render_not_found
+      end
+
       private
 
       def hydrate_scenarios(saved_scenarios)
@@ -80,7 +100,7 @@ module Api
 
         scenarios = Scenario
           .accessible_by(current_ability)
-          .where(id: saved_scenarios.map { |s| s['scenario_id'] })
+          .where(id: saved_scenarios.pluck('scenario_id'))
           .includes(:scaler, :users)
           .index_by(&:id)
 
@@ -114,7 +134,7 @@ module Api
       end
 
       def saved_scenario_params
-        params.require(:saved_scenario).permit(:scenario_id, :title, :description, :private)
+        params.expect(saved_scenario: %i[scenario_id title description private])
       end
 
       def service_error_response(failure)
@@ -122,6 +142,18 @@ module Api
           render failure.to_response
         else
           render json: { errors: failure }, status: :unprocessable_content
+        end
+      end
+
+      def handle_faraday_error(error)
+        if error.response
+          status = error.response[:status]
+          body = error.response[:body]
+
+          render json: body, status:
+        else
+          render json: { errors: ['Failed to connect to MyETM'] },
+            status: :service_unavailable
         end
       end
     end

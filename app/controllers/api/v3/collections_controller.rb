@@ -25,6 +25,10 @@ module Api
         query = { page: params[:page], limit: params[:limit] }.compact.to_query
         response = my_etm_client.get("/api/v1/collections?#{query}")
         render json: response.body
+      rescue Faraday::ResourceNotFound
+        render_not_found
+      rescue Faraday::Error => e
+        handle_faraday_error(e)
       end
 
       def show
@@ -89,6 +93,18 @@ module Api
           render failure.to_response
         else
           render json: { errors: failure }, status: :unprocessable_content
+        end
+      end
+
+      def handle_faraday_error(error)
+        if error.response
+          status = error.response[:status]
+          body = error.response[:body]
+
+          render json: body, status:
+        else
+          render json: { errors: ['Failed to connect to MyETM'] },
+            status: :service_unavailable
         end
       end
 

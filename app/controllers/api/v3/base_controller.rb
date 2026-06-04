@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V3
     class BaseController < ActionController::API
@@ -88,6 +90,7 @@ module Api
       def my_etm_client
         Faraday.new(url: Settings.identity.issuer) do |conn|
           conn.response(:json)
+          conn.response(:raise_error)
           conn.request(:json)
 
           if (auth_header = request.authorization.to_s[/\ABearer (.+)\z/, 1])

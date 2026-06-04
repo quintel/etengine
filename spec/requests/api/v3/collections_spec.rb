@@ -94,6 +94,59 @@ describe Api::V3::CollectionsController, type: :controller do
         expect(JSON.parse(response.body)).to include('errors' => ['Invalid data'])
       end
     end
+
+    context 'integration test without service mocking' do
+      before do
+        allow(UpsertTransitionPath).to receive(:new).and_call_original
+      end
+
+      context 'with successful creation' do
+        let(:admin_user) { create(:admin) }
+
+        before do
+          # Override user to be admin for this test
+          allow(controller).to receive_messages(current_user: admin_user, current_ability: Ability.new(admin_user))
+
+          allow(idp_client).to receive(:post)
+            .with('/api/v1/collections', hash_including(collection: hash_including(title: 'New Collection')))
+            .and_return(double(body: { 'id' => 1, 'title' => 'New Collection' }))
+
+          post :create, params: { title: 'New Collection' }
+        end
+
+        it 'responds successfully' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'returns the created data' do
+          parsed = response.parsed_body
+          expect(parsed).to include('id' => 1, 'title' => 'New Collection')
+        end
+      end
+
+      context 'with validation errors from MyETM' do
+        before do
+          error_response = {
+            body: { 'errors' => { 'title' => ['cannot be blank'] } },
+            status: 422
+          }
+          error = Faraday::UnprocessableEntityError.new(error_response)
+          allow(error).to receive(:response).and_return(error_response)
+          allow(idp_client).to receive(:post).and_raise(error)
+
+          post :create, params: { title: '' }
+        end
+
+        it 'responds with unprocessable entity' do
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+
+        it 'returns the error messages' do
+          parsed = response.parsed_body
+          expect(parsed['errors']).to eq({ 'title' => ['cannot be blank'] })
+        end
+      end
+    end
   end
 
   describe 'PUT #update' do
@@ -131,6 +184,54 @@ describe Api::V3::CollectionsController, type: :controller do
 
       it 'returns the errors' do
         expect(JSON.parse(response.body)).to include('errors' => ['Invalid data'])
+      end
+    end
+
+    context 'integration test without service mocking' do
+      before do
+        allow(UpsertTransitionPath).to receive(:new).and_call_original
+      end
+
+      context 'with successful update' do
+        before do
+          allow(idp_client).to receive(:put)
+            .with('/api/v1/collections/1', hash_including(collection: hash_including(title: 'Updated Collection')))
+            .and_return(double(body: { 'id' => 1, 'title' => 'Updated Collection' }))
+
+          put :update, params: { id: 1, title: 'Updated Collection' }
+        end
+
+        it 'responds successfully' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'returns the updated data' do
+          parsed = response.parsed_body
+          expect(parsed).to include('id' => 1, 'title' => 'Updated Collection')
+        end
+      end
+
+      context 'with validation errors from MyETM' do
+        before do
+          error_response = {
+            body: { 'errors' => { 'title' => ['cannot be blank'] } },
+            status: 422
+          }
+          error = Faraday::UnprocessableEntityError.new(error_response)
+          allow(error).to receive(:response).and_return(error_response)
+          allow(idp_client).to receive(:put).and_raise(error)
+
+          put :update, params: { id: 1, title: '' }
+        end
+
+        it 'responds with unprocessable entity' do
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+
+        it 'returns the error messages' do
+          parsed = response.parsed_body
+          expect(parsed['errors']).to eq({ 'title' => ['cannot be blank'] })
+        end
       end
     end
   end

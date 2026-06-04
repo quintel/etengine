@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Deletes a saved scenario in ETModel.
+# Deletes a saved scenario in MyETM.
 class DeleteSavedScenario
   include Dry::Monads[:result]
 

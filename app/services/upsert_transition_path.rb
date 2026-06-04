@@ -22,8 +22,10 @@ class UpsertTransitionPath
   #
   # Returns the collection data from MyETM.
   def call(params:, ability:, client:)
-    scenarios = find_scenarios(ability, params[:scenario_ids])
-    yield validate_scenario_ids(params[:scenario_ids], scenarios)
+    scenario_ids = params.dig(:collection, :scenario_ids)
+
+    scenarios = find_scenarios(ability, scenario_ids)
+    yield validate_scenario_ids(scenario_ids, scenarios)
 
     result = yield upsert_transition_path(client, full_params(params))
 
@@ -60,6 +62,6 @@ class UpsertTransitionPath
   end
 
   def full_params(params)
-    params.merge(version: Settings.version_tag)
+    params.merge(collection: params[:collection].merge(version: Settings.version_tag))
   end
 end
