@@ -2,14 +2,11 @@
 require 'yaml'
 
 module GraphDataValidation
-
-  # Make sure etsource is initialised in development
-
   class Datasets
     include Enumerable
 
     def initialize(*area_codes, env: :dev)
-      # Let's connect with etsource in development. This should also be extracted later
+      # Connect with etsource in development. This should also be extracted later
       if env == :dev
         Settings.etsource_lazy_load_dataset = true
         Atlas.data_dir = Etsource::Base.clean_path(File.expand_path("../etsource"))

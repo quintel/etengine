@@ -1,16 +1,3 @@
-# For node in emissions group
-# test:
-#
-#
-# Fossil test case
-# direct_co2_output_content_carriers_fossil <= (direct_co2_input_content_carriers_fossil + direct_co2_input_utilisation_fossil)
-
-#
-#
-# Biogenic test case
-# direct_co2_output_content_carriers_biogenic <= direct_co2_input_content_carriers_biogenic
-#
-#
 # frozen_string_literal: true
 
 RSpec.shared_examples "emissions" do |dataset|
