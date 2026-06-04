@@ -22,8 +22,7 @@ class UpsertTransitionPath
   #
   # Returns the collection data from MyETM.
   def call(params:, ability:, client:)
-    # Extract scenario_ids from nested or flat params structure
-    scenario_ids = params.dig(:collection, :scenario_ids) || params[:scenario_ids]
+    scenario_ids = params.dig(:collection, :scenario_ids)
 
     scenarios = find_scenarios(ability, scenario_ids)
     yield validate_scenario_ids(scenario_ids, scenarios)
@@ -63,12 +62,6 @@ class UpsertTransitionPath
   end
 
   def full_params(params)
-    if params[:collection].present?
-      # Nested params: add version inside :collection
-      params.merge(collection: params[:collection].merge(version: Settings.version_tag))
-    else
-      # Flat params: add version at top level
-      params.merge(version: Settings.version_tag)
-    end
+    params.merge(collection: params[:collection].merge(version: Settings.version_tag))
   end
 end
