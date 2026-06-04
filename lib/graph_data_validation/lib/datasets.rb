@@ -8,10 +8,12 @@ module GraphDataValidation
   class Datasets
     include Enumerable
 
-    def initialize(*area_codes)
+    def initialize(*area_codes, env: :dev)
       # Let's connect with etsource in development. This should also be extracted later
-      Settings.etsource_lazy_load_dataset = true
-      Atlas.data_dir = Etsource::Base.clean_path(File.expand_path("../etsource"))
+      if env == :dev
+        Settings.etsource_lazy_load_dataset = true
+        Atlas.data_dir = Etsource::Base.clean_path(File.expand_path("../etsource"))
+      end
 
       # Silently reject unexisting areas
       @area_codes = area_codes.reject { |area| !Atlas::Dataset.exists?(area) }

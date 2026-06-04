@@ -8,11 +8,11 @@ RSpec.describe GraphDataValidation::NodeGroup, :etsource_fixture do
     let(:node_group) { described_class.new(:emissions, gql) }
 
     it 'does not contains molecule nodes' do
-      expect(node_group.any? {|n| n.graph_name == :molecules } ).to be_falsey
+      expect(node_group.any? {|n| n.is_a?(Qernel::NodeApi::MoleculeApi) } ).to be_falsey
     end
 
     it 'contains energy_nodes' do
-       expect(node_group.any? {|n| n.graph_name == :energy } ).to be_truthy
+       expect(node_group.any? {|n| n.is_a?(Qernel::NodeApi::EnergyApi) } ).to be_truthy
     end
   end
 
