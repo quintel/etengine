@@ -352,8 +352,9 @@ module Gql::Runtime
       #
       # Examples
       #   EMISSIONS(households, energetic, other_ghg) # => 12.0 (from emissions.csv)
-      #   EMISSIONS(households, energetic, co2, 1990) # => value (from emissions_1990.csv)
-      #   EMISSIONS(buildings_non_specified, energetic, other_ghg) # => 18.0
+      #   EMISSIONS(households, energetic, co2) # => aggregated value (sum of subsectors, default year)
+      #   EMISSIONS(households, energetic, co2, 1990) # => aggregated value for 1990
+      #   EMISSIONS(buildings_non_specified, energetic, other_ghg, 2023) # => 18.0
       #
       def EMISSIONS(*keys)
         return scope.graph.emissions if keys.empty?
@@ -364,8 +365,8 @@ module Gql::Runtime
         # EMISSIONS(sector, use) -> return ScopedSector for UPDATE operations
         return scope.graph.emissions.scope(keys.join('_').to_sym) if keys.size == 2
 
-        # EMISSIONS(sector, use, ghg [, year]) -> return value
-        scope.graph.emissions[keys.join('_').to_sym]
+        # EMISSIONS(sector, use, ghg [, year]) -> aggregate and return value
+        scope.graph.emissions.sum(*keys)
       end
 
       # Returns an Array of {Qernel::Node} matching a CRT/IPCC code.
