@@ -1,13 +1,29 @@
 module Qernel
-  # Class for getting and setting emissions data
+  # Class for getting and setting emissions data.
   # Behaves much like Qernel::Area, can be seen as an extension of
-  # area attributes, scoped for emissions
+  # area attributes, scoped for emissions.
+  #
+  # == Data Structure
   #
   # Emissions data is loaded from CSV files in ETSource with structure:
-  #   etm_sector, etm_subsector, use, ghg, unit, value
+  #   etm_sector, etm_subsector, use, ghg, year, unit, value
   #
-  # Keys are generated as: sector_[subsector_]use_ghg[_year]
-  # Example: buildings_non_specified_energetic_co2
+  # Keys are generated as: sector_subsector_use_ghg_year
+  # Examples:
+  #   - buildings_non_specified_energetic_other_ghg_2023
+  #   - energy_electricity_and_heat_production_energetic_co2_1990
+  #
+  # == Aggregation via sum()
+  #
+  # The sum() method aggregates emissions across subsectors for a given sector,
+  # use, ghg, and year combination. This allows queries like:
+  #   EMISSIONS(energy, energetic, co2, 2023)
+  # to return the sum of all energy subsectors' energetic CO2 emissions for 2023.
+  #
+  # == Year Handling
+  #
+  # Year parameter defaults to the dataset's analysis_year when not specified.
+  # Multiple years can coexist in the same dataset (e.g., 1990 baseline, 2023 current).
   class Emissions
     include DatasetAttributes
 
@@ -23,9 +39,10 @@ module Qernel
     #   EMISSIONS(households, energetic) returns a ScopedSector
     #   Then UPDATE can call: scoped.co2 = 100.0
     class ScopedSector
-      def initialize(emissions, scope)
+      def initialize(emissions, scope, year = nil)
         @emissions = emissions
         @scope = scope
+        @year = year
       end
 
       def [](attr_name)
@@ -41,27 +58,56 @@ module Qernel
       end
 
       def scoped_method(method_name)
-        "#{@scope}_#{method_name}"
+        year = @year || @emissions.graph&.area&.analysis_year
+        "#{@scope}_#{method_name}_#{year}"
       end
 
       def respond_to_missing?(method_name, include_private = false)
-        data_key = scoped_method(method_name).split('=').first
+        # Remove '=' suffix if present before generating scoped key
+        clean_method = method_name.to_s.delete_suffix('=')
+        data_key = scoped_method(clean_method).to_sym
 
-        @emissions.respond_to?(data_key) || super
+        # Setters are allowed if the scope exists (at least one key with this scope prefix)
+        # Getters require the exact key to exist in the dataset
+        if method_name.to_s.end_with?('=')
+          scope_exists?
+        else
+          @emissions.dataset_attributes&.key?(data_key) || super
+        end
       end
 
       def method_missing(method_name, *args)
-        data_key = scoped_method(method_name).split('=').first.to_sym
+        # Remove '=' suffix if present before generating scoped key
+        clean_method = method_name.to_s.delete_suffix('=')
+        data_key = scoped_method(clean_method).to_sym
 
-        # Validate the key exists for both getters and setters
-        unless @emissions.respond_to?(data_key)
-          raise NoMethodError, "undefined method `#{method_name}' for #{inspect}"
-        end
-
-        if data_key.to_s == scoped_method(method_name)
-          @emissions[data_key]
-        else
+        # Setter if method name ended with '='
+        if method_name.to_s.end_with?('=')
+          # Validate that the scope exists (at least one key with this scope prefix)
+          unless scope_exists?
+            raise NoMethodError, "undefined method `#{method_name}' for #{inspect}"
+          end
           @emissions[data_key] = args.first
+        else
+          # Getter - validate the key exists
+          unless @emissions.dataset_attributes&.key?(data_key)
+            raise NoMethodError, "undefined method `#{method_name}' for #{inspect}"
+          end
+          @emissions[data_key]
+        end
+      end
+
+      private
+
+      # Check if at least one key exists with the current scope prefix
+      # (validates the scope exists in the dataset, allowing any GHG/year combination)
+      def scope_exists?
+        prefix = "#{@scope}_"
+
+        return false unless @emissions.dataset_attributes
+
+        @emissions.dataset_attributes.keys.any? do |key|
+          key.to_s.start_with?(prefix)
         end
       end
     end
@@ -72,11 +118,57 @@ module Qernel
       @dataset_key = @key = :emissions_data
     end
 
+    # Public: Aggregates emissions across subsectors for a given sector, use, ghg, and year.
+    #
+    # This method sums all emissions entries that match the specified sector prefix,
+    # use type, GHG type, and year. It aggregates across all subsectors within the
+    # specified sector.
+    #
+    # == Examples
+    #
+    #   # Sum all energy sector energetic CO2 emissions for 2023
+    #   # (aggregates electricity production, fuels production, etc.)
+    #   emissions.sum(:energy, :energetic, :co2, 2023)
+    #   # => 500.25
+    #
+    #   # Get single subsector (no aggregation needed, but still uses sum)
+    #   emissions.sum(:buildings_non_specified, :energetic, :other_ghg, 2023)
+    #   # => 55.64
+    #
+    #   # Use default year (analysis_year from dataset)
+    #   emissions.sum(:agriculture, :non_energetic, :other_ghg)
+    #   # => 18863.47
+    #
+    # == Parameters
+    #
+    # sector - Sector name or full subsector key (e.g., :energy, :buildings_non_specified)
+    #          Normalized: dashes/dots → underscores, lowercased
+    # use    - Use type (:energetic or :non_energetic)
+    # ghg    - GHG type (:co2 or :other_ghg)
+    # year   - Optional year (Integer). Defaults to graph.area.analysis_year if not specified
+    #
+    # == Returns
+    #
+    # Float sum of all matching emissions. Returns 0 if no matches found.
+    # Includes any runtime UPDATE modifications to emission values.
+    def sum(sector, use, ghg, year = nil)
+      year ||= graph&.area&.analysis_year
+      prefix = sector.to_s.tr('-.', '_').downcase
+      suffix = "_#{use}_#{ghg}_#{year}"
+
+      dataset_attributes.keys.select { |key|
+        key.to_s.start_with?(prefix) && key.to_s.end_with?(suffix)
+      }.sum { |key| dataset_get(key) || 0 }
+    end
+
     # Public: define the sector scope for access to the hashed emission keys
     #
+    # sector - Sector identifier (e.g., :buildings_non_specified_energetic)
+    # year   - Optional year (defaults to analysis_year). Used to target specific year for UPDATE operations.
+    #
     # Returns a scoped version of the emissions data
-    def scope(sector)
-      ScopedSector.new(self, sector)
+    def scope(sector, year = nil)
+      ScopedSector.new(self, sector, year)
     end
   end
 end

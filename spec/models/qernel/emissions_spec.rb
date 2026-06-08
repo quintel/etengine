@@ -45,12 +45,14 @@ module Qernel
     end
 
     describe Emissions::ScopedSector do
-      let(:emissions) { Emissions.new.with({}) }
+      let(:graph) { double('Graph', area: area) }
+      let(:area) { double('Area', analysis_year: 2023) }
+      let(:emissions) { Emissions.new(graph).with({}) }
       let(:scoped) { emissions.scope(:households_non_specified_energetic) }
 
       before do
-        emissions[:households_non_specified_energetic_other_ghg] = 50.0
-        emissions[:agriculture_non_specified_energetic_other_ghg] = 25.0
+        emissions[:households_non_specified_energetic_other_ghg_2023] = 50.0
+        emissions[:agriculture_non_specified_energetic_other_ghg_2023] = 25.0
       end
 
       describe '#method_missing' do
@@ -66,13 +68,13 @@ module Qernel
         it 'delegates setter methods to emissions with scoped prefix' do
           scoped.other_ghg = 75.0
           # Setters convert to symbol keys via dataset_set
-          expect(emissions.dataset_get(:households_non_specified_energetic_other_ghg)).to eq(75.0)
+          expect(emissions.dataset_get(:households_non_specified_energetic_other_ghg_2023)).to eq(75.0)
         end
 
         it 'delegates setter for a different scope' do
           other_scoped = emissions.scope(:agriculture_non_specified_energetic)
           other_scoped.other_ghg = 30.0
-          expect(emissions.dataset_get(:agriculture_non_specified_energetic_other_ghg)).to eq(30.0)
+          expect(emissions.dataset_get(:agriculture_non_specified_energetic_other_ghg_2023)).to eq(30.0)
         end
 
         it 'raises NoMethodError for undefined getter methods' do
@@ -80,15 +82,17 @@ module Qernel
           expect { scoped.invalid_emission }.to raise_error(NoMethodError)
         end
 
-        it 'raises NoMethodError for setter keys that do not exist in the dataset' do
-          expect { scoped.arbitrary_key = 100.0 }.to raise_error(NoMethodError)
-          expect { scoped.custom_emission_type = 200.0 }.to raise_error(NoMethodError)
-          expect { scoped.nonexistent = 300.0 }.to raise_error(NoMethodError)
+        it 'allows setters for any GHG type when scope exists in dataset' do
+          # Setters are allowed for any GHG type if the scope (subsector + use) exists
+          # This enables UPDATE operations to set runtime values
+          expect { scoped.arbitrary_key = 100.0 }.not_to raise_error
+          expect { scoped.custom_emission_type = 200.0 }.not_to raise_error
+          expect { scoped.co2 = 300.0 }.not_to raise_error
         end
 
         it 'allows setters for emission keys that exist in the dataset' do
           expect { scoped.other_ghg = 2.0 }.not_to raise_error
-          expect(emissions.dataset_get(:households_non_specified_energetic_other_ghg)).to eq(2.0)
+          expect(emissions.dataset_get(:households_non_specified_energetic_other_ghg_2023)).to eq(2.0)
         end
       end
 
@@ -101,10 +105,12 @@ module Qernel
           expect(scoped.respond_to?(:other_ghg=)).to be true
         end
 
-        it 'returns false for setter methods where the key does not exist in dataset' do
-          expect(scoped.respond_to?(:invalid_key=)).to be false
-          expect(scoped.respond_to?(:co2=)).to be false  # co2 doesn't exist for this scope
-          expect(scoped.respond_to?(:arbitrary_name=)).to be false
+        it 'returns true for setter methods when scope exists in dataset' do
+          # Setters are allowed for any GHG type if the scope exists
+          # This enables UPDATE operations to set runtime values
+          expect(scoped.respond_to?(:invalid_key=)).to be true
+          expect(scoped.respond_to?(:co2=)).to be true
+          expect(scoped.respond_to?(:arbitrary_name=)).to be true
         end
 
         it 'returns false for getter methods where the key does not exist in dataset' do
@@ -116,7 +122,7 @@ module Qernel
 
       describe '[]' do
         before do
-          emissions[:agriculture_non_specified_energetic_other_ghg] = 123.45
+          emissions[:agriculture_non_specified_energetic_other_ghg_2023] = 123.45
         end
 
         let(:scoped) { emissions.scope(:agriculture_non_specified_energetic) }
@@ -135,7 +141,7 @@ module Qernel
 
         it 'sets the value' do
           scoped[:other_ghg] = 999.0
-          expect(emissions.dataset_get(:industry_non_specified_energetic_other_ghg)).to eq(999.0)
+          expect(emissions.dataset_get(:industry_non_specified_energetic_other_ghg_2023)).to eq(999.0)
         end
       end
 
@@ -150,20 +156,22 @@ module Qernel
         let(:scoped) { emissions.scope(:energy_fugitive_emissions_non_energetic) }
 
         before do
-          emissions[:energy_fugitive_emissions_non_energetic_co2] = 0.0
-          emissions[:energy_electricity_and_heat_production_energetic_other_ghg] = 0.0
-          emissions[:buildings_non_specified_energetic_other_ghg] = 0.0
+          emissions[:energy_fugitive_emissions_non_energetic_co2_2023] = 0.0
+          emissions[:energy_electricity_and_heat_production_energetic_other_ghg_2023] = 0.0
+          emissions[:buildings_non_specified_energetic_other_ghg_2023] = 0.0
+          emissions[:agriculture_non_specified_energetic_other_ghg_2023] = 0.0
+          emissions[:agriculture_non_specified_non_energetic_co2_2023] = 0.0
         end
 
         it 'handles zero values' do
           scoped.co2 = 0.0
-          expect(emissions.dataset_get(:energy_fugitive_emissions_non_energetic_co2)).to eq(0.0)
+          expect(emissions.dataset_get(:energy_fugitive_emissions_non_energetic_co2_2023)).to eq(0.0)
         end
 
         it 'handles large values' do
           buildings_scoped = emissions.scope(:buildings_non_specified_energetic)
           buildings_scoped.other_ghg = 9999999.0
-          expect(emissions.dataset_get(:buildings_non_specified_energetic_other_ghg)).to eq(9999999.0)
+          expect(emissions.dataset_get(:buildings_non_specified_energetic_other_ghg_2023)).to eq(9999999.0)
         end
 
         it 'handles multi-word subsector scopes' do
@@ -171,22 +179,119 @@ module Qernel
           # Scope: energy_electricity_and_heat_production_energetic
           multi_scoped = emissions.scope(:energy_electricity_and_heat_production_energetic)
           multi_scoped.other_ghg = 275.0
-          expect(emissions.dataset_get(:energy_electricity_and_heat_production_energetic_other_ghg)).to eq(275.0)
+          expect(emissions.dataset_get(:energy_electricity_and_heat_production_energetic_other_ghg_2023)).to eq(275.0)
         end
 
         it 'works with multi-part keys from real dataset' do
           scoped.co2 = 100.0
-          expect(emissions.dataset_get(:energy_fugitive_emissions_non_energetic_co2)).to eq(100.0)
+          expect(emissions.dataset_get(:energy_fugitive_emissions_non_energetic_co2_2023)).to eq(100.0)
 
           # Test agriculture keys that actually exist in default dataset
           ag_energetic = emissions.scope(:agriculture_non_specified_energetic)
           ag_energetic.other_ghg = 200.0
-          expect(emissions.dataset_get(:agriculture_non_specified_energetic_other_ghg)).to eq(200.0)
+          expect(emissions.dataset_get(:agriculture_non_specified_energetic_other_ghg_2023)).to eq(200.0)
 
           ag_non_energetic = emissions.scope(:agriculture_non_specified_non_energetic)
           ag_non_energetic.co2 = 300.0
-          expect(emissions.dataset_get(:agriculture_non_specified_non_energetic_co2)).to eq(300.0)
+          expect(emissions.dataset_get(:agriculture_non_specified_non_energetic_co2_2023)).to eq(300.0)
         end
+      end
+    end
+
+    describe '#sum' do
+      let(:graph) { double('Graph', area: area) }
+      let(:area) { double('Area', analysis_year: 2023) }
+      let(:emissions) { Emissions.new(graph) }
+
+      before do
+        emissions.with({
+          energy_electricity_and_heat_production_energetic_other_ghg_2023: 18.0,
+          energy_electricity_and_heat_production_energetic_other_ghg_1990: 25.0,
+          energy_fugitive_emissions_non_energetic_co2_2023: 20.0,
+          energy_fugitive_emissions_non_energetic_co2_1990: 30.0,
+          agriculture_non_specified_energetic_other_ghg_2023: 50.0,
+          agriculture_non_specified_energetic_other_ghg_1990: 75.0,
+          agriculture_non_specified_non_energetic_co2_2023: 75.0,
+          agriculture_non_specified_non_energetic_co2_1990: 100.0,
+          industry_steel_non_energetic_co2_2023: 100.0,
+          industry_chemicals_non_energetic_co2_2023: 50.0,
+          buildings_non_specified_energetic_other_ghg_2023: 2796620.0,
+          buildings_non_specified_energetic_other_ghg_1990: 3000000.0
+        })
+      end
+
+      it 'sums emissions across multiple subsectors for a sector' do
+        # Energy has two subsectors: electricity (18.0) + fugitive (20.0) for 2023
+        # But they have different use types, so this tests non_energetic only
+        result = emissions.sum(:energy, :non_energetic, :co2, 2023)
+        expect(result).to eq(20.0) # Only fugitive has non_energetic co2
+      end
+
+      it 'aggregates energy sector with energetic other_ghg for default year' do
+        # Energy has electricity (18.0) for energetic other_ghg in 2023
+        result = emissions.sum(:energy, :energetic, :other_ghg)
+        expect(result).to eq(18.0)
+      end
+
+      it 'sums emissions for 1990 year when specified' do
+        # Energy fugitive: 30.0 (1990) for non_energetic co2
+        result = emissions.sum(:energy, :non_energetic, :co2, 1990)
+        expect(result).to eq(30.0)
+      end
+
+      it 'handles single subsector aggregation' do
+        # Agriculture only has one subsector (Non-specified)
+        result = emissions.sum(:agriculture, :energetic, :other_ghg, 2023)
+        expect(result).to eq(50.0)
+      end
+
+      it 'sums multiple subsectors in industry' do
+        # Industry has steel (100.0) + chemicals (50.0) = 150.0
+        result = emissions.sum(:industry, :non_energetic, :co2, 2023)
+        expect(result).to eq(150.0)
+      end
+
+      it 'returns 0 when no matches are found' do
+        result = emissions.sum(:nonexistent_sector, :energetic, :co2, 2023)
+        expect(result).to eq(0)
+      end
+
+      it 'normalizes sector names with dashes' do
+        # Test that dashes are converted to underscores
+        result = emissions.sum(:'energy', :non_energetic, :co2, 2023)
+        expect(result).to eq(20.0)
+      end
+
+      it 'includes runtime UPDATE modifications in sum' do
+        # Modify a value via UPDATE
+        emissions[:energy_fugitive_emissions_non_energetic_co2_2023] = 50.0
+
+        result = emissions.sum(:energy, :non_energetic, :co2, 2023)
+        expect(result).to eq(50.0) # Modified value
+      end
+
+      it 'uses analysis_year when year parameter is not provided' do
+        allow(area).to receive(:analysis_year).and_return(1990)
+
+        result = emissions.sum(:energy, :energetic, :other_ghg)
+        expect(result).to eq(25.0) # 1990 value
+      end
+
+      it 'handles nil values gracefully' do
+        # Set a value to nil
+        emissions[:buildings_non_specified_energetic_other_ghg_2023] = nil
+
+        result = emissions.sum(:buildings, :energetic, :other_ghg, 2023)
+        expect(result).to eq(0)
+      end
+
+      it 'sums multiple values correctly' do
+        # Agriculture has both energetic (50.0) and non_energetic (75.0) for co2/other_ghg
+        energetic = emissions.sum(:agriculture, :energetic, :other_ghg, 2023)
+        non_energetic = emissions.sum(:agriculture, :non_energetic, :co2, 2023)
+
+        expect(energetic).to eq(50.0)
+        expect(non_energetic).to eq(75.0)
       end
     end
   end

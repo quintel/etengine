@@ -1,0 +1,27 @@
+crt_code,etm_sector,etm_subsector,use
+1.A.1,Energy,Electricity and heat production,energetic
+1.A.1.a,Energy,Electricity and heat production,energetic
+1.A.1.b,Industry,Refineries,energetic
+1.A.1.c,Energy,Fuels production,energetic
+1.A.2,Industry,Non-specified,energetic
+1.A.3.a,National transport,Non-specified,energetic
+1.A.4.a,Buildings,Non-specified,energetic
+1.A.4.b,Households,Non-specified,energetic
+1.A.4.c.i,Agriculture,Non-specified,energetic
+1.A.5,Other,Non-specified,energetic
+1.B.1,Energy,Fugitive emissions,non_energetic
+1.B.2.a.i,Energy,Fugitive emissions,non_energetic
+1.C,Energy,CCUS,non_energetic
+2.A,Industry,Other,non_energetic
+2.B.1,Industry,Fertilizers,non_energetic
+2.B.3,Industry,Chemicals,non_energetic
+2.B.8.a,Energy,Methanol production,non_energetic
+2.B.10.a,Energy,Hydrogen production,non_energetic
+2.C.1,Industry,Steel,non_energetic
+2.C.3,Industry,Aluminium,non_energetic
+3,Agriculture,Non-specified,non_energetic
+4,LULUCF,Non-specified,non_energetic
+5,Waste,Non-specified,non_energetic
+ind_CO2,Other,Indirect emissions,non_energetic
+1.D.1.a,International transport,International aviation,energetic
+1.D.1.b,International transport,International navigation,energetic
