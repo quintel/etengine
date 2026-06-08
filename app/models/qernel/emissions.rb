@@ -58,7 +58,7 @@ module Qernel
       end
 
       def scoped_method(method_name)
-        year = @year || @emissions.graph&.area&.analysis_year
+        year = @year || @emissions.default_year
         "#{@scope}_#{method_name}_#{year}"
       end
 
@@ -154,7 +154,7 @@ module Qernel
     # Float sum of all matching emissions. Returns 0 if no matches found.
     # Includes any runtime UPDATE modifications to emission values.
     def sum(sector, use, ghg, year = nil)
-      year ||= graph&.area&.analysis_year
+      year ||= default_year
       prefix = sector.to_s.tr('-.', '_').downcase
       suffix = "_#{use}_#{ghg}_#{year}"
 
@@ -176,6 +176,12 @@ module Qernel
     # Returns a scoped version of the emissions data
     def scope(sector, year = nil)
       ScopedSector.new(self, sector, year)
+    end
+
+    # Returns the default year for emissions queries.
+    # Uses the area's analysis_year if graph is present, nil otherwise.
+    def default_year
+      graph&.area.analysis_year
     end
   end
 end
