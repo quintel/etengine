@@ -67,8 +67,8 @@ module Qernel
         clean_method = method_name.to_s.delete_suffix('=')
         data_key = scoped_method(clean_method).to_sym
 
-        # Setters are allowed if the scope exists (at least one key with this scope prefix)
-        # Getters require the exact key to exist in the dataset
+        # Setters: validate scope exists (allows runtime values for valid scopes)
+        # Getters: require exact key to exist (strict validation)
         if method_name.to_s.end_with?('=')
           scope_exists?
         else
@@ -81,15 +81,14 @@ module Qernel
         clean_method = method_name.to_s.delete_suffix('=')
         data_key = scoped_method(clean_method).to_sym
 
-        # Setter if method name ended with '='
+        # Setter: validate scope exists (allows runtime values for valid scopes)
+        # Getter: require exact key to exist (strict validation)
         if method_name.to_s.end_with?('=')
-          # Validate that the scope exists (at least one key with this scope prefix)
           unless scope_exists?
             raise NoMethodError, "undefined method `#{method_name}' for #{inspect}"
           end
           @emissions[data_key] = args.first
         else
-          # Getter - validate the key exists
           unless @emissions.dataset_attributes&.key?(data_key)
             raise NoMethodError, "undefined method `#{method_name}' for #{inspect}"
           end
@@ -99,8 +98,11 @@ module Qernel
 
       private
 
-      # Check if at least one key exists with the current scope prefix
-      # (validates the scope exists in the dataset, allowing any GHG/year combination)
+      # Validates that the scope (sector_subsector_use) exists in the dataset.
+      # This allows UPDATE operations to set runtime values for valid scopes,
+      # while preventing completely invalid scopes like 'invalid_sector_energetic'.
+      #
+      # Returns true if at least one key matching the scope prefix exists.
       def scope_exists?
         prefix = "#{@scope}_"
 
@@ -156,9 +158,14 @@ module Qernel
       prefix = sector.to_s.tr('-.', '_').downcase
       suffix = "_#{use}_#{ghg}_#{year}"
 
-      dataset_attributes.keys.select { |key|
-        key.to_s.start_with?(prefix) && key.to_s.end_with?(suffix)
-      }.sum { |key| dataset_get(key) || 0 }
+      dataset_attributes.keys.reduce(0) do |total, key|
+        key_str = key.to_s
+        if key_str.start_with?(prefix) && key_str.end_with?(suffix)
+          total + (dataset_get(key) || 0)
+        else
+          total
+        end
+      end
     end
 
     # Public: define the sector scope for access to the hashed emission keys
