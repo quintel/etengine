@@ -1,5 +1,4 @@
 # Load module code
-puts "HELLO"
 Dir[File.expand_path("../../lib/*.rb", __FILE__)].each {|f| require f}
 
 # Load examples
@@ -11,7 +10,7 @@ RSpec::Matchers.define :match_output do |output|
     input - output >= -margin
   end
 
-  failure_message_for_should do |input|
+  failure_message do |input|
     "expected input (#{format_float(input)}) to be bigger than output (#{format_float(output)}) \
  difference of #{(format_float(((input - output) / input).round(6).abs * 100))}%"
   end
