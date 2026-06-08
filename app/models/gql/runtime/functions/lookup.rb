@@ -365,8 +365,17 @@ module Gql::Runtime
         # EMISSIONS(sector, use) -> return ScopedSector for UPDATE operations
         return scope.graph.emissions.scope(keys.join('_').to_sym) if keys.size == 2
 
-        # EMISSIONS(sector, use, ghg [, year]) -> aggregate and return value
-        scope.graph.emissions.sum(*keys)
+        sector, use, ghg, year = keys
+        year ||= scope.graph.area.analysis_year
+
+        # Build expected key for direct lookup
+        full_key = "#{sector}_#{use}_#{ghg}_#{year}".to_sym
+
+        # Try direct lookup first (common case: single subsector)
+        value = scope.graph.emissions[full_key]
+
+        # If not found, aggregate across matching subsectors
+        value.nil? ? scope.graph.emissions.sum(*keys) : value
       end
     end
   end
