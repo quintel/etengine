@@ -11,8 +11,12 @@
 .row-fluid
   .span12
     .page-header
-      %h1
-        = node_key
+      %h1{ data: { controller: 'clipboard' } }
+        %span{ data: { clipboard_target: 'source' } }= node_key
+        %button.copy{ data: { action: 'clipboard#copy', clipboard_target: 'button' }, aria: { label: 'Copy node key' } }
+          = inline_svg 'hero/20/duplicate.svg', class: 'w-5 h-5'
+        .copied.hidden{ data: { clipboard_target: 'notice' } }
+          = inline_svg 'hero/20/circle-check.svg', class: 'w-4 h-4'
       .controls
         %span.graph-name
           = params[:graph_name].humanize
@@ -20,7 +24,6 @@
         = link_to 'View document', link_to_node_file(@node_future), class: 'btn btn-small'
         = link_to 'Visualize present graph', {:format => 'svg'}, :target => :blank, :class => 'btn btn-small'
         = link_to 'Visualize future graph', {:format => 'svg', :graph => 'future'}, :target => :blank, :class => 'btn btn-small'
-        = link_to 'Copy key', '#', onclick: "navigator.clipboard.writeText('#{node_key}'); return false;", class: 'btn btn-small'
 
 .row-fluid.span-12.node-flows
   .node-flows-inner
