@@ -293,6 +293,31 @@ module Qernel
         expect(energetic).to eq(50.0)
         expect(non_energetic).to eq(75.0)
       end
+
+      it 'does not match "energetic" substring in "non_energetic" (regression test)' do
+        # Add data with same sector+ghg but different use types
+        # This tests the bug where "energetic" would incorrectly match "non_energetic"
+        emissions[:agriculture_non_specified_energetic_other_ghg_2023] = 1263.93948
+        emissions[:agriculture_non_specified_non_energetic_other_ghg_2023] = 18361.45468
+
+        # Query for energetic should return ONLY 1263.93948, not 19625.39416 (sum of both)
+        result = emissions.sum(:agriculture, :energetic, :other_ghg, 2023)
+        expect(result).to eq(1263.93948)
+
+        # Query for non_energetic should return ONLY 18361.45468
+        result_non = emissions.sum(:agriculture, :non_energetic, :other_ghg, 2023)
+        expect(result_non).to eq(18361.45468)
+      end
+
+      it 'handles partial sector matching with exact use matching' do
+        # Partial sector "agriculture_non_" should match "agriculture_non_specified"
+        # But use "energetic" should NOT match "non_energetic"
+        emissions[:agriculture_non_specified_energetic_other_ghg_2023] = 1263.93948
+        emissions[:agriculture_non_specified_non_energetic_other_ghg_2023] = 18361.45468
+
+        result = emissions.sum(:agriculture_non_, :energetic, :other_ghg, 2023)
+        expect(result).to eq(1263.93948) # Only energetic, not 19625.39416
+      end
     end
   end
 end

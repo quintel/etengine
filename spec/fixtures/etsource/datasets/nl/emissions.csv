@@ -11,6 +11,8 @@ Industry,Non-specified,energetic,other_ghg,2023,kg CO2eq,100.0
 Industry,Non-specified,energetic,other_ghg,1990,kg CO2eq,150.0
 Agriculture,Non-specified,energetic,other_ghg,2023,kg CO2eq,50.0
 Agriculture,Non-specified,energetic,other_ghg,1990,kg CO2eq,75.0
+Agriculture,Non-specified,non_energetic,other_ghg,2023,kg CO2eq,100.0
+Agriculture,Non-specified,non_energetic,other_ghg,1990,kg CO2eq,125.0
 Agriculture,Non-specified,non_energetic,co2,2023,kg CO2eq,75.0
 Agriculture,Non-specified,non_energetic,co2,1990,kg CO2eq,100.0
 Waste,Non-specified,non_energetic,co2,2023,kg CO2eq,25.0
