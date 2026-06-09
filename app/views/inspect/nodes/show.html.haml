@@ -20,6 +20,7 @@
         = link_to 'View document', link_to_node_file(@node_future), class: 'btn btn-small'
         = link_to 'Visualize present graph', {:format => 'svg'}, :target => :blank, :class => 'btn btn-small'
         = link_to 'Visualize future graph', {:format => 'svg', :graph => 'future'}, :target => :blank, :class => 'btn btn-small'
+        = link_to 'Copy key', '#', onclick: "navigator.clipboard.writeText('#{node_key}'); return false;", class: 'btn btn-small'
 
 .row-fluid.span-12.node-flows
   .node-flows-inner
