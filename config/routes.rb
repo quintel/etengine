@@ -110,6 +110,10 @@ Rails.application.routes.draw do
             get :network_gas,            to: 'curves#network_gas',            as: :network_gas_download
             get :residual_load,          to: 'curves#residual_load',          as: :residual_load_download
             get :hydrogen_integral_cost, to: 'curves#hydrogen_integral_cost', as: :hydrogen_integral_cost_download
+            get :merit_order_capacities,  to: 'curves#merit_order_capacities',  as: :merit_order_capacities_download
+            get :hydrogen_capacities,     to: 'curves#hydrogen_capacities',     as: :hydrogen_capacities_download
+            get :network_gas_capacities,  to: 'curves#network_gas_capacities',  as: :network_gas_capacities_download
+            get :heat_network_capacities, to: 'curves#heat_network_capacities', as: :heat_network_capacities_download
           end
         end
       end
