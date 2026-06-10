@@ -119,6 +119,33 @@ module Api
         )
       end
 
+      def merit_order_capacities
+        render_csv MeritOrderCapacitiesCSVSerializer.new(
+          @scenario.gql.future_graph, :electricity, :merit_order,
+          MeritCSVSerializer::NodeCustomisation.new(
+            'merit_order_csv_include', 'merit_order_csv_exclude'
+          )
+        )
+      end
+
+      def hydrogen_capacities
+        render_csv ReconciliationCapacitiesCSVSerializer.new(
+          @scenario.gql.future_graph, :hydrogen
+        )
+      end
+
+      def network_gas_capacities
+        render_csv ReconciliationCapacitiesCSVSerializer.new(
+          @scenario.gql.future_graph, :network_gas
+        )
+      end
+
+      def heat_network_capacities
+        render_csv HeatNetworkParticipantCapacitiesCSVSerializer.new(
+          @scenario.gql.future_graph
+        )
+      end
+
       private
 
       def merit_required
