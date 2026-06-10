@@ -321,16 +321,16 @@ module Gql::Runtime
       # Returns an attribute {Qernel::Emissions} or {Qernel::Emissions::ScopedSector} or a value.
       #
       # Emissions data is loaded from CSV files in ETSource with the following structure:
-      #   etm_sector, etm_subsector, use, ghg, unit, value
+      #   etm_sector, etm_subsector, use, ghg, year, unit, value
       #
       # Parameters:
       #   - sector: ETM sector name (e.g., 'households', 'buildings_non_specified')
       #             Dashes/dots in sector names are converted to underscores for key generation
       #   - use: Emission use type (energetic, non_energetic) - REQUIRED when accessing values
       #   - ghg: GHG type (co2, other_ghg) - optional
-      #   - year: Year of emission (e.g., 1990) - optional, reads from emissions_YEAR.csv files
+      #   - year: Year of emission (e.g., 1990) - optional, defaults to the analysis year
       #
-      # Key generation combines: sector_[subsector_]use_ghg[_year]
+      # Key generation combines: sector_[subsector_]use_ghg_year
       # Note: Unit column from CSV is not included in keys, blank values return nil
       #
       # EMISSIONS() without any keys returns {Qernel::Emissions}
@@ -365,17 +365,9 @@ module Gql::Runtime
         # EMISSIONS(sector, use) -> return ScopedSector for UPDATE operations
         return scope.graph.emissions.scope(keys.join('_').to_sym) if keys.size == 2
 
-        sector, use, ghg, year = keys
-        year ||= scope.graph.area.analysis_year
-
-        # Build expected key for direct lookup
-        full_key = "#{sector}_#{use}_#{ghg}_#{year}".to_sym
-
-        # Try direct lookup first (common case: single subsector)
-        value = scope.graph.emissions[full_key]
-
-        # If not found, aggregate across matching subsectors
-        value.nil? ? scope.graph.emissions.sum(*keys) : value
+        # EMISSIONS(sector, use, ghg [, year]) -> value; a full subsector key
+        # sums a single entry, a sector key sums all of its subsectors.
+        scope.graph.emissions.sum(*keys)
       end
     end
   end
