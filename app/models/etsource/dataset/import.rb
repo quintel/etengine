@@ -117,9 +117,35 @@ module Etsource
 
     # Internal: Loads the emission data.
     #
-    # Returns a hash nested under emissions_data key for DatasetAttributes compatibility.
+    # Returns a hash nested under keys for DatasetAttributes compatibility.
     def load_emission_data
-      { emissions_data: @atlas_ds.emissions.to_hash }
+      {
+        emissions_data: @atlas_ds.emissions.to_hash,
+        emissions_index: build_emissions_index
+      }
+    end
+
+    # Internal: Groups emission keys by their CSV column components.
+    #
+    # Returns a hash with :sectors (sector => subsector keys), :subsectors
+    # (subsector key => true), :scopes (sector_subsector_use => true) and
+    # :ghgs (ghg => true).
+    def build_emissions_index
+      index = { sectors: {}, subsectors: {}, scopes: {}, ghgs: {} }
+
+      @atlas_ds.emissions.component_keys.each_value do |components|
+        *subsector_parts, use, ghg, _year = components
+        subsector = subsector_parts.join('_').to_sym
+
+        sectors = (index[:sectors][components.first] ||= [])
+        sectors << subsector unless sectors.include?(subsector)
+
+        index[:subsectors][subsector] = true
+        index[:scopes][:"#{subsector}_#{use}"] = true
+        index[:ghgs][ghg] = true
+      end
+
+      index
     end
 
     # Internal: Loads the carrier data.

@@ -94,10 +94,8 @@ module Gql::Runtime::Functions
     end
 
     describe 'EMISSIONS(agriculture_non_, energetic, other_ghg, 2023)' do
-      it 'uses partial sector matching but exact use matching' do
-        # Partial sector "agriculture_non_" should match "agriculture_non_specified"
-        # But use "energetic" should NOT match "non_energetic"
-        expect(result).to eq(50.0) # Only energetic (50.0), not sum with non_energetic (100.0)
+      it 'does not match partial sector names' do
+        expect(result).to eq(0)
       end
     end
   end
