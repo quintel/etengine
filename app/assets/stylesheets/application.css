@@ -10,7 +10,6 @@
  *= require inspect/gem-info.css
  *= require inspect/node.css
  *= require inspect/search.css
- *= require inspect/staff-applications.css
  *
  *= require_self
  */
@@ -20,12 +19,24 @@
     Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
+.w-4 {
+  width: 1rem;
+}
+
+.h-4 {
+  height: 1rem;
+}
+
 .w-5 {
   width: 1.25rem;
 }
 
 .h-5 {
   height: 1.25rem;
+}
+
+.hidden {
+  display: none !important;
 }
 
 .future-edges h2 a,

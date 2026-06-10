@@ -11,8 +11,12 @@
 .row-fluid
   .span12
     .page-header
-      %h1
-        = node_key
+      %h1{ data: { controller: 'clipboard' } }
+        %span{ data: { clipboard_target: 'source' } }= node_key
+        %button.copy{ data: { action: 'clipboard#copy', clipboard_target: 'button' }, aria: { label: 'Copy node key' } }
+          = inline_svg 'hero/20/duplicate.svg', style: 'width: 2rem; height: 2rem;'
+        .copied.hidden{ data: { clipboard_target: 'notice' } }
+          = inline_svg 'hero/20/circle-check.svg', class: 'w-4 h-4'
       .controls
         %span.graph-name
           = params[:graph_name].humanize
