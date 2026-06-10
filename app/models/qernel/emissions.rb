@@ -153,22 +153,29 @@ module Qernel
     #
     # Float sum of all matching emissions. Returns 0 if no matches found.
     # Includes any runtime UPDATE modifications to emission values.
-  def sum(sector, use, ghg, year = nil)
-    year ||= default_year
-    prefix = sector.to_s.tr('-.', '_').downcase
-    use_str = use.to_s
-    ghg_str = ghg.to_s
-    year_str = year.to_s
+    def sum(sector, use, ghg, year = nil)
+      year ||= default_year
+      prefix = sector.to_s.tr('-.', '_').downcase
+      use_str = use.to_s
+      ghg_str = ghg.to_s
+      year_str = year.to_s
 
-    # Build regex pattern to match keys with exact component boundaries.
-    # When searching for "energetic", we must not match "non_energetic".
-    # Negative lookbehind (?<!non) prevents this specific substring collision.
-    pattern = /^#{Regexp.escape(prefix)}.*(?<!non)_#{Regexp.escape(use_str)}_#{Regexp.escape(ghg_str)}_#{Regexp.escape(year_str)}$/
+      # Match known emission types explicitly to avoid substring collisions.
+      # Use non-greedy match (.*?) and longest-first alternations to ensure
+      # "non_energetic" and "other_ghg" are matched correctly.
+      # This replaces the negative lookbehind with explicit enumeration of valid values.
+      pattern = /^#{Regexp.escape(prefix)}.*?_(non_energetic|energetic)_(other_ghg|co2)_#{Regexp.escape(year_str)}$/
 
-    dataset_attributes.keys.sum do |key|
-      key.to_s.match?(pattern) ? (dataset_get(key) || 0) : 0
+      dataset_attributes.keys.sum do |key|
+        match = key.to_s.match(pattern)
+        # Verify exact match on use and ghg components
+        if match && match[1] == use_str && match[2] == ghg_str
+          dataset_get(key) || 0
+        else
+          0
+        end
+      end
     end
-  end
 
     # Public: define the sector scope for access to the hashed emission keys
     #
