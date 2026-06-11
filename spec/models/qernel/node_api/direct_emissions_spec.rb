@@ -2464,53 +2464,54 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
   end
 
   describe '#direct_reporting_emissions_co2_utilisation' do
-    context 'with biogenic production emissions' do
+    context 'with fossil CO2 input utilisation' do
       # Create a graph:
-      # [Biogenic Waste Producer] -> [Biogenic Plant] -> [Terminus]
-      # Plant produces biogenic CO2 emissions during production
+      # [CO2 Source] -> [CO2 Utilisation Plant] -> [Terminus]
+      # Plant uses fossil CO2 as input for production
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 100)
-          builder.add(:biogenic_plant, groups: [:emissions])
-          builder.add(:biogenic_waste_producer, groups: [:primary_energy_demand])
+          builder.add(:co2_utilisation_plant, groups: [:emissions], co2_utilisation_per_mj: 0.08)
+          builder.add(:co2_source, groups: [:primary_energy_demand])
 
-          builder.connect(:biogenic_waste_producer, :biogenic_plant, :biogenic_waste, type: :share)
-          builder.connect(:biogenic_plant, :terminus, :heat, type: :share)
+          builder.connect(:co2_source, :co2_utilisation_plant, :co2, type: :share)
+          builder.connect(:co2_utilisation_plant, :terminus, :electricity, type: :share)
 
-          builder.carrier_attrs(:biogenic_waste, potential_co2_conversion_per_mj: 0.05)
-          builder.carrier_attrs(:heat, potential_co2_conversion_per_mj: 0.0)
+          builder.carrier_attrs(:co2, co2_conversion_per_mj: 0.0)
+          builder.carrier_attrs(:electricity, co2_conversion_per_mj: 0.0)
         end
       end
 
       let(:graph) { builder.to_qernel }
-      let(:biogenic_plant) { graph.node(:biogenic_plant) }
+      let(:co2_plant) { graph.node(:co2_utilisation_plant) }
 
-      it 'reports CO2 utilisation equal to biogenic production emissions' do
-        # Biogenic: 100 MJ * 0.05 kg/MJ = 5.0 kg CO2
-        # CO2 Utilisation = Biogenic production emissions = 5.0 kg CO2
-        expect(biogenic_plant).to have_query_value(:direct_reporting_emissions_co2_utilisation, 5.0)
+      it 'reports CO2 utilisation equal to fossil input utilisation' do
+        # Total useful output: 100 MJ
+        # Fossil CO2 utilisation: 100 MJ * 0.08 kg/MJ = 8.0 kg CO2
+        # CO2 Utilisation (reporting) = 8.0 kg CO2
+        expect(co2_plant).to have_query_value(:direct_reporting_emissions_co2_utilisation, 8.0)
       end
 
-      it 'equals direct_co2_output_production_emissions_biogenic' do
-        biogenic = biogenic_plant.query.direct_co2_output_production_emissions_biogenic
-        utilisation = biogenic_plant.query.direct_reporting_emissions_co2_utilisation
+      it 'equals direct_co2_input_utilisation_fossil' do
+        fossil_util = co2_plant.query.direct_co2_input_utilisation_fossil
+        utilisation = co2_plant.query.direct_reporting_emissions_co2_utilisation
 
-        expect(utilisation).to eq(biogenic)
+        expect(utilisation).to eq(fossil_util)
       end
     end
 
-    context 'with zero biogenic emissions' do
+    context 'with zero fossil CO2 utilisation' do
       # Create a graph:
-      # [Fossil Producer] -> [Fossil Plant] -> [Terminus]
-      # Plant has no biogenic inputs
+      # [Producer] -> [Plant without CO2 utilisation] -> [Terminus]
+      # Plant has no CO2 utilisation attribute
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 100)
-          builder.add(:fossil_plant, groups: [:emissions])
-          builder.add(:fossil_producer, groups: [:primary_energy_demand], demand: 100)
+          builder.add(:regular_plant, groups: [:emissions])
+          builder.add(:producer, groups: [:primary_energy_demand])
 
-          builder.connect(:fossil_producer, :fossil_plant, :natural_gas, type: :share)
-          builder.connect(:fossil_plant, :terminus, :electricity, type: :share)
+          builder.connect(:producer, :regular_plant, :natural_gas, type: :share)
+          builder.connect(:regular_plant, :terminus, :electricity, type: :share)
 
           builder.carrier_attrs(:natural_gas, co2_conversion_per_mj: 0.0564)
           builder.carrier_attrs(:electricity, co2_conversion_per_mj: 0.0)
@@ -2518,18 +2519,18 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       end
 
       let(:graph) { builder.to_qernel }
-      let(:fossil_plant) { graph.node(:fossil_plant) }
+      let(:regular_plant) { graph.node(:regular_plant) }
 
       it 'reports zero CO2 utilisation' do
-        # No biogenic inputs = 0 kg CO2 utilisation
-        expect(fossil_plant).to have_query_value(:direct_reporting_emissions_co2_utilisation, 0.0)
+        # No CO2 utilisation = 0 kg CO2
+        expect(regular_plant).to have_query_value(:direct_reporting_emissions_co2_utilisation, 0.0)
       end
 
-      it 'equals direct_co2_output_production_emissions_biogenic (zero)' do
-        biogenic = fossil_plant.query.direct_co2_output_production_emissions_biogenic
-        utilisation = fossil_plant.query.direct_reporting_emissions_co2_utilisation
+      it 'equals direct_co2_input_utilisation_fossil (zero)' do
+        fossil_util = regular_plant.query.direct_co2_input_utilisation_fossil
+        utilisation = regular_plant.query.direct_reporting_emissions_co2_utilisation
 
-        expect(utilisation).to eq(biogenic)
+        expect(utilisation).to eq(fossil_util)
         expect(utilisation).to eq(0.0)
       end
     end
@@ -2558,54 +2559,53 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
   end
 
   describe '#direct_reporting_emissions_biogenic_co2_emissions' do
-    context 'with fossil CO2 input utilisation' do
+    context 'with biogenic production emissions' do
       # Create a graph:
-      # [CO2 Source] -> [CO2 Utilisation Plant] -> [Terminus]
-      # Plant uses fossil CO2 as input for production
+      # [Biogenic Waste Producer] -> [Biogenic Plant] -> [Terminus]
+      # Plant produces biogenic CO2 emissions during production
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 100)
-          builder.add(:co2_utilisation_plant, groups: [:emissions], co2_utilisation_per_mj: 0.08)
-          builder.add(:co2_source, groups: [:primary_energy_demand])
+          builder.add(:biogenic_plant, groups: [:emissions])
+          builder.add(:biogenic_waste_producer, groups: [:primary_energy_demand])
 
-          builder.connect(:co2_source, :co2_utilisation_plant, :co2, type: :share)
-          builder.connect(:co2_utilisation_plant, :terminus, :electricity, type: :share)
+          builder.connect(:biogenic_waste_producer, :biogenic_plant, :biogenic_waste, type: :share)
+          builder.connect(:biogenic_plant, :terminus, :heat, type: :share)
 
-          builder.carrier_attrs(:co2, co2_conversion_per_mj: 0.0)
-          builder.carrier_attrs(:electricity, co2_conversion_per_mj: 0.0)
+          builder.carrier_attrs(:biogenic_waste, potential_co2_conversion_per_mj: 0.05)
+          builder.carrier_attrs(:heat, potential_co2_conversion_per_mj: 0.0)
         end
       end
 
       let(:graph) { builder.to_qernel }
-      let(:co2_plant) { graph.node(:co2_utilisation_plant) }
+      let(:biogenic_plant) { graph.node(:biogenic_plant) }
 
-      it 'reports biogenic CO2 emissions equal to fossil input utilisation' do
-        # Total useful output: 100 MJ
-        # Fossil CO2 utilisation: 100 MJ * 0.08 kg/MJ = 8.0 kg CO2
-        # Biogenic CO2 emissions (reporting) = 8.0 kg CO2
-        expect(co2_plant).to have_query_value(:direct_reporting_emissions_biogenic_co2_emissions, 8.0)
+      it 'reports biogenic CO2 emissions equal to biogenic production emissions' do
+        # Biogenic: 100 MJ * 0.05 kg/MJ = 5.0 kg CO2
+        # Biogenic CO2 emissions (reporting) = 5.0 kg CO2
+        expect(biogenic_plant).to have_query_value(:direct_reporting_emissions_biogenic_co2_emissions, 5.0)
       end
 
-      it 'equals direct_co2_input_utilisation_fossil' do
-        fossil_util = co2_plant.query.direct_co2_input_utilisation_fossil
-        biogenic_reporting = co2_plant.query.direct_reporting_emissions_biogenic_co2_emissions
+      it 'equals direct_co2_output_production_emissions_biogenic' do
+        biogenic = biogenic_plant.query.direct_co2_output_production_emissions_biogenic
+        biogenic_reporting = biogenic_plant.query.direct_reporting_emissions_biogenic_co2_emissions
 
-        expect(biogenic_reporting).to eq(fossil_util)
+        expect(biogenic_reporting).to eq(biogenic)
       end
     end
 
-    context 'with zero fossil CO2 utilisation' do
+    context 'with zero biogenic emissions' do
       # Create a graph:
-      # [Producer] -> [Plant without CO2 utilisation] -> [Terminus]
-      # Plant has no CO2 utilisation attribute
+      # [Fossil Producer] -> [Fossil Plant] -> [Terminus]
+      # Plant has no biogenic inputs
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 100)
-          builder.add(:regular_plant, groups: [:emissions])
-          builder.add(:producer, groups: [:primary_energy_demand], demand: 100)
+          builder.add(:fossil_plant, groups: [:emissions])
+          builder.add(:fossil_producer, groups: [:primary_energy_demand])
 
-          builder.connect(:producer, :regular_plant, :natural_gas, type: :share)
-          builder.connect(:regular_plant, :terminus, :electricity, type: :share)
+          builder.connect(:fossil_producer, :fossil_plant, :natural_gas, type: :share)
+          builder.connect(:fossil_plant, :terminus, :electricity, type: :share)
 
           builder.carrier_attrs(:natural_gas, co2_conversion_per_mj: 0.0564)
           builder.carrier_attrs(:electricity, co2_conversion_per_mj: 0.0)
@@ -2613,18 +2613,18 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       end
 
       let(:graph) { builder.to_qernel }
-      let(:regular_plant) { graph.node(:regular_plant) }
+      let(:fossil_plant) { graph.node(:fossil_plant) }
 
       it 'reports zero biogenic CO2 emissions' do
-        # No CO2 utilisation = 0 kg CO2
-        expect(regular_plant).to have_query_value(:direct_reporting_emissions_biogenic_co2_emissions, 0.0)
+        # No biogenic inputs = 0 kg CO2
+        expect(fossil_plant).to have_query_value(:direct_reporting_emissions_biogenic_co2_emissions, 0.0)
       end
 
-      it 'equals direct_co2_input_utilisation_fossil (zero)' do
-        fossil_util = regular_plant.query.direct_co2_input_utilisation_fossil
-        biogenic_reporting = regular_plant.query.direct_reporting_emissions_biogenic_co2_emissions
+      it 'equals direct_co2_output_production_emissions_biogenic (zero)' do
+        biogenic = fossil_plant.query.direct_co2_output_production_emissions_biogenic
+        biogenic_reporting = fossil_plant.query.direct_reporting_emissions_biogenic_co2_emissions
 
-        expect(biogenic_reporting).to eq(fossil_util)
+        expect(biogenic_reporting).to eq(biogenic)
         expect(biogenic_reporting).to eq(0.0)
       end
     end
