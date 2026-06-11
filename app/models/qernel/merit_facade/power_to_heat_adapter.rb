@@ -36,6 +36,8 @@ module Qernel
         target_api.demand = production
 
         inject_curve!(full_name: :heat_output_curve) { @heat_output_curve }
+
+        adjust_heat_output_conversion!(production)
       end
 
       def subtraction_profile
@@ -43,6 +45,24 @@ module Qernel
       end
 
       private
+
+      # Internal: Energy which remains in the reserve at the end of the year is
+      # included in the node demand, but never appears in the hourly heat
+      # output curve. Lower the useable_heat conversion so that the annual
+      # output matches the sum of the hourly curve, with the elastic loss slot
+      # absorbing the difference. The conversion is only ever lowered, keeping
+      # the slot conversions summing to 1.0.
+      def adjust_heat_output_conversion!(production)
+        return unless production.positive?
+
+        heat_output = @node.node.output(:useable_heat)
+
+        return unless heat_output && @node.node.output(:loss)
+
+        conversion = @heat_output_curve.sum * 3600 / production
+
+        heat_output[:conversion] = conversion if conversion < heat_output.conversion
+      end
 
       def producer_attributes
         attrs = super
@@ -79,11 +99,10 @@ module Qernel
 
         lambda do |point, stored|
           wanted = decay.get(point) / conversion
-          heat = [stored, wanted].min * conversion
 
-          @heat_output_curve[point] = heat
+          @heat_output_curve[point] = [stored, wanted].min * conversion
 
-          decay.get(point)
+          wanted
         end
       end
 
