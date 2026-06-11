@@ -185,23 +185,23 @@ module Qernel
 
       # CO2 utilisation at this node.
       #
-      # Biogenic CO2 emissions from production.
+      # Fossil CO2 input utilisation.
       #
       # @return [Float, nil] CO2 utilisation in kg, or nil if node is not in emissions group
       def direct_reporting_emissions_co2_utilisation
         with_emissions_node do
-          direct_co2_output_production_emissions_biogenic
+          direct_co2_input_utilisation_fossil
         end
       end
 
       # Biogenic CO2 emissions at this node.
       #
-      # Fossil CO2 input utilisation.
+      # Biogenic CO2 emissions from production.
       #
       # @return [Float, nil] Biogenic CO2 emissions in kg, or nil if node is not in emissions group
       def direct_reporting_emissions_biogenic_co2_emissions
         with_emissions_node do
-          direct_co2_input_utilisation_fossil
+          direct_co2_output_production_emissions_biogenic
         end
       end
 
