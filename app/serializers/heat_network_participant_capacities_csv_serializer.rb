@@ -17,7 +17,7 @@ class HeatNetworkParticipantCapacitiesCSVSerializer
 
     header = %w[key installed_capacity peak_capacity]
     data_rows = %i[lt mt ht].flat_map do |network|
-      MeritOrderCapacitiesCSVSerializer.new(
+      MeritCapacitiesCSVSerializer.new(
         @graph, :steam_hot_water, :"heat_network_#{network}", prefix: network
       ).to_csv_rows[1..]
     end

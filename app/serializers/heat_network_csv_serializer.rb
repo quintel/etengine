@@ -5,7 +5,7 @@ class HeatNetworkCSVSerializer
   attr_reader :filename
 
   def initialize(graph, conv_cust = nil)
-    @filename = :heat_network
+    @filename = :heat_network_profiles
     @graph = graph
     @conv_cust = conv_cust
   end
