@@ -19,7 +19,6 @@ Rails.application.routes.draw do
       resources :scenarios, only: %i[index show create update destroy] do
         member do
           get :batch
-          get :production_parameters,   to: 'export#production_parameters'
           get :energy_flow,            to: 'export#energy_flow'
           get :energy_flow_present,    to: 'export#energy_flow_present'
           get :molecule_flow,          to: 'export#molecule_flow'
