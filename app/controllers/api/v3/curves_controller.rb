@@ -119,8 +119,8 @@ module Api
         )
       end
 
-      def merit_order_capacities
-        render_csv MeritOrderCapacitiesCSVSerializer.new(
+      def electricity_capacities
+        render_csv ElectricityCapacitiesCSVSerializer.new(
           @scenario.gql.future_graph, :electricity, :merit_order,
           MeritCSVSerializer::NodeCustomisation.new(
             'merit_order_csv_include', 'merit_order_csv_exclude'

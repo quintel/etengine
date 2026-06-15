@@ -3,9 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe ParticipantCapacitiesCSVSerializer do
-  # MeritOrderCapacitiesCSVSerializer is used as the concrete vehicle to exercise
+  # MeritCapacitiesCSVSerializer is used as the concrete vehicle to exercise
   # the module's logic; ReconciliationCapacitiesCSVSerializer would work equally.
-  let(:serializer_class) { MeritOrderCapacitiesCSVSerializer }
+  let(:serializer_class) { MeritCapacitiesCSVSerializer }
   let(:graph) { instance_double(Qernel::Graph) }
 
   let(:producer_api) do
