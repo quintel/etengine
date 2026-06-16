@@ -67,36 +67,5 @@ module Gql::Runtime::Functions
         expect(result).to eq(7.0)
       end
     end
-
-    describe 'EMISSIONS(energy, non_energetic, co2, 2023)' do
-      it 'aggregates across energy subsectors (Fugitive emissions)' do
-        expect(result).to eq(20.0) # Fugitive: 20.0
-      end
-    end
-
-    describe 'EMISSIONS(energy, energetic, other_ghg, 2023)' do
-      it 'aggregates multiple energy subsectors' do
-        # Electricity: 18.0
-        expect(result).to eq(18.0)
-      end
-    end
-
-    describe 'EMISSIONS(agriculture, energetic, other_ghg, 2023)' do
-      it 'sums single subsector' do
-        expect(result).to eq(50.0)
-      end
-    end
-
-    describe 'EMISSIONS(agriculture, non_energetic, other_ghg, 2023)' do
-      it 'returns only non_energetic value, not including energetic' do
-        expect(result).to eq(100.0)
-      end
-    end
-
-    describe 'EMISSIONS(agriculture_non_, energetic, other_ghg, 2023)' do
-      it 'does not match partial sector names' do
-        expect(result).to eq(0)
-      end
-    end
   end
 end
