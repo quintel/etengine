@@ -49,7 +49,6 @@ module Etsource
       end
     end
 
-
     def self.emissions_keys
       NastyCache.instance.fetch('emission_keys') do
         Atlas::Dataset.find(

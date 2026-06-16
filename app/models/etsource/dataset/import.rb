@@ -117,7 +117,7 @@ module Etsource
 
     # Internal: Loads the emission data.
     #
-    # Returns a hash nested under emisisons_data key for DatasetAttributes compatibility.
+    # Returns a hash nested under emissions_data key for DatasetAttributes compatibility.
     def load_emission_data
       { emissions_data: @atlas_ds.emissions.to_hash }
     end

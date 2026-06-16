@@ -60,7 +60,11 @@ module Qernel
         attr_name = method_name.to_s.delete_suffix('=')
         data_key = scoped_method(attr_name)
 
-        @emissions.respond_to?(data_key) || super
+        if method_name.to_s.end_with?('=')
+          scope_exists?
+        else
+          @emissions.respond_to?(data_key) || super
+        end
       end
 
       def method_missing(method_name, *args)
@@ -68,10 +72,20 @@ module Qernel
         data_key = scoped_method(attr_name).to_sym
 
         if method_name.to_s.end_with?('=')
+          unless scope_exists?
+            raise NoMethodError, "undefined method `#{method_name}' for #{inspect}"
+          end
           @emissions[data_key] = args.first
         else
           @emissions[data_key]
         end
+      end
+
+      private
+
+      def scope_exists?
+        prefix = "#{@scope}_"
+        @emissions.dataset_attributes.keys.any? { |key| key.to_s.start_with?(prefix) }
       end
     end
 
