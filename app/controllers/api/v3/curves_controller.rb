@@ -19,6 +19,69 @@ module Api
       load_and_authorize_resource :scenario
       before_action :merit_required
 
+      # Register all available curves with metadata
+      # These registrations provide the single source of truth for curve metadata
+      # exposed via the /api/v3/curves/metadata endpoint
+      CurveMetadataRegistry.register_curve(
+        :electricity_profiles,
+        type: :merit,
+        description: 'Load on each participant in the electricity merit order'
+      )
+
+      CurveMetadataRegistry.register_curve(
+        :electricity_price,
+        type: :price,
+        description: 'Hourly price of electricity according to the merit order'
+      )
+
+      CurveMetadataRegistry.register_curve(
+        :district_heating_profiles,
+        type: :load,
+        description: 'Load on each participant in the heat merit order'
+      )
+
+      CurveMetadataRegistry.register_curve(
+        :agriculture_heat,
+        type: :merit,
+        description: 'Load on each participant in the agriculture heat merit order'
+      )
+
+      CurveMetadataRegistry.register_curve(
+        :household_heat,
+        type: :fever,
+        description: 'Supply and demand of heat in households, including deficits and surpluses'
+      )
+
+      CurveMetadataRegistry.register_curve(
+        :buildings_heat,
+        type: :fever,
+        description: 'Supply and demand of heat in buildings, including deficits and surpluses'
+      )
+
+      CurveMetadataRegistry.register_curve(
+        :hydrogen_profiles,
+        type: :reconciliation,
+        description: 'Total demand and supply for hydrogen, with storage demand and supply'
+      )
+
+      CurveMetadataRegistry.register_curve(
+        :network_gas_profiles,
+        type: :reconciliation,
+        description: 'Total demand and supply for network gas, with storage demand and supply'
+      )
+
+      CurveMetadataRegistry.register_curve(
+        :residual_load,
+        type: :query,
+        description: 'Residual loads of various carriers'
+      )
+
+      CurveMetadataRegistry.register_curve(
+        :hydrogen_integral_cost,
+        type: :query,
+        description: 'Levelised costs, production costs per MWh and hourly production per hydrogen production technology'
+      )
+
       def electricity_profiles
         render_csv Curves::ElectricityCSVSerializer.new(
           @scenario.gql.future_graph, :electricity, :merit_order,
@@ -116,33 +179,6 @@ module Api
           Etsource::Config.hydrogen_integral_cost_csv,
           @scenario.gql,
           'hydrogen_integral_cost'
-        )
-      end
-
-      def electricity_capacities
-        render_csv ElectricityCapacitiesCSVSerializer.new(
-          @scenario.gql.future_graph, :electricity, :merit_order,
-          MeritCSVSerializer::NodeCustomisation.new(
-            'merit_order_csv_include', 'merit_order_csv_exclude'
-          )
-        )
-      end
-
-      def hydrogen_capacities
-        render_csv ReconciliationCapacitiesCSVSerializer.new(
-          @scenario.gql.future_graph, :hydrogen
-        )
-      end
-
-      def network_gas_capacities
-        render_csv ReconciliationCapacitiesCSVSerializer.new(
-          @scenario.gql.future_graph, :network_gas
-        )
-      end
-
-      def heat_network_capacities
-        render_csv HeatNetworkParticipantCapacitiesCSVSerializer.new(
-          @scenario.gql.future_graph
         )
       end
 

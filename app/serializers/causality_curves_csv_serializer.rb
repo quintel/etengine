@@ -3,6 +3,11 @@
 # The CSV contains the key of each node and the direction of energy
 # flow (input or output) and the hourly load in MWh.
 class CausalityCurvesCSVSerializer
+  # Single CSV row returned when a scenario has no time-resolved (merit/Fever)
+  # data. Shared by the curve and capacity serializers.
+  TIME_RESOLVED_DISABLED_MESSAGE =
+    'Merit order and time-resolved calculation are not enabled for this scenario'
+
   # Provides support for multiple carriers in the serializer.
   class Adapter
     attr_reader :attribute, :carrier
@@ -47,10 +52,7 @@ class CausalityCurvesCSVSerializer
   # Returns an array of arrays.
   def to_csv_rows
     # Empty CSV if time-resolved calculations are not enabled.
-    unless @adapter.supported?(@graph)
-      return [['Merit order and time-resolved calculation are not ' \
-               'enabled for this scenario']]
-    end
+    return [[TIME_RESOLVED_DISABLED_MESSAGE]] unless @adapter.supported?(@graph)
 
     CurvesCSVSerializer.new(
       raw_columns,

@@ -17,8 +17,7 @@ class Curves::DistrictHeatingCSVSerializer
   def to_csv_rows
     # Empty CSV if time-resolved calculations are not enabled.
     unless Qernel::Plugins::Causality.enabled?(@graph)
-      return [['Merit order and time-resolved calculation are not ' \
-               'enabled for this scenario']]
+      return [[CausalityCurvesCSVSerializer::TIME_RESOLVED_DISABLED_MESSAGE]]
     end
 
     CurvesCSVSerializer.new(
