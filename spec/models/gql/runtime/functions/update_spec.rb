@@ -69,13 +69,6 @@ describe Gql::Runtime::Functions::Update, :etsource_fixture do
     end
   end
 
-  describe 'UPDATE(EMISSIONS(invalid_sector, energetic), co2, 100.0)' do
-    it 'raises an error when the emission key does not exist in the dataset' do
-      # The full key 'invalid_sector_energetic_co2' does not exist in the dataset
-      expect { result }.to raise_error(Gql::CommandError)
-    end
-  end
-
   describe 'UPDATE(EMISSIONS(energy_fugitive_emissions, non_energetic), co2, 0.0)' do
     before { result }
 

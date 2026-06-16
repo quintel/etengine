@@ -48,5 +48,14 @@ module Etsource
           .map    { |dataset| dataset.key.to_s }
       end
     end
+
+
+    def self.emissions_keys
+      NastyCache.instance.fetch('emission_keys') do
+        Atlas::Dataset.find(
+          Etsource::Config.default_dataset_key
+        ).emissions.to_hash.keys
+      end
+    end
   end
 end

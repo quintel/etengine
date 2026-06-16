@@ -352,8 +352,8 @@ module Gql::Runtime
       #
       # Examples
       #   EMISSIONS(households, energetic, other_ghg) # => 12.0 (from emissions.csv)
-      #   EMISSIONS(households, energetic, co2) # => aggregated value (sum of subsectors, default year)
-      #   EMISSIONS(households, energetic, co2, 1990) # => aggregated value for 1990
+      #   EMISSIONS(households, energetic, co2) # => value for default year
+      #   EMISSIONS(households, energetic, co2, 1990) # => value for 1990
       #   EMISSIONS(buildings_non_specified, energetic, other_ghg, 2023) # => 18.0
       #
       def EMISSIONS(*keys)
@@ -365,9 +365,10 @@ module Gql::Runtime
         # EMISSIONS(sector, use) -> return ScopedSector for UPDATE operations
         return scope.graph.emissions.scope(keys.join('_').to_sym) if keys.size == 2
 
-        # EMISSIONS(sector, use, ghg [, year]) -> value; a full subsector key
-        # sums a single entry, a sector key sums all of its subsectors.
-        scope.graph.emissions.sum(*keys)
+        # EMISSIONS(sector, use, ghg [, year]) -> return value
+        year = keys[3] || scope.graph.area.analysis_year
+        full_key = "#{keys[0]}_#{keys[1]}_#{keys[2]}_#{year}".to_sym
+        scope.graph.emissions[full_key]
       end
     end
   end
