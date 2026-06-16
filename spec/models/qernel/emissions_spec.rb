@@ -54,6 +54,34 @@ module Qernel
       end
     end
 
+    describe 'scope validation' do
+      context 'with valid scope' do
+        it 'allows creating a ScopedSector instance' do
+          expect { emissions.scope(:households_non_specified_energetic) }.not_to raise_error
+        end
+      end
+
+      context 'with invalid scope (does not exist in dataset)' do
+        it 'allows creating the ScopedSector instance' do
+          # Note: Validation happens on setter, not on scope() call
+          expect { emissions.scope(:invalid_sector_energetic) }.not_to raise_error
+        end
+
+        it 'raises NoMethodError when trying to set a value' do
+          invalid_scope = emissions.scope(:invalid_sector_energetic)
+          expect { invalid_scope.co2 = 100.0 }.to raise_error(
+            NoMethodError,
+            /undefined method `co2=' for <Qernel::Emissions::ScopedSector invalid_sector_energetic>/
+          )
+        end
+
+        it 'returns nil when trying to get a value (no validation on getter)' do
+          invalid_scope = emissions.scope(:invalid_sector_energetic)
+          expect(invalid_scope.co2).to be_nil
+        end
+      end
+    end
+
     describe Emissions::ScopedSector do
       let(:scoped) { emissions.scope(:households_non_specified_energetic) }
 
@@ -101,6 +129,35 @@ module Qernel
           expect(emissions.dataset_get(:households_non_specified_energetic_other_ghg_1990)).to eq(12.0)
           expect(scoped_1990.other_ghg).to eq(12.0)
           expect(scoped.other_ghg).to eq(50.0)
+        end
+      end
+
+      describe 'scope existence validation' do
+        context 'with scope that does not exist in dataset' do
+          before do
+            # Create a scope that has no matching keys in dataset
+            @invalid_scoped = emissions.scope(:nonexistent_sector_energetic)
+          end
+
+          it 'raises NoMethodError when setting any GHG value' do
+            expect { @invalid_scoped.co2 = 100.0 }.to raise_error(NoMethodError)
+            expect { @invalid_scoped.other_ghg = 50.0 }.to raise_error(NoMethodError)
+          end
+
+          it 'returns nil when getting any GHG value (no validation)' do
+            expect(@invalid_scoped.co2).to be_nil
+            expect(@invalid_scoped.other_ghg).to be_nil
+          end
+
+          it 'does not respond to setter methods' do
+            expect(@invalid_scoped.respond_to?(:co2=)).to be false
+            expect(@invalid_scoped.respond_to?(:other_ghg=)).to be false
+          end
+
+          it 'does not respond to getter methods' do
+            expect(@invalid_scoped.respond_to?(:co2)).to be false
+            expect(@invalid_scoped.respond_to?(:other_ghg)).to be false
+          end
         end
       end
 
