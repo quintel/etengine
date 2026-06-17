@@ -9,14 +9,6 @@ module Api
         authorize!(:read, @scenario)
       end
 
-      # GET /api/v3/scenarios/:id/production_parameters
-      #
-      # Returns a CSV file containing the capacities and costs of some electricity and heat
-      # producers.
-      def production_parameters
-        send_csv(ProductionParametersSerializer.new(@scenario), 'production_parameters.%d.csv')
-      end
-
       # GET /api/v3/scenarios/:id/energy_flow
       #
       # Returns a CSV file containing the energetic inputs and outputs of every node in the future graph.

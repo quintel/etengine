@@ -19,8 +19,8 @@ module Api
       load_and_authorize_resource :scenario
       before_action :merit_required
 
-      def merit_order
-        render_csv MeritCSVSerializer.new(
+      def electricity_profiles
+        render_csv ElectricityCSVSerializer.new(
           @scenario.gql.future_graph, :electricity, :merit_order,
           MeritCSVSerializer::NodeCustomisation.new(
             'merit_order_csv_include', 'merit_order_csv_exclude'
@@ -46,8 +46,8 @@ module Api
 
       # Downloads the load on each participant in the heat merit orders as a CSV.
       #
-      # GET /api/v3/scenarios/:scenario_id/curves/heat_network.csv
-      def heat_network
+      # GET /api/v3/scenarios/:scenario_id/curves/heat_network_profiles.csv
+      def heat_network_profiles
         render_csv HeatNetworkCSVSerializer.new(@scenario.gql.future_graph)
       end
 
@@ -87,16 +87,16 @@ module Api
       # Downloads the total demand and supply for hydrogen, with additional
       # columns for the storage demand and supply.
       #
-      # GET /api/v3/scenarios/:scenario_id/curves/hydrogen.csv
-      def hydrogen
+      # GET /api/v3/scenarios/:scenario_id/curves/hydrogen_profiles.csv
+      def hydrogen_profiles
         render_csv ReconciliationCSVSerializer.new(@scenario.gql.future_graph, :hydrogen)
       end
 
       # Downloads the total demand and supply for network gas, with additional
       # columns for the storage demand and supply.
       #
-      # GET /api/v3/scenarios/:scenario_id/curves/network_gas.csv
-      def network_gas
+      # GET /api/v3/scenarios/:scenario_id/curves/network_gas_profiles.csv
+      def network_gas_profiles
         render_csv ReconciliationCSVSerializer.new(@scenario.gql.future_graph, :network_gas)
       end
 
@@ -116,6 +116,33 @@ module Api
           Etsource::Config.hydrogen_integral_cost_csv,
           @scenario.gql,
           'hydrogen_integral_cost'
+        )
+      end
+
+      def electricity_capacities
+        render_csv ElectricityCapacitiesCSVSerializer.new(
+          @scenario.gql.future_graph, :electricity, :merit_order,
+          MeritCSVSerializer::NodeCustomisation.new(
+            'merit_order_csv_include', 'merit_order_csv_exclude'
+          )
+        )
+      end
+
+      def hydrogen_capacities
+        render_csv ReconciliationCapacitiesCSVSerializer.new(
+          @scenario.gql.future_graph, :hydrogen
+        )
+      end
+
+      def network_gas_capacities
+        render_csv ReconciliationCapacitiesCSVSerializer.new(
+          @scenario.gql.future_graph, :network_gas
+        )
+      end
+
+      def heat_network_capacities
+        render_csv HeatNetworkParticipantCapacitiesCSVSerializer.new(
+          @scenario.gql.future_graph
         )
       end
 
