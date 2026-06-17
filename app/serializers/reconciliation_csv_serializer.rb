@@ -2,10 +2,6 @@
 
 # Creates CSV rows for hydrogen and network gas.
 class ReconciliationCSVSerializer < CausalityCurvesCSVSerializer
-  def filename
-    :"#{@adapter.attribute}_profiles"
-  end
-
   private
 
   def producer_types

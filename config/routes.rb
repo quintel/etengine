@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       resources :scenarios, only: %i[index show create update destroy] do
         member do
           get :batch
+          get :production_parameters,   to: 'export#production_parameters'
           get :energy_flow,            to: 'export#energy_flow'
           get :energy_flow_present,    to: 'export#energy_flow_present'
           get :molecule_flow,          to: 'export#molecule_flow'
@@ -99,24 +100,16 @@ Rails.application.routes.draw do
 
         resources :curves, only: [] do
           collection do
-            get :buildings_heat,          to: 'curves#buildings_heat_curves',   as: :buildings_heat_download
-            get :merit_order,             to: 'curves#electricity_profiles'     # backwards compatible
-            get :electricity_profiles,    to: 'curves#electricity_profiles',    as: :electricity_profiles_download
-            get :electricity_price,       to: 'curves#electricity_price',       as: :electricity_price_download
-            get :heat_network,            to: 'curves#heat_network_profiles'    # backwards compatible
-            get :heat_network_profiles,   to: 'curves#heat_network_profiles',   as: :heat_network_profiles_download
-            get :agriculture_heat,        to: 'curves#agriculture_heat',        as: :agriculture_heat_download
-            get :household_heat,          to: 'curves#household_heat_curves',   as: :household_heat_download
-            get :hydrogen,                to: 'curves#hydrogen_profiles'        # backwards compatible
-            get :hydrogen_profiles,       to: 'curves#hydrogen_profiles',       as: :hydrogen_profiles_download
-            get :network_gas,             to: 'curves#network_gas_profiles'     # backwards compatible
-            get :network_gas_profiles,    to: 'curves#network_gas_profiles',    as: :network_gas_profiles_download
-            get :residual_load,           to: 'curves#residual_load',           as: :residual_load_download
-            get :hydrogen_integral_cost,  to: 'curves#hydrogen_integral_cost',  as: :hydrogen_integral_cost_download
-            get :electricity_capacities,  to: 'curves#electricity_capacities',  as: :electricity_capacities_download
-            get :hydrogen_capacities,     to: 'curves#hydrogen_capacities',     as: :hydrogen_capacities_download
-            get :network_gas_capacities,  to: 'curves#network_gas_capacities',  as: :network_gas_capacities_download
-            get :heat_network_capacities, to: 'curves#heat_network_capacities', as: :heat_network_capacities_download
+            get :buildings_heat,         to: 'curves#buildings_heat_curves',   as: :buildings_heat_download
+            get :merit_order,            to: 'curves#merit_order',            as: :merit_order_download
+            get :electricity_price,      to: 'curves#electricity_price',      as: :electricity_price_download
+            get :heat_network,           to: 'curves#heat_network',           as: :heat_network_download
+            get :agriculture_heat,       to: 'curves#agriculture_heat',       as: :agriculture_heat_download
+            get :household_heat,         to: 'curves#household_heat_curves',  as: :household_heat_download
+            get :hydrogen,               to: 'curves#hydrogen',               as: :hydrogen_download
+            get :network_gas,            to: 'curves#network_gas',            as: :network_gas_download
+            get :residual_load,          to: 'curves#residual_load',          as: :residual_load_download
+            get :hydrogen_integral_cost, to: 'curves#hydrogen_integral_cost', as: :hydrogen_integral_cost_download
           end
         end
       end
