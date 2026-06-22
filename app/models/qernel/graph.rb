@@ -59,7 +59,8 @@ class Graph
 
   attr_accessor :dataset,
                 :finished_nodes,
-                :area
+                :area,
+                :emissions
 
   delegate :weather_properties, to: :area
 
@@ -71,6 +72,7 @@ class Graph
   def initialize(nodes = [], name = :anonymous)
     @logger = Qernel::Logger.new
     @area   = Qernel::Area.new(self)
+    @emissions = Qernel::Emissions.new(self)
     @name   = name.to_sym
 
     @nodes_by_group = {}
@@ -189,6 +191,8 @@ class Graph
   def refresh_dataset_attributes
     # See Qernel::Dataset#assign_dataset_attributes to understand what's going on:
     call_on_each_qernel_object(:assign_dataset_attributes)
+    # Assign emissions data to the Emissions object via DatasetAttributes
+    @emissions.assign_dataset_attributes if @emissions
     reset_goals
   end
 

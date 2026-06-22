@@ -4,6 +4,8 @@ module Qernel
   module NodeApi
     # Contains methods and attributes specific to querying molecule nodes.
     class MoleculeApi < Base
+      include MoleculeEmissions
+
       dataset_accessors :output_capacity
       dataset_accessors :from_energy
 

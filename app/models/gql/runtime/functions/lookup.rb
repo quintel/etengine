@@ -317,6 +317,56 @@ module Gql::Runtime
         curves = Qernel::Causality::Curves.new(scope.graph, rotate: 0)
         curves.curve(key, nil).to_a
       end
+
+      # Returns an attribute {Qernel::Emissions} or {Qernel::Emissions::ScopedSector} or a value.
+      #
+      # Emissions data is loaded from CSV files in ETSource with the following structure:
+      #   etm_sector, etm_subsector, use, ghg, unit, value
+      #
+      # Parameters:
+      #   - sector: ETM sector name (e.g., 'households', 'buildings_non_specified')
+      #             Dashes/dots in sector names are converted to underscores for key generation
+      #   - use: Emission use type (energetic, non_energetic) - REQUIRED when accessing values
+      #   - ghg: GHG type (co2, other_ghg) - optional
+      #   - year: Year of emission (e.g., 1990) - optional, reads from emissions_YEAR.csv files
+      #
+      # Key generation combines: sector_[subsector_]use_ghg[_year]
+      # Note: Unit column from CSV is not included in keys, blank values return nil
+      #
+      # EMISSIONS() without any keys returns {Qernel::Emissions}
+      #
+      #   EMISSIONS() # => <Qernel::Emissions>
+      #
+      # EMISSIONS(sector, use) returns {Qernel::Emissions::ScopedSector}
+      #
+      # Which can be used to update emission factors:
+      #   UPDATE(EMISSIONS(households, energetic), co2, VALUE )
+      #   UPDATE(EMISSIONS(buildings_non_specified, energetic), other_ghg, VALUE )
+      #
+      # Examples
+      #
+      #   EMISSIONS(buildings_non_specified, energetic)
+      #   # => <Qernel::Emissions::ScopedSector buildings_non_specified_energetic>
+      #
+      # EMISSIONS(sector, use, ghg) or EMISSIONS(sector, use, ghg, year) returns an emission value
+      #
+      # Examples
+      #   EMISSIONS(households, energetic, other_ghg) # => 12.0 (from emissions.csv)
+      #   EMISSIONS(households, energetic, co2, 1990) # => value (from emissions_1990.csv)
+      #   EMISSIONS(buildings_non_specified, energetic, other_ghg) # => 18.0
+      #
+      def EMISSIONS(*keys)
+        return scope.graph.emissions if keys.empty?
+
+        # Convert dashes/dots to underscores in the first key (sector)
+        keys[0] = keys.first.to_s.tr('-.', '_').to_sym
+
+        # EMISSIONS(sector, use) -> return ScopedSector for UPDATE operations
+        return scope.graph.emissions.scope(keys.join('_').to_sym) if keys.size == 2
+
+        # EMISSIONS(sector, use, ghg [, year]) -> return value
+        scope.graph.emissions[keys.join('_').to_sym]
+      end
     end
   end
 end

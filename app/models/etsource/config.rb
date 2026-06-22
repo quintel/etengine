@@ -107,6 +107,15 @@ module Etsource
       read('storage_parameters_csv')
     end
 
+    # Public: Contains a configuration for the emissions CSV export.
+    #
+    # See ConfiguredCSVSerializer.
+    #
+    # Returns a hash.
+    def direct_emissions_csv
+      read('direct_emissions_csv')
+    end
+
 
     # Public: Contains a configuration for the residual load CSV export.
     #

@@ -79,6 +79,7 @@ module Etsource
 
       {
         area: load_region_data,
+        emissions: load_emission_data,
         carriers: load_carrier_data(precalculated_objects),
         energy_graph: load_energy_graph_dataset(precalculated_objects),
         molecules_graph: load_molecules_graph_dataset(precalculated_objects)
@@ -112,6 +113,13 @@ module Etsource
     # Returns a hash.
     def load_region_data
       { area_data: @atlas_ds.to_hash }
+    end
+
+    # Internal: Loads the emission data.
+    #
+    # Returns a hash nested under emissions_data key for DatasetAttributes compatibility.
+    def load_emission_data
+      { emissions_data: @atlas_ds.emissions.to_hash }
     end
 
     # Internal: Loads the carrier data.

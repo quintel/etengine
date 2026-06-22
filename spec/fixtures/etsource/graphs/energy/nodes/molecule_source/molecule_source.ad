@@ -1,4 +1,4 @@
-- groups = [preset_demand]
+- groups = [preset_demand, emissions]
 - preset_demand = 100.0
 - input.electricity = 0.75
 - input.natural_gas = 0.25

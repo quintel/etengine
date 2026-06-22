@@ -45,6 +45,13 @@ module Etsource
       end
     end
 
+    def emissions(area_code)
+      cache("emissions/#{area_code}") do
+        area_emissions = Atlas::Dataset.find(area_code).emissions
+        IceNine.deep_freeze!(area_emissions.to_hash.with_indifferent_access)
+      end
+    end
+
     # @return [Qernel::Dataset] Dataset to be used for a country. Is in a uncalculated state.
     def dataset(country)
       instrument("etsource.loader: dataset(#{country.inspect})") do
