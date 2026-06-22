@@ -31,9 +31,7 @@ module Qernel::RecursiveFactor::WeightedCarrier
 
     # Carriers with no or zero intrinsic CO2 are not counted in this calculation.
 
-    if edge.carrier.co2_conversion_per_mj || right_dead_end?
-      edge.carrier.co2_conversion_per_mj
-    end
+    edge.carrier.co2_conversion_per_mj if edge.carrier.co2_conversion_per_mj || right_dead_end?
 
     # Else: continue traversing right.
   end

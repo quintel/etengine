@@ -49,7 +49,7 @@ module Qernel
       @lft_node = lft
       @rgt_node = rgt
       @carrier       = carrier
-      @groups        = groups.freeze
+      @groups        = (groups || []).freeze
       @edge_type     = type.to_sym
 
       lft_node.add_input_edge(self)
@@ -132,6 +132,10 @@ module Qernel
 
     def treat_as_loss?
       !!dataset_get(:treat_as_loss)
+    end
+
+    def emissions_skip_crude_oil_mix?
+      @groups.include?(:emissions_skip_crude_oil_mix)
     end
 
     # Calculation --------------------------------------------------------------

@@ -16,8 +16,8 @@ RSpec.describe Qernel::RecursiveFactor::BioEmissions do
     TestGraphBuilder.new.tap do |builder|
       builder.add(:terminus)
 
-      builder.add(:ccs_plant_1, demand: 50, ccs_capture_rate: 1.0)
-      builder.add(:ccs_plant_2, demand: 50, ccs_capture_rate: 0.5)
+      builder.add(:ccs_plant_1, demand: 50, ccs_capture_rate: 1.0, free_co2_factor: 1.0)
+      builder.add(:ccs_plant_2, demand: 50, ccs_capture_rate: 0.5, free_co2_factor: 0.5)
       builder.add(:normal_plant, demand: 50)
 
       builder.add(:biomass_prod, groups: [:primary_energy_demand])
@@ -69,6 +69,7 @@ RSpec.describe Qernel::RecursiveFactor::BioEmissions do
   context 'when CCS plant 1 has no capture' do
     before do
       builder.node(:ccs_plant_1).set(:ccs_capture_rate, 0.0)
+      builder.node(:ccs_plant_1).set(:free_co2_factor, 0.0)
     end
 
     it 'captures nothing on CCS Plant #1' do
@@ -97,6 +98,7 @@ RSpec.describe Qernel::RecursiveFactor::BioEmissions do
   context 'when the normal plant has capture' do
     before do
       builder.node(:normal_plant).set(:ccs_capture_rate, 1.0)
+      builder.node(:normal_plant).set(:free_co2_factor, 1.0)
     end
 
     it 'captures nothing on the Normal Plant' do
@@ -157,7 +159,9 @@ RSpec.describe Qernel::RecursiveFactor::BioEmissions do
     before do
       builder.carrier_attrs(:coal, co2_conversion_per_mj: 0.5)
       builder.node(:ccs_plant_1).set(:ccs_capture_rate, 0.0)
+      builder.node(:ccs_plant_1).set(:free_co2_factor, 0.0)
       builder.node(:ccs_plant_2).set(:ccs_capture_rate, 0.0)
+      builder.node(:ccs_plant_2).set(:free_co2_factor, 0.0)
     end
 
     it 'has 25 emissions on Terminus' do
@@ -175,6 +179,20 @@ RSpec.describe Qernel::RecursiveFactor::BioEmissions do
         :primary_co2_emission_of_bio_and_fossil_without_capture,
         100.0
       )
+    end
+  end
+
+  context 'when a node has free_co2_factor but no ccs_capture_rate' do
+    before do
+      builder.node(:normal_plant).set(:free_co2_factor, 0.9)
+    end
+
+    it 'captures nothing on the node with only free_co2_factor' do
+      expect(normal_plant).to have_query_value(:captured_bio_emissions, 0)
+    end
+
+    it 'Terminus inherits 62.5 captures CO2 from CCS plants only' do
+      expect(terminus).to have_query_value(:inherited_captured_bio_emissions, 62.5)
     end
   end
 end

@@ -35,6 +35,7 @@ module Qernel
       include FallbackMethods
 
       include RecursiveFactor::Base
+      include RecursiveFactor::DirectEmissions
       include RecursiveFactor::WeightedCarrier
 
       # attributes updated by #initialize

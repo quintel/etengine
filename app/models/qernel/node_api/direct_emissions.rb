@@ -1,0 +1,264 @@
+# frozen_string_literal: true
+
+module Qernel
+  module NodeApi
+    # Calculates direct CO2 emissions from fossil and biogenic carriers using a mass balance approach.
+    #
+    # Direct emissions measure the change in carbon stock at a specific node:
+    # - Carbon enters via input carriers
+    # - Carbon enters via CO2 utilisation
+    # - Carbon leaves via output carriers
+    # - Carbon leaves via CO2 capture
+    # - Direct emissions = CO2 released to atmosphere at this location (input - output)
+    #
+    # For mixed carriers (network gas, crude oil, carrier_mix), composition tracking
+    # uses RecursiveFactor::WeightedCarrier to recursively trace CO2 content through the supply chain.
+    module DirectEmissions
+      # Fossil CO2 content of all carriers entering the node.
+      #
+      # @return [Float, nil] Total fossil CO2 content from input carriers in kg, or nil if node is not in emissions group
+      def direct_co2_input_content_carriers_fossil
+        with_emissions_node do
+          sum_carbon_content(inputs.flat_map(&:edges), :fossil)
+        end
+      end
+
+      # Fossil CO2 content of all carriers leaving the node.
+      #
+      # @return [Float, nil] Total fossil CO2 content from output carriers in kg, or nil if node is not in emissions group
+      def direct_co2_output_content_carriers_fossil
+        with_emissions_node do
+          sum_carbon_content(output_edges, :fossil)
+        end
+      end
+
+      # Fossil CO2 emissions produced at this node.
+      #
+      # Calculates net emissions after accounting for CO2 utilisation and CO2 capture.
+      # Emissions = input carriers co2 + utilised co2 - captured co2 - output carriers co2
+      #
+      # @return [Float, nil] Direct fossil CO2 emissions in kg, or nil if node is not in emissions group
+      def direct_co2_output_production_emissions_fossil
+        with_emissions_node do
+          direct_co2_input_content_carriers_fossil      +
+            direct_co2_input_utilisation_fossil         -
+            direct_co2_output_production_capture_fossil -
+            direct_co2_output_content_carriers_fossil
+        end
+      end
+
+      # Biogenic CO2 content of all carriers entering the node.
+      #
+      # @return [Float, nil] Total biogenic CO2 content from input carriers in kg, or nil if node is not in emissions group
+      def direct_co2_input_content_carriers_biogenic
+        with_emissions_node do
+          sum_carbon_content(inputs.flat_map(&:edges), :biogenic)
+        end
+      end
+
+      # Biogenic CO2 content of all carriers leaving the node.
+      #
+      # @return [Float, nil] Total biogenic CO2 content from output carriers in kg, or nil if node is not in emissions group
+      def direct_co2_output_content_carriers_biogenic
+        with_emissions_node do
+          sum_carbon_content(output_edges, :biogenic)
+        end
+      end
+
+      # Biogenic CO2 emissions produced at this node.
+      #
+      # Emissions = input carriers biogenic co2 - captured biogenic co2 - output carriers biogenic co2
+      #
+      # Note: Unlike fossil emissions, biogenic CO2 utilisation is not included as
+      # the model does not distinguish biogenic CO2 utilisation.
+      #
+      # @return [Float, nil] Direct biogenic CO2 emissions in kg, or nil if node is not in emissions group
+      def direct_co2_output_production_emissions_biogenic
+        with_emissions_node do
+          direct_co2_input_content_carriers_biogenic      -
+            direct_co2_output_production_capture_biogenic -
+            direct_co2_output_content_carriers_biogenic
+        end
+      end
+
+      # Fossil CO2 captured at this node.
+      #
+      # Calculates the amount of fossil CO2 captured based on the total CO2 available
+      # (input content + utilised CO2 - output content) multiplied by the CCS capture rate.
+      #
+      # @return [Float, nil] Fossil CO2 captured in kg, or nil if node is not in emissions group
+      def direct_co2_output_production_capture_fossil
+        with_emissions_node do
+          calculate_capture(
+            direct_co2_input_content_carriers_fossil +
+              direct_co2_input_utilisation_fossil -
+              direct_co2_output_content_carriers_fossil
+          )
+        end
+      end
+
+      # Biogenic CO2 captured at this node.
+      #
+      # Calculates the amount of biogenic CO2 captured based on the total biogenic CO2
+      # available (input content - output content) multiplied by the CCS capture rate.
+      #
+      # @return [Float, nil] Biogenic CO2 captured in kg, or nil if node is not in emissions group
+      def direct_co2_output_production_capture_biogenic
+        with_emissions_node do
+          calculate_capture(
+            direct_co2_input_content_carriers_biogenic -
+              direct_co2_output_content_carriers_biogenic
+          )
+        end
+      end
+
+      # Fossil CO2 utilised (consumed as feedstock) at this node.
+      #
+      # Calculates CO2 that is consumed as feedstock rather than emitted, based on the total
+      # useful carrier output in MJ and the node's co2_utilisation_per_mj attribute.
+      #
+      # @return [Float, nil] Total fossil CO2 utilised in kg, or nil if node is not in emissions group
+      def direct_co2_input_utilisation_fossil
+        with_emissions_node do
+          output_edges.sum { |edge| edge.net_demand || 0.0 } * (dataset_get(:co2_utilisation_per_mj) || 0.0)
+        end
+      end
+
+      # Reporting Methods -------------------------------------------------------------------------------
+
+      # The GHG carrier key for this node: :other_ghg for molecule nodes whose input slot
+      # carries other_ghg, :co2 for all others (energy nodes always emit CO2).
+      #
+      # @return [Symbol] :other_ghg or :co2
+      def ghg_carrier
+        inputs.map { |s| s.carrier&.key }.include?(:other_ghg) ? :other_ghg : :co2
+      end
+
+      # Fossil CO2 production at this node
+      #
+      # Input content + utilisation - output co2 content
+      #
+      # @return [Float, nil] Direct fossil CO2 production in kg, or nil if node is not in emissions group
+      def direct_reporting_emissions_co2_production
+        with_emissions_node do
+          direct_co2_input_content_carriers_fossil  +
+            direct_co2_input_utilisation_fossil     -
+            direct_co2_output_content_carriers_fossil
+        end
+      end
+
+      # Total CO2 captured at this node.
+      #
+      # Sum of fossil and biogenic capture.
+      #
+      # @return [Float, nil] Total CO2 captured in kg, or nil if node is not in emissions group
+      def direct_reporting_emissions_co2_capture
+        with_emissions_node do
+          direct_co2_output_production_capture_fossil +
+          direct_co2_output_production_capture_biogenic
+        end
+      end
+
+      # Other GHG emissions (non-CO2) at this node.
+      #
+      # Currently returns 0 as a placeholder
+      #
+      # @return [Float, nil] Other GHG emissions in kg CO2-equivalent, or nil if node is not in emissions group
+      def direct_reporting_emissions_other_ghg_emissions
+        with_emissions_node do
+          0.0
+        end
+      end
+
+      # Total GHG emissions at this node.
+      #
+      # Total co2 and other_ghg emissions - capture
+      #
+      # @return [Float, nil] Total GHG emissions in kg, or nil if node is not in emissions group
+      def direct_reporting_emissions_total_ghg_emissions
+        with_emissions_node do
+          direct_reporting_emissions_co2_production -
+            direct_reporting_emissions_co2_capture  +
+            direct_reporting_emissions_other_ghg_emissions
+        end
+      end
+
+      private
+
+      # Yields the given block only if the node belongs to the :emissions group.
+      #
+      # @return [Float, nil] Result of the block, or nil if node is not in emissions group
+      def with_emissions_node
+        yield if node.emissions?
+      end
+
+      # Sums carbon content across multiple edges.
+      #
+      # @param edges [Array<Edge>] The edges to sum carbon content for
+      # @param carbon_type [Symbol] Either :fossil or :biogenic
+      # @return [Float] Total carbon content in kg
+      def sum_carbon_content(edges, carbon_type)
+        edges.sum do |edge|
+          carbon_content = direct_edge_carbon_content(edge, carbon_type)
+          (edge.net_demand || 0.0) * carbon_content
+        end
+      end
+
+      # Returns the CO2 content per MJ for a specific edge.
+      #
+      # For edges marked with :emissions_skip_crude_oil_mix or carriers without intrinsic
+      # CO2 values, delegates to RecursiveFactor::DirectEmissions to calculate from the
+      # weighted supply mix. Otherwise uses the carrier's direct CO2 value.
+      #
+      # @param edge [Edge] The edge to calculate carbon content for
+      # @param carbon_type [Symbol] Either :fossil or :biogenic
+      # @return [Float] CO2 content in kg/MJ
+      def direct_edge_carbon_content(edge, carbon_type)
+        attribute, fallback_method = carbon_type_attributes(carbon_type)
+
+        # Check if carrier has intrinsic CO2 value and edge doesn't skip it
+        if edge.carrier.public_send(attribute) && !edge.emissions_skip_crude_oil_mix?
+          return edge.carrier.public_send(attribute)
+        end
+
+        # For biogenic: if carrier has fossil CO2 defined but no biogenic CO2, return 0.0
+        # This prevents recursing when the carrier explicitly has no biogenic content
+        if carbon_type == :biogenic && !edge.carrier.co2_conversion_per_mj.nil? && !edge.emissions_skip_crude_oil_mix?
+          return 0.0
+        end
+
+        # Fallback: calculate from weighted supply mix using recursive factor
+        # Always query the supplier (rgt_node) - the recursion factor handles stopping conditions
+        supplier = edge.rgt_node
+        supplier&.query&.public_send(fallback_method) || 0.0
+      end
+
+      # Calculates the amount of CO2 captured based on the CCS capture rate.
+      #
+      # @param co2_production [Float] The amount of CO2 available for capture
+      # @return [Float] Amount of CO2 captured in kg
+      def calculate_capture(co2_production)
+        if (capture_rate = node.dataset_get(:ccs_capture_rate))&.positive?
+          co2_production * capture_rate
+        else
+          0.0
+        end
+      end
+
+      # Maps carbon type to carrier attribute and query method names.
+      #
+      # @param carbon_type [Symbol] Either :fossil or :biogenic
+      # @return [Array<Symbol>] [carrier_attribute, query_method]
+      def carbon_type_attributes(carbon_type)
+        case carbon_type
+        when :fossil
+          [:co2_conversion_per_mj, :direct_carbon_content_per_mj]
+        when :biogenic
+          [:potential_co2_conversion_per_mj, :direct_biogenic_carbon_content_per_mj]
+        else
+          raise ArgumentError, "Unknown carbon type: #{carbon_type}"
+        end
+      end
+    end
+  end
+end

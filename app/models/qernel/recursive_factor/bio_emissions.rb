@@ -6,10 +6,16 @@ module Qernel
     module BioEmissions
       # Public: Calculates the amount of CO2 captured on the node.
       #
+      # Note: Checks for the existence of `ccs_capture_rate` to determine if this node
+      # has capture capability, but uses `free_co2_factor` to calculate the actual
+      # capture amount. The free_co2_factor represents the proportion of CO2 that is
+      # freely available for capture (not bound in products).
+      #
       # Returns a numeric in kg.
       def captured_bio_emissions
-        if ccs_capture_rate&.positive?
-          primary_co2_emission_of_bio_carriers * ccs_capture_rate
+        if ccs_capture_rate
+          capture_rate = dataset_get(:free_co2_factor)
+          primary_co2_emission_of_bio_carriers * capture_rate
         else
           0.0
         end
