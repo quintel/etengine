@@ -39,8 +39,8 @@ module ParticipantCapacitiesCSVSerializer
 
     [
       "#{@prefix}#{node.key}.#{direction} (MW)",
-      installed.round(4),
-      peak.round(4)
+      installed.round(6),
+      peak.round(6)
     ]
   end
 end
