@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Creates CSV rows describing merit order production and consumption.
-class MeritCSVSerializer < Curves::CausalityCurvesCSVSerializer
+class MeritCSVSerializer < CausalityCurvesCSVSerializer
   # Selects extra nodes to be included in or excluded from the CSV,
   # based on groups assigned to nodes.
   class NodeCustomisation

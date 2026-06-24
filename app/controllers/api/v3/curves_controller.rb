@@ -89,7 +89,7 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/curves/hydrogen_profiles.csv
       def hydrogen_profiles
-        render_csv Curves::ReconciliationCSVSerializer.new(@scenario.gql.future_graph, :hydrogen)
+        render_csv ReconciliationCSVSerializer.new(@scenario.gql.future_graph, :hydrogen)
       end
 
       # Downloads the total demand and supply for network gas, with additional
@@ -97,7 +97,7 @@ module Api
       #
       # GET /api/v3/scenarios/:scenario_id/curves/network_gas_profiles.csv
       def network_gas_profiles
-        render_csv Curves::ReconciliationCSVSerializer.new(@scenario.gql.future_graph, :network_gas)
+        render_csv ReconciliationCSVSerializer.new(@scenario.gql.future_graph, :network_gas)
       end
 
       # Downloads the residual loads of various carriers.

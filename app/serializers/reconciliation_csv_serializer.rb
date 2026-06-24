@@ -1,0 +1,22 @@
+# frozen_string_literal: true
+
+# Creates CSV rows for hydrogen and network gas.
+class ReconciliationCSVSerializer < CausalityCurvesCSVSerializer
+  def filename
+    :"#{@adapter.attribute}_profiles"
+  end
+
+  private
+
+  def producer_types
+    %i[producer flex import storage transformation]
+  end
+
+  def consumer_types
+    %i[consumer flex export storage transformation]
+  end
+
+  def exclude_producer_subtypes
+    %i[curtailment]
+  end
+end
