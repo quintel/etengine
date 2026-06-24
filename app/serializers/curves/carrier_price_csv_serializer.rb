@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Creates a CSV containing the price of a carrier for each hour in the year.
-class CarrierPriceCSVSerializer
+class Curves::CarrierPriceCSVSerializer
   def initialize(carrier, year)
     @carrier = carrier
     @year = year

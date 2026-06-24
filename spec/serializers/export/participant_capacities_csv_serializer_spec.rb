@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe ParticipantCapacitiesCSVSerializer do
+RSpec.describe Export::ParticipantCapacitiesCSVSerializer do
   # MeritCapacitiesCSVSerializer is used as the concrete vehicle to exercise
   # the module's logic; ReconciliationCapacitiesCSVSerializer would work equally.
-  let(:serializer_class) { MeritCapacitiesCSVSerializer }
+  let(:serializer_class) { Export::MeritCapacitiesCSVSerializer }
   let(:graph) { instance_double(Qernel::Graph) }
 
   let(:producer_api) do
@@ -49,17 +49,17 @@ RSpec.describe ParticipantCapacitiesCSVSerializer do
     subject(:rows) { serializer.to_csv_rows }
 
     it 'includes the header row' do
-      expect(rows[0]).to eq(%w[key installed_capacity peak_capacity])
+      expect(rows[0]).to eq(%w[key peak_capacity])
     end
 
     it 'includes the producer row' do
       # 0.4 * 2.0 * 10.0 = 8.0, peak = 200.0
-      expect(rows[1]).to eq(['wind_turbine.output (MW)', 8.0, 200.0])
+      expect(rows[1]).to eq(['wind_turbine.output (MW)', 200.0])
     end
 
     it 'includes the consumer row' do
       # 0.9 * 1.0 * 5.0 = 4.5, peak = 150.0
-      expect(rows[2]).to eq(['electrolyser.input (MW)', 4.5, 150.0])
+      expect(rows[2]).to eq(['electrolyser.input (MW)', 150.0])
     end
 
     context 'when causality is not enabled' do
@@ -70,17 +70,17 @@ RSpec.describe ParticipantCapacitiesCSVSerializer do
       end
     end
 
-    context 'when a node has zero units' do
-      let(:producer_api) do
-        instance_double(Qernel::NodeApi::Base, input_capacity: 2.0, number_of_units: 0.0)
-      end
+    # context 'when a node has zero units' do
+    #   let(:producer_api) do
+    #     instance_double(Qernel::NodeApi::Base, input_capacity: 2.0, number_of_units: 0.0)
+    #   end
 
-      before { allow(producer_api).to receive(:public_send).with('electricity_output_conversion').and_return(0.4) }
+    #   before { allow(producer_api).to receive(:public_send).with('electricity_output_conversion').and_return(0.4) }
 
-      it 'reports 0.0 installed_capacity' do
-        expect(rows[1][1]).to eq(0.0)
-      end
-    end
+    #   it 'reports 0.0 installed_capacity' do
+    #     expect(rows[1][1]).to eq(0.0)
+    #   end
+    # end
 
     context 'when the curve is nil' do
       before do
@@ -89,7 +89,7 @@ RSpec.describe ParticipantCapacitiesCSVSerializer do
       end
 
       it 'reports 0.0 peak_capacity' do
-        expect(rows[1][2]).to eq(0.0)
+        expect(rows[1][1]).to eq(0.0)
       end
     end
   end

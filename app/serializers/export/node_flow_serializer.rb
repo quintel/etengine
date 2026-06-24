@@ -1,5 +1,5 @@
 # Presents information about the inputs and outputs of nodes.
-class NodeFlowSerializer
+class Export::NodeFlowSerializer
   # Creates a new node flow serializer.
   #
   # graph - A computed graph, whose node demands and carrier flows will be included in the CSV.

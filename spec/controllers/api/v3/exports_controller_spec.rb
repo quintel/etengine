@@ -26,7 +26,7 @@ describe Api::V3::ExportController do
     end
 
     it 'renders the CSV' do
-      expect(response.body).to eq(NodeFlowSerializer.new(scenario.gql.future.graph, 'MJ').as_csv)
+      expect(response.body).to eq(Export::NodeFlowSerializer.new(scenario.gql.future.graph, 'MJ').as_csv)
     end
   end
 
@@ -49,7 +49,7 @@ describe Api::V3::ExportController do
     end
 
     it 'renders the CSV' do
-      expect(response.body).to eq(NodeFlowSerializer.new(scenario.gql.present.graph, 'MJ').as_csv)
+      expect(response.body).to eq(Export::NodeFlowSerializer.new(scenario.gql.present.graph, 'MJ').as_csv)
     end
   end
 
@@ -73,7 +73,7 @@ describe Api::V3::ExportController do
 
     it 'renders the CSV' do
       expect(response.body).to eq(
-        NodeFlowSerializer.new(scenario.gql.future.molecules, 'kg').as_csv
+        Export::NodeFlowSerializer.new(scenario.gql.future.molecules, 'kg').as_csv
       )
     end
   end

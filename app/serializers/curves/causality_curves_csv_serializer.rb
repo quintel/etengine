@@ -2,7 +2,7 @@
 
 # The CSV contains the key of each node and the direction of energy
 # flow (input or output) and the hourly load in MWh.
-class CausalityCurvesCSVSerializer
+class Curves::CausalityCurvesCSVSerializer
   # Provides support for multiple carriers in the serializer.
   class Adapter
     attr_reader :attribute, :carrier

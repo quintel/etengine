@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe QueryCurveCSVSerializer do
+RSpec.describe Curves::QueryCurveCSVSerializer do
   let(:config) do
     [
       {

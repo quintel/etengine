@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Creates CSV rows describing merit order production and consumption.
-class HeatNetworkCSVSerializer
+class Curves::DistrictHeatingCSVSerializer
   attr_reader :filename
 
   def initialize(graph, conv_cust = nil)
