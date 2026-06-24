@@ -2,7 +2,7 @@
 
 # Presents the CAPEX, OPEX and other cost parameters of nodes that are part of
 # costs groups as a CSV file.
-class CostsParametersSerializer
+class Export::CostsParametersSerializer
   QUERIES = {
     costs_building_and_installations_households: %w[
       costs_of_insulation_apartments_before_1945

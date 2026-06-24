@@ -5,7 +5,7 @@
 class CausalityCurvesCSVSerializer
   # Provides support for multiple carriers in the serializer.
   class Adapter
-    attr_reader :attribute
+    attr_reader :attribute, :carrier
 
     def initialize(carrier, attribute)
       @carrier = carrier.to_sym

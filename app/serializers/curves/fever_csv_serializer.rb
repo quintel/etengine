@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Creates CSV rows describing heat demand and supply for one or more fever groups.
-class FeverCSVSerializer
+class Curves::FeverCSVSerializer
   attr_reader :filename
 
   def self.time_column(year)

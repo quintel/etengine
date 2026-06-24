@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe CostsParametersSerializer do
+describe Export::CostsParametersSerializer do
   subject do
     CSV.parse(described_class.new(scenario).as_csv, headers: true)
   end

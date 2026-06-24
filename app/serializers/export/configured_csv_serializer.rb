@@ -45,7 +45,7 @@
 #                     to the result of `value:`. For example:
 #                       transform: "value * 10e-6"
 #                       transform: "value ? :other_ghg : :co2"
-class ConfiguredCSVSerializer
+class Export::ConfiguredCSVSerializer
   # Represents the schema for a column in the CSV file.
   class Column
     attr_reader :name, :type, :label, :value, :transform
