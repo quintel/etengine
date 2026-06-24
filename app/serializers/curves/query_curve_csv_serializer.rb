@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Queries the graph to extract curves and serializes the results as a CSV.
-class QueryCurveCSVSerializer
+class Curves::QueryCurveCSVSerializer
   attr_reader :filename
 
   def initialize(config, gql, filename)

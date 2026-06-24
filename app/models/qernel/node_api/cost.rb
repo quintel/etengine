@@ -7,7 +7,7 @@ module Qernel
     # These methods are used in conversion.rb to offer a possibility to convert to a number of
     # different units.
     module Cost
-      # Public: Calculates the input capacity of a typical plant, based on the  output capacity in
+      # Public: Calculates the input capacity of a typical plant, based on the output capacity in
       # MW.
       #
       # If the node has a "typical_input_capacity" defined, this value is always used. When no
@@ -17,11 +17,12 @@ module Qernel
       # Return a float of the input capacity of a typical plant in MWinput
       def input_capacity
         fetch(:input_capacity) do
-          typical_input_capacity ||
-            electric_based_input_capacity ||
-            heat_based_input_capacity ||
-            cooling_based_input_capacity ||
-            # hydrogen_based_input_capacity || I'll fix it on Thursday!
+          typical_input_capacity ||           # very common: most nodes define this explicitly
+            electric_based_input_capacity ||  # common: electricity producers without typical_input_capacity
+            heat_based_input_capacity ||      # common: heat-only nodes without typical_input_capacity
+            hydrogen_based_input_capacity ||  # rare: hydrogen nodes without typical_input_capacity
+            cooling_based_input_capacity ||   # unlikely: cooling nodes usually also have heat_output_capacity
+            # network_gas_based_input_capacity — not yet: network_gas_output_capacity is not an etsource attribute
             0.0
         end
       end

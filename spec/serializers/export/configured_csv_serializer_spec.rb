@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ConfiguredCSVSerializer do
+RSpec.describe Export::ConfiguredCSVSerializer do
   let(:config) do
     {
       schema: [
