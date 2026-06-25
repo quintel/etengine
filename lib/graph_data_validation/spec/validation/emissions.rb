@@ -23,19 +23,36 @@ end
 RSpec.shared_examples('emissions_1990_reconciliation') do |dataset|
   reconciler = GraphDataValidation::EmissionsCsvReconciler.new(dataset)
 
-  [
-    { total: 'direct_emissions_co2_1990',       bunkers: 'direct_emissions_bunkers_co2_1990',       ghgs: %w[co2] },
-    { total: 'direct_emissions_other_ghg_1990', bunkers: 'direct_emissions_bunkers_other_ghg_1990', ghgs: %w[other_ghg] },
-    { total: 'direct_emissions_total_ghg_1990', bunkers: 'direct_emissions_bunkers_total_ghg_1990', ghgs: %w[co2 other_ghg] }
-  ].each do |check|
-    queried_mt = dataset.query("present:Q(#{check[:total]})") -
-                 dataset.query("present:Q(#{check[:bunkers]})")
-    expected_mt = reconciler.total_mt(ghgs: check[:ghgs])
+  context 'with 1990 CO2 emissions' do
+    queried_mt =
+      dataset.query('present:Q(direct_emissions_co2_1990)') -
+      dataset.query('present:Q(direct_emissions_bunkers_co2_1990)')
+    expected_mt = reconciler.total_mt(ghgs: %w[co2])
 
-    context "1990 emissions results for #{check[:total]}" do
-      it 'matches emissions.csv (excl. bunkers)' do
-        expect(queried_mt).to be_within(0.001 * expected_mt + 1e-6).of(expected_mt)
-      end
+    it 'matches emissions.csv (excluding bunkers)' do
+      expect(queried_mt).to be_within((0.001 * expected_mt) + 1e-6).of(expected_mt)
+    end
+  end
+
+  context 'with 1990 other greenhouse gas emissions' do
+    queried_mt =
+      dataset.query('present:Q(direct_emissions_other_ghg_1990)') -
+      dataset.query('present:Q(direct_emissions_bunkers_other_ghg_1990)')
+    expected_mt = reconciler.total_mt(ghgs: %w[other_ghg])
+
+    it 'matches emissions.csv (excluding bunkers)' do
+      expect(queried_mt).to be_within((0.001 * expected_mt) + 1e-6).of(expected_mt)
+    end
+  end
+
+  context 'with 1990 total greenhouse gas emissions' do
+    queried_mt =
+      dataset.query('present:Q(direct_emissions_total_ghg_1990)') -
+      dataset.query('present:Q(direct_emissions_bunkers_total_ghg_1990)')
+    expected_mt = reconciler.total_mt(ghgs: %w[co2 other_ghg])
+
+    it 'matches emissions.csv (excluding bunkers)' do
+      expect(queried_mt).to be_within((0.001 * expected_mt) + 1e-6).of(expected_mt)
     end
   end
 end
