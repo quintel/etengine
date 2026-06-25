@@ -1,4 +1,10 @@
 dataset_collections:
+  emissions_1990_validation:
+    - nl2023
+    - nl2019
+    - DE_germany
+    - UKNI01_northern_ireland
+
   countries:
     - AT_austria
     - BEGM11002_antwerpen

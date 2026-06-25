@@ -10,6 +10,7 @@ module GraphDataValidation
       if env == :dev
         Settings.etsource_lazy_load_dataset = true
         Atlas.data_dir = Etsource::Base.clean_path(File.expand_path("../etsource"))
+        Etsource::Loader.instance.clear!(:gqueries)
       end
 
       # Silently reject unexisting areas
