@@ -109,7 +109,7 @@ Rails.application.routes.draw do
             get :merit_order,               to: 'curves#electricity_profiles'       # backwards compatible
             get :electricity_profiles,      to: 'curves#electricity_profiles',      as: :electricity_profiles_download
             get :electricity_price,         to: 'curves#electricity_price',         as: :electricity_price_download
-            get :heat_network,              to: 'curves#heat_network_profiles'      # backwards compatible
+            get :heat_network,              to: 'curves#district_heating_profiles'  # backwards compatible
             get :district_heating_profiles, to: 'curves#district_heating_profiles', as: :district_heating_profiles_download
             get :agriculture_heat,          to: 'curves#agriculture_heat',          as: :agriculture_heat_download
             get :household_heat,            to: 'curves#household_heat_curves',     as: :household_heat_download
