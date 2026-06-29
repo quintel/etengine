@@ -321,16 +321,16 @@ module Gql::Runtime
       # Returns an attribute {Qernel::Emissions} or {Qernel::Emissions::ScopedSector} or a value.
       #
       # Emissions data is loaded from CSV files in ETSource with the following structure:
-      #   etm_sector, etm_subsector, use, ghg, unit, value
+      #   etm_sector, etm_subsector, use, ghg, year, unit, value
       #
       # Parameters:
       #   - sector: ETM sector name (e.g., 'households', 'buildings_non_specified')
       #             Dashes/dots in sector names are converted to underscores for key generation
       #   - use: Emission use type (energetic, non_energetic) - REQUIRED when accessing values
       #   - ghg: GHG type (co2, other_ghg) - optional
-      #   - year: Year of emission (e.g., 1990) - optional, reads from emissions_YEAR.csv files
+      #   - year: Year of emission (e.g., 1990) - optional, defaults to the analysis year
       #
-      # Key generation combines: sector_[subsector_]use_ghg[_year]
+      # Key generation combines: sector_[subsector_]use_ghg_year
       # Note: Unit column from CSV is not included in keys, blank values return nil
       #
       # EMISSIONS() without any keys returns {Qernel::Emissions}
@@ -352,8 +352,9 @@ module Gql::Runtime
       #
       # Examples
       #   EMISSIONS(households, energetic, other_ghg) # => 12.0 (from emissions.csv)
-      #   EMISSIONS(households, energetic, co2, 1990) # => value (from emissions_1990.csv)
-      #   EMISSIONS(buildings_non_specified, energetic, other_ghg) # => 18.0
+      #   EMISSIONS(households, energetic, co2) # => value for default year
+      #   EMISSIONS(households, energetic, co2, 1990) # => value for 1990
+      #   EMISSIONS(buildings_non_specified, energetic, other_ghg, 2023) # => 18.0
       #
       def EMISSIONS(*keys)
         return scope.graph.emissions if keys.empty?
@@ -365,7 +366,9 @@ module Gql::Runtime
         return scope.graph.emissions.scope(keys.join('_').to_sym) if keys.size == 2
 
         # EMISSIONS(sector, use, ghg [, year]) -> return value
-        scope.graph.emissions[keys.join('_').to_sym]
+        year = keys[3] || scope.graph.area.analysis_year
+        full_key = "#{keys[0]}_#{keys[1]}_#{keys[2]}_#{year}".to_sym
+        scope.graph.emissions[full_key]
       end
     end
   end
