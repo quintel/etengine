@@ -5,14 +5,7 @@
 # Controllers declare their curves/exports here with a small DSL, so the metadata
 # lives next to the actions that serve it and powers the /curves/metadata and
 # /exports/metadata discovery endpoints.
-#
-# A curve's name still appears in several places (route, controller action,
-# serializer filename and the registration below) which are not auto-derived from
-# one another, so a request spec asserts every registered curve has a matching
-# download route to catch drift.
 module CurveMetadataRegistry
-  # Curve type symbols, stored as '<type>_curve' strings. Extend when adding a
-  # new curve type.
   CURVE_TYPES = %i[merit price capacity load fever reconciliation query].freeze
 
   class << self
@@ -22,13 +15,6 @@ module CurveMetadataRegistry
     # @param type [Symbol] The curve type (:merit, :price, :capacity, :load, :fever,
     #   :reconciliation, :query)
     # @param description [String] Human-readable description of what the curve contains
-    #
-    # @example
-    #   CurveMetadataRegistry.register_curve(
-    #     :electricity_profiles,
-    #     type: :merit,
-    #     description: 'Load on each participant in the electricity merit order'
-    #   )
     def register_curve(name, type:, description:)
       curves[name] = {
         name: name.to_s,
@@ -41,12 +27,6 @@ module CurveMetadataRegistry
     #
     # @param name [Symbol] The export name (must match controller method and route)
     # @param description [String] Human-readable description of what the export contains
-    #
-    # @example
-    #   CurveMetadataRegistry.register_export(
-    #     :energy_flow,
-    #     description: 'Energy flows by carrier (future year)'
-    #   )
     def register_export(name, description:)
       exports[name] = {
         name: name.to_s,
@@ -68,7 +48,7 @@ module CurveMetadataRegistry
       exports.values
     end
 
-    # Clears all registrations (useful for testing)
+    # Clears all registrations
     def clear!
       curves.clear
       exports.clear

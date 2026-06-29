@@ -14,7 +14,7 @@ module Api
     # - Clients can discover new curves without a code change on their side
     #
     # A curve's name is repeated across its route, action, serializer and
-    # registration; a request spec guards that these stay in sync.
+    # registration;
     class CurveMetadataController < BaseController
       # GET /api/v3/curves/metadata
       #
