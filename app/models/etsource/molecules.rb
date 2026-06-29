@@ -12,7 +12,7 @@ module Etsource
     #
     # Returns an Array of Symbols.
     def from_energy_keys
-      Rails.cache.fetch('molecules.from_energy_keys') do
+      NastyCache.instance.fetch('molecules.from_energy_keys') do
         Atlas::MoleculeNode.all.select(&:from_energy).map(&:key).sort
       end
     end
@@ -24,7 +24,7 @@ module Etsource
     #
     # Returns an Array of Symbols.
     def from_molecules_keys
-      Rails.cache.fetch('molecules.from_molecules_keys') do
+      NastyCache.instance.fetch('molecules.from_molecules_keys') do
         Atlas::EnergyNode.all.select(&:from_molecules).map(&:key).sort
       end
     end
