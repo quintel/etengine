@@ -9,6 +9,59 @@ module Api
         authorize!(:read, @scenario)
       end
 
+      # Register all available exports with metadata
+      # These registrations provide the single source of truth for export metadata
+      # exposed via the /api/v3/exports/metadata endpoint
+      CurveMetadataRegistry.register_export(
+        :energy_flow,
+        description: 'Energy flows by carrier (future year)'
+      )
+
+      CurveMetadataRegistry.register_export(
+        :energy_flow_present,
+        description: 'Energy flows by carrier (present year)'
+      )
+
+      CurveMetadataRegistry.register_export(
+        :molecule_flow,
+        description: 'Molecule/hydrogen flows'
+      )
+
+      CurveMetadataRegistry.register_export(
+        :sankey,
+        description: 'Sankey diagram data'
+      )
+
+      CurveMetadataRegistry.register_export(
+        :storage_parameters,
+        description: 'Storage capacity and parameters'
+      )
+
+      CurveMetadataRegistry.register_export(
+        :costs_parameters,
+        description: 'Cost breakdown by technology'
+      )
+
+      CurveMetadataRegistry.register_export(
+        :electricity_capacities,
+        description: 'Installed/peak capacity per participant in the electricity merit order'
+      )
+
+      CurveMetadataRegistry.register_export(
+        :hydrogen_capacities,
+        description: 'Installed/peak capacity for hydrogen participants'
+      )
+
+      CurveMetadataRegistry.register_export(
+        :network_gas_capacities,
+        description: 'Installed/peak capacity for network gas participants'
+      )
+
+      CurveMetadataRegistry.register_export(
+        :district_heating_capacities,
+        description: 'Installed/peak capacity per participant in the heat merit order'
+      )
+
       # GET /api/v3/scenarios/:id/energy_flow
       #
       # Returns a CSV file containing the energetic inputs and outputs of every node in the future graph.

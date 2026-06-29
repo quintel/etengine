@@ -16,21 +16,24 @@ Rails.application.routes.draw do
       resources :areas, only: %i[index show]
       resources :gqueries, only: :index
 
+      get 'curves/metadata',  to: 'curve_metadata#curves'
+      get 'exports/metadata', to: 'curve_metadata#exports'
+
       resources :scenarios, only: %i[index show create update destroy] do
         member do
           get :batch
-          get :energy_flow,               to: 'export#energy_flow'
-          get :energy_flow_present,       to: 'export#energy_flow_present'
-          get :molecule_flow,             to: 'export#molecule_flow'
-          get :costs_parameters,          to: 'export#costs_parameters'
-          get :sankey,                    to: 'export#sankey'
-          get :storage_parameters,        to: 'export#storage_parameters'
-          get :direct_emissions_present,  to: 'export#direct_emissions_present'
-          get :direct_emissions_future,   to: 'export#direct_emissions_future'
-          get :electricity_capacities,    to: 'export#electricity_capacities',  as: :electricity_capacities_download
-          get :hydrogen_capacities,       to: 'export#hydrogen_capacities',     as: :hydrogen_capacities_download
-          get :network_gas_capacities,    to: 'export#network_gas_capacities',  as: :network_gas_capacities_download
-          get :district_heating_capacities,   to: 'export#district_heating_capacities', as: :district_heating_capacities_download
+          get :energy_flow,                 to: 'export#energy_flow'
+          get :energy_flow_present,         to: 'export#energy_flow_present'
+          get :molecule_flow,               to: 'export#molecule_flow'
+          get :costs_parameters,            to: 'export#costs_parameters'
+          get :sankey,                      to: 'export#sankey'
+          get :storage_parameters,          to: 'export#storage_parameters'
+          get :direct_emissions_present,    to: 'export#direct_emissions_present'
+          get :direct_emissions_future,     to: 'export#direct_emissions_future'
+          get :electricity_capacities,      to: 'export#electricity_capacities',      as: :electricity_capacities_download
+          get :hydrogen_capacities,         to: 'export#hydrogen_capacities',         as: :hydrogen_capacities_download
+          get :network_gas_capacities,      to: 'export#network_gas_capacities',      as: :network_gas_capacities_download
+          get :district_heating_capacities, to: 'export#district_heating_capacities', as: :district_heating_capacities_download
           get :merit
           get :dump
           put :dashboard
