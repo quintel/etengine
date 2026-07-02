@@ -68,6 +68,10 @@ module Gql
         energy_graph_helper.use_nodes(keys)
       end
 
+      def molecule_use_nodes(keys)
+        molecule_graph_helper.use_nodes(keys)
+      end
+
       def group_energy_nodes(keys)
         energy_graph_helper.group_nodes(keys)
       end

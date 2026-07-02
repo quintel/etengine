@@ -143,6 +143,11 @@ module Gql::Runtime
         scope.energy_use_nodes(keys)
       end
 
+      # Returns an Array of {Qernel::Node} for given molecule use. See USE.
+      def MUSE(*keys)
+        scope.molecule_use_nodes(keys)
+      end
+
       # Returns an Array of {Qernel::Carrier} for given key(s). Returns carriers belonging to the
       # energy graph.
       #
