@@ -2,15 +2,13 @@ require 'spec_helper'
 
 module Qernel
   describe Emissions do
-    let(:area) { double('Area', analysis_year: 2023) }
-
     let(:dataset) do
       Qernel::Dataset.new(1).tap do |ds|
         ds.data[:emissions] = { emissions_data: data }
       end
     end
 
-    let(:graph) { double('Graph', area: area, dataset: dataset) }
+    let(:graph) { double('Graph', dataset: dataset) }
     let(:emissions) { Emissions.new(graph).tap(&:assign_dataset_attributes) }
     let(:data) { {} }
 
@@ -86,8 +84,8 @@ module Qernel
       let(:scoped) { emissions.scope(:households_non_specified_energetic) }
 
       before do
-        emissions[:households_non_specified_energetic_other_ghg_2023] = 50.0
-        emissions[:agriculture_non_specified_energetic_other_ghg_2023] = 25.0
+        emissions[:households_non_specified_energetic_other_ghg] = 50.0
+        emissions[:agriculture_non_specified_energetic_other_ghg] = 25.0
       end
 
       describe 'GHG accessors' do
@@ -102,13 +100,13 @@ module Qernel
 
         it 'writes values with the scoped prefix' do
           scoped.other_ghg = 75.0
-          expect(emissions.dataset_get(:households_non_specified_energetic_other_ghg_2023)).to eq(75.0)
+          expect(emissions.dataset_get(:households_non_specified_energetic_other_ghg)).to eq(75.0)
         end
 
         it 'writes values for a different scope' do
           other_scoped = emissions.scope(:agriculture_non_specified_energetic)
           other_scoped.other_ghg = 30.0
-          expect(emissions.dataset_get(:agriculture_non_specified_energetic_other_ghg_2023)).to eq(30.0)
+          expect(emissions.dataset_get(:agriculture_non_specified_energetic_other_ghg)).to eq(30.0)
         end
 
         it 'returns nil when the scope has no value for the GHG' do
@@ -117,7 +115,7 @@ module Qernel
 
         it 'allows setting a GHG which has no value yet (runtime UPDATE values)' do
           scoped.co2 = 300.0
-          expect(emissions.dataset_get(:households_non_specified_energetic_co2_2023)).to eq(300.0)
+          expect(emissions.dataset_get(:households_non_specified_energetic_co2)).to eq(300.0)
         end
       end
 
@@ -163,7 +161,7 @@ module Qernel
 
       describe '[]' do
         before do
-          emissions[:agriculture_non_specified_energetic_other_ghg_2023] = 123.45
+          emissions[:agriculture_non_specified_energetic_other_ghg] = 123.45
         end
 
         let(:scoped) { emissions.scope(:agriculture_non_specified_energetic) }
@@ -182,7 +180,7 @@ module Qernel
 
         it 'sets the value' do
           scoped[:other_ghg] = 999.0
-          expect(emissions.dataset_get(:industry_non_specified_energetic_other_ghg_2023)).to eq(999.0)
+          expect(emissions.dataset_get(:industry_non_specified_energetic_other_ghg)).to eq(999.0)
         end
       end
 
@@ -196,22 +194,22 @@ module Qernel
         let(:scoped) { emissions.scope(:energy_fugitive_emissions_non_energetic) }
 
         before do
-          emissions[:energy_fugitive_emissions_non_energetic_co2_2023] = 0.0
-          emissions[:energy_electricity_and_heat_production_energetic_other_ghg_2023] = 0.0
-          emissions[:buildings_non_specified_energetic_other_ghg_2023] = 0.0
-          emissions[:agriculture_non_specified_energetic_other_ghg_2023] = 0.0
-          emissions[:agriculture_non_specified_non_energetic_co2_2023] = 0.0
+          emissions[:energy_fugitive_emissions_non_energetic_co2] = 0.0
+          emissions[:energy_electricity_and_heat_production_energetic_other_ghg] = 0.0
+          emissions[:buildings_non_specified_energetic_other_ghg] = 0.0
+          emissions[:agriculture_non_specified_energetic_other_ghg] = 0.0
+          emissions[:agriculture_non_specified_non_energetic_co2] = 0.0
         end
 
         it 'handles zero values' do
           scoped.co2 = 0.0
-          expect(emissions.dataset_get(:energy_fugitive_emissions_non_energetic_co2_2023)).to eq(0.0)
+          expect(emissions.dataset_get(:energy_fugitive_emissions_non_energetic_co2)).to eq(0.0)
         end
 
         it 'handles large values' do
           buildings_scoped = emissions.scope(:buildings_non_specified_energetic)
           buildings_scoped.other_ghg = 9999999.0
-          expect(emissions.dataset_get(:buildings_non_specified_energetic_other_ghg_2023)).to eq(9999999.0)
+          expect(emissions.dataset_get(:buildings_non_specified_energetic_other_ghg)).to eq(9999999.0)
         end
 
         it 'handles multi-word subsector scopes' do
@@ -219,20 +217,20 @@ module Qernel
           # Scope: energy_electricity_and_heat_production_energetic
           multi_scoped = emissions.scope(:energy_electricity_and_heat_production_energetic)
           multi_scoped.other_ghg = 275.0
-          expect(emissions.dataset_get(:energy_electricity_and_heat_production_energetic_other_ghg_2023)).to eq(275.0)
+          expect(emissions.dataset_get(:energy_electricity_and_heat_production_energetic_other_ghg)).to eq(275.0)
         end
 
         it 'works with multi-part keys from real dataset' do
           scoped.co2 = 100.0
-          expect(emissions.dataset_get(:energy_fugitive_emissions_non_energetic_co2_2023)).to eq(100.0)
+          expect(emissions.dataset_get(:energy_fugitive_emissions_non_energetic_co2)).to eq(100.0)
 
           ag_energetic = emissions.scope(:agriculture_non_specified_energetic)
           ag_energetic.other_ghg = 200.0
-          expect(emissions.dataset_get(:agriculture_non_specified_energetic_other_ghg_2023)).to eq(200.0)
+          expect(emissions.dataset_get(:agriculture_non_specified_energetic_other_ghg)).to eq(200.0)
 
           ag_non_energetic = emissions.scope(:agriculture_non_specified_non_energetic)
           ag_non_energetic.co2 = 300.0
-          expect(emissions.dataset_get(:agriculture_non_specified_non_energetic_co2_2023)).to eq(300.0)
+          expect(emissions.dataset_get(:agriculture_non_specified_non_energetic_co2)).to eq(300.0)
         end
       end
     end
