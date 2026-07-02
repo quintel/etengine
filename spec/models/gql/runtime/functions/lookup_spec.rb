@@ -74,5 +74,35 @@ module Gql::Runtime::Functions
         expect(result).to eq(10.0)
       end
     end
+
+    # MUSE
+    # ----
+
+    describe 'MUSE(energetic)' do
+      it 'returns [Node(m_right_one)]' do
+        expect(result).to eq([molecule_graph.node(:m_right_one)])
+      end
+    end
+
+    describe 'MUSE(non_energetic)' do
+      it 'returns [Node(m_right_two)]' do
+        expect(result).to eq([molecule_graph.node(:m_right_two)])
+      end
+    end
+
+    describe 'MUSE(energetic, non_energetic)' do
+      it 'returns [Node(m_right_one), Node(m_right_two)]' do
+        expect(result).to eq([
+          molecule_graph.node(:m_right_one),
+          molecule_graph.node(:m_right_two)
+        ])
+      end
+    end
+
+    describe 'MUSE(undefined)' do
+      it 'returns []' do
+        expect(result).to eq([])
+      end
+    end
   end
 end
