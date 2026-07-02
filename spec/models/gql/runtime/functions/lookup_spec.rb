@@ -3,6 +3,7 @@ require 'spec_helper'
 module Gql::Runtime::Functions
   describe Lookup, :etsource_fixture do
     let(:gql) { Scenario.default.gql(prepare: true) }
+    let(:molecule_graph) { gql.future.molecules }
 
     let(:result) do |example|
       gql.query_future(example.metadata[:example_group][:description])
@@ -50,21 +51,27 @@ module Gql::Runtime::Functions
       end
     end
 
-    describe "EMISSIONS(buildings_non_specified, energetic, other_ghg, 2023)" do
-      it 'returns the emission value for the specified year' do
+    describe "EMISSIONS(buildings_non_specified, energetic, other_ghg)" do
+      it 'returns the present-year emission value' do
         expect(result).to eq(2796620.0)
       end
     end
 
-    describe "EMISSIONS(energy_electricity_and_heat_production, energetic, other_ghg, 2023)" do
-      it 'returns the emission value for the specified year' do
+    describe "EMISSIONS(energy_electricity_and_heat_production, energetic, other_ghg)" do
+      it 'returns the present-year emission value' do
         expect(result).to eq(18.0)
       end
     end
 
-    describe 'EMISSIONS(households_non_specified, energetic, other_ghg, 2023)' do
-      it 'returns the emission value for the specified year' do
+    describe 'EMISSIONS(households_non_specified, energetic, other_ghg)' do
+      it 'returns the present-year emission value' do
         expect(result).to eq(7.0)
+      end
+    end
+
+    describe 'EMISSIONS(households_non_specified, energetic, other_ghg, 1990)' do
+      it 'returns the 1990 baseline emission value' do
+        expect(result).to eq(10.0)
       end
     end
   end

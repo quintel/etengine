@@ -8,16 +8,16 @@ module Qernel
   # Emissions data is loaded from CSV files in ETSource with structure:
   #   etm_sector, etm_subsector, use, ghg, year, unit, value
   #
-  # Values are stored flat, keyed as: sector_subsector_use_ghg_year
+  # Values are stored flat, keyed as: sector_subsector_use_ghg[_1990]
   # Examples:
-  #   - buildings_non_specified_energetic_other_ghg_2023
+  #   - buildings_non_specified_energetic_other_ghg
   #   - energy_electricity_and_heat_production_energetic_co2_1990
   #
   # == Year Handling
   #
-  # Year parameter defaults to the dataset's analysis_year when not
-  # specified. Multiple years coexist in the same dataset (e.g., 1990
-  # baseline, 2023 current).
+  # The present year is implicit and carries no suffix. Only the historic
+  # 1990 baseline is suffixed with its year, so both can coexist in the
+  # same dataset.
   class Emissions
     include DatasetAttributes
 
@@ -52,37 +52,35 @@ module Qernel
       end
 
       def scoped_method(method_name)
-        year = @year || @emissions.default_year
-        "#{@scope}_#{method_name}_#{year}"
+        attr = method_name.to_s.delete_suffix('=')
+        @year.to_i == 1990 ? "#{@scope}_#{attr}_1990" : "#{@scope}_#{attr}"
       end
 
       def respond_to_missing?(method_name, include_private = false)
-        attr_name = method_name.to_s.delete_suffix('=')
-        data_key = scoped_method(attr_name)
-
         if method_name.to_s.end_with?('=')
           scope_exists?
         else
-          @emissions.respond_to?(data_key) || super
+          @emissions.respond_to?(scoped_method(method_name)) || super
         end
       end
 
       def method_missing(method_name, *args)
-        attr_name = method_name.to_s.delete_suffix('=')
-        data_key = scoped_method(attr_name).to_sym
+        key = scoped_method(method_name).to_sym
 
         if method_name.to_s.end_with?('=')
           unless scope_exists?
             raise NoMethodError, "undefined method `#{method_name}' for #{inspect}"
           end
-          @emissions[data_key] = args.first
+
+          @emissions[key] = args.first
         else
-          @emissions[data_key]
+          @emissions[key]
         end
       end
 
       private
 
+      # Scoped writes work for any region that has the scope.
       def scope_exists?
         prefix = "#{@scope}_"
         @emissions.dataset_attributes.keys.any? { |key| key.to_s.start_with?(prefix) }
@@ -98,18 +96,11 @@ module Qernel
     # Public: define the sector scope for access to the hashed emission keys
     #
     # sector - Scope identifier (e.g., :buildings_non_specified_energetic).
-    # year   - Optional year (defaults to analysis_year). Used to target a
-    #          specific year for UPDATE operations.
+    # year   - Optional year. Pass 1990 to target the historic baseline.
     #
     # Returns a scoped version of the emissions data
     def scope(sector, year = nil)
       ScopedSector.new(self, sector, year)
-    end
-
-    # Returns the default year for emissions queries.
-    # Uses the area's analysis_year if graph is present, nil otherwise.
-    def default_year
-      graph&.area&.analysis_year
     end
   end
 end

@@ -133,8 +133,6 @@ module Gql::Runtime
 
       # Returns an Array with {Qernel::Node} for given energy use.
       #
-      # See Qernel::Node::USES
-      #
       # Examples
       #
       #   USE(energetic)
@@ -328,9 +326,10 @@ module Gql::Runtime
       #             Dashes/dots in sector names are converted to underscores for key generation
       #   - use: Emission use type (energetic, non_energetic) - REQUIRED when accessing values
       #   - ghg: GHG type (co2, other_ghg) - optional
-      #   - year: Year of emission (e.g., 1990) - optional, defaults to the analysis year
+      #   - year: Pass 1990 to read the historic baseline; the present year is
+      #           implicit and needs no argument
       #
-      # Key generation combines: sector_[subsector_]use_ghg_year
+      # Key generation combines: sector_[subsector_]use_ghg[_1990]
       # Note: Unit column from CSV is not included in keys, blank values return nil
       #
       # EMISSIONS() without any keys returns {Qernel::Emissions}
@@ -351,10 +350,9 @@ module Gql::Runtime
       # EMISSIONS(sector, use, ghg) or EMISSIONS(sector, use, ghg, year) returns an emission value
       #
       # Examples
-      #   EMISSIONS(households, energetic, other_ghg) # => 12.0 (from emissions.csv)
-      #   EMISSIONS(households, energetic, co2) # => value for default year
+      #   EMISSIONS(households, energetic, other_ghg) # => 12.0 (present year)
       #   EMISSIONS(households, energetic, co2, 1990) # => value for 1990
-      #   EMISSIONS(buildings_non_specified, energetic, other_ghg, 2023) # => 18.0
+      #   EMISSIONS(buildings_non_specified, energetic, other_ghg) # => 18.0
       #
       def EMISSIONS(*keys)
         return scope.graph.emissions if keys.empty?
@@ -365,10 +363,11 @@ module Gql::Runtime
         # EMISSIONS(sector, use) -> return ScopedSector for UPDATE operations
         return scope.graph.emissions.scope(keys.join('_').to_sym) if keys.size == 2
 
-        # EMISSIONS(sector, use, ghg [, year]) -> return value
-        year = keys[3] || scope.graph.area.analysis_year
-        full_key = "#{keys[0]}_#{keys[1]}_#{keys[2]}_#{year}".to_sym
-        scope.graph.emissions[full_key]
+        # EMISSIONS(sector, use, ghg [, year]) -> return value.
+        # The present year is implicit; only 1990 is suffixed with a year.
+        scope.graph.emissions[
+          [*keys.first(3), (1990 if keys[3].to_i == 1990)].compact.join('_').to_sym
+        ]
       end
     end
   end
