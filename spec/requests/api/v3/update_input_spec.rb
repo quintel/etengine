@@ -113,7 +113,7 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'responds 200 OK' do
-        decoded_token = ETEngine::TokenDecoder.decode(token_header['Authorization'].split(' ').last)
+        Identity::TokenDecoder.decode(token_header['Authorization'].split.last)
         expect(response.status).to be(200)
       end
 
@@ -122,7 +122,7 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'includes the scenario data' do
-        json = JSON.parse(response.body)
+        json = response.parsed_body
 
         expect(json).to have_key('scenario')
 
