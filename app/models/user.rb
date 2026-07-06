@@ -46,22 +46,11 @@ class User < ApplicationRecord
     identity_user&.admin? || admin
   end
 
-  # Performs sign-in steps for an Identity::User.
-  #
-  # If a matching user exists in the database, it will be updated with the latest data from the
-  # Identity::User. Otherwise, a new user will be created.
-  #
-  # Returns the user. Raises an error if the user could not be saved.
-  def self.from_identity!(identity_user)
-    where(id: identity_user.id).first_or_initialize.tap do |user|
-      user.identity_user = identity_user
-      user.name = identity_user.name
-
-      user.save!
-    end
-  end
-
   # Finds or creates a user from a JWT token.
+  #
+  # The token's claims are also set as identity_user: admin?/email/roles all prefer this fresh,
+  # per-request identity data over the persisted columns, which are only ever set at creation, so a
+  # role granted/revoked at the identity provider after that first login is still reflected here.
   def self.from_jwt!(token)
     id = token['sub']
     admin = token.dig('user', 'admin')
@@ -70,7 +59,13 @@ class User < ApplicationRecord
 
     raise 'Token does not contain user information' if id.blank? || name.blank? || email.blank?
 
-    User.find_or_create_by!(id: token['sub']) do |u|
+    user = find_or_create_from_jwt(id:, admin:, name:, email:)
+    user&.identity_user = Identity::User.from_jwt_claims(token)
+    user
+  end
+
+  def self.find_or_create_from_jwt(id:, admin:, name:, email:)
+    User.find_or_create_by!(id: id) do |u|
       u.admin = admin.presence || false
       u.name = name
       u.user_email = email
@@ -83,10 +78,7 @@ class User < ApplicationRecord
   # id.
   # Also rescue from Deadlock: https://github.com/rails/rails/issues/54281
   rescue ActiveRecord::RecordNotUnique, ActiveRecord::Deadlocked, ActiveRecord::LockWaitTimeout
-    User.find_by(id: token['sub'])
+    User.find_by(id: id)
   end
-
-  def self.from_session_user!(identity_user)
-    find(identity_user.id).tap { |u| u.identity_user = identity_user }
-  end
+  private_class_method :find_or_create_from_jwt
 end

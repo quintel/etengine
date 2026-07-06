@@ -10,15 +10,11 @@ module AuthorizationHelper
   end
 
   def generate_jwt(user, **kwargs)
-    allow(ETEngine::TokenDecoder)
-      .to receive(:jwk).and_return(
-        JSON::JWK.new(AuthorizationHelper.key.public_key)
-      )
+    allow(Identity::TokenDecoder).to receive(:jwk_set).and_return(
+      'keys' => [JWT::JWK.new(AuthorizationHelper.key.public_key, 'test_key').export]
+    )
 
-    token = JSON::JWT.new(jwt_payload(user, **kwargs))
-    token.header[:kid] = 'test_key'
-
-    token.sign(AuthorizationHelper.key, :RS256).to_s
+    JWT.encode(jwt_payload(user, **kwargs), AuthorizationHelper.key, 'RS256', kid: 'test_key')
   end
 
   def jwt_payload(
