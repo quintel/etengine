@@ -23,6 +23,11 @@ Rails.application.configure do
   # a dotted parent the browser accepts
   config.hosts << ENV.fetch('ETM_HOST_PARENT', '.local.energytransitionmodel.com')
 
+  # Allow the ETLauncher cross-app parent domain so the shared etm_session cookie can be scoped to
+  # a dotted parent the browser accepts (a Domain cookie on .localhost is rejected). The parent is
+  # supplied by ETLauncher via ETM_HOST_PARENT (single source of truth); defaults to the local dev domain.
+  config.hosts << ENV.fetch('ETM_HOST_PARENT', '.local.energytransitionmodel.com')
+
   # Always use a memory store so that we don't reload datasets on every request.
   config.cache_store = :memory_store, { size: 512 * (1024**3) } # 512 Mb
   # config.cache_store = :dalli_store
