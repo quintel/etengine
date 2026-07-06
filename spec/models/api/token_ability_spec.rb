@@ -45,7 +45,7 @@ RSpec.describe Api::TokenAbility do
     allow(described_class).to receive(:jwk_set).and_return(JSON::JWK::Set.new(mock_jwk_set))
 
     # Mock the TokenDecoder behavior
-    allow(ETEngine::TokenDecoder).to receive(:decode).with(test_token).and_return(mock_decoded_token)
+    allow(Identity::TokenDecoder).to receive(:decode).with(test_token).and_return(mock_decoded_token)
   end
 
   let(:ability) { described_class.new(mock_decoded_token, user) }

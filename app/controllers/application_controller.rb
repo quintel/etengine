@@ -21,7 +21,12 @@ class ApplicationController < ActionController::Base
   end
 
   def current_user
-    @current_user ||= User.from_session_user!(identity_user) if signed_in?
+    @current_user ||=
+      if identity_token
+        # Shared JWT session cookie: find-or-create the local user from the verified claims, the same
+        # way the API path does, so a cookie-authenticated visitor without a local row is not bounced.
+        User.from_jwt!(identity_token)
+      end
   rescue ActiveRecord::RecordNotFound
     reset_session
     redirect_to root_path
