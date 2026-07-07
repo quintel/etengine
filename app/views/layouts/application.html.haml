@@ -14,7 +14,7 @@
     = stylesheet_link_tag 'application'
     = javascript_importmap_tags 'inspect'
 
-  %body#data
+  %body#data{ data: identity_session_keeper_attributes }
     .navbar.navbar-inverse
       .navbar-inner
         .container
