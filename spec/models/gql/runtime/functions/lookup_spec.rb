@@ -85,16 +85,20 @@ module Gql::Runtime::Functions
     end
 
     describe 'MUSE(non_energetic)' do
-      it 'returns [Node(m_right_two)]' do
-        expect(result).to eq([molecule_graph.node(:m_right_two)])
+      it 'returns [Node(m_right_two), Node(m_waste)]' do
+        expect(result).to eq([
+          molecule_graph.node(:m_right_two),
+          molecule_graph.node(:m_waste)
+        ])
       end
     end
 
     describe 'MUSE(energetic, non_energetic)' do
-      it 'returns [Node(m_right_one), Node(m_right_two)]' do
+      it 'returns [Node(m_right_one), Node(m_right_two), Node(m_waste)]' do
         expect(result).to eq([
           molecule_graph.node(:m_right_one),
-          molecule_graph.node(:m_right_two)
+          molecule_graph.node(:m_right_two),
+          molecule_graph.node(:m_waste)
         ])
       end
     end
@@ -201,13 +205,13 @@ module Gql::Runtime::Functions
 
     describe "MSECTOR(ipcc_crt_code_agg, '5')" do
       it 'returns the labelled molecule node' do
-        expect(keys_of(result)).to eq(%i[m_left])
+        expect(keys_of(result)).to eq(%i[m_waste])
       end
     end
 
     describe "MSECTOR(klimaattafel, 'Elektriciteit')" do
       it 'returns only molecule nodes (disjoint from the energy graph)' do
-        expect(keys_of(result)).to eq(%i[m_left])
+        expect(keys_of(result)).to eq(%i[m_waste])
       end
     end
 
