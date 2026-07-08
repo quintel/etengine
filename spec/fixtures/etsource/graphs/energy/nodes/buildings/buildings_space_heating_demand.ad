@@ -6,3 +6,5 @@
 - demand = 100.0
 - preset_demand = 100.0
 - number_of_units = 200.0
+- sector_label = buildings_non_specified
+- use = energetic

@@ -1,0 +1,12 @@
+sector_label,use,ipcc_crt_code_agg,klimaattafel
+energy_electricity_and_heat_production,energetic,1.A.1,Elektriciteit
+industry_refineries,energetic,1.A.1,Industrie
+industry_refineries,non_energetic,1.B,Industrie
+industry_non_specified,energetic,1.A.2,Industrie
+buildings_non_specified,energetic,1.A.4.a,Gebouwde omgeving
+households_non_specified,energetic,1.A.4.b,Gebouwde omgeving
+agriculture_non_specified,energetic,1.A.4.c,Landbouw
+agriculture_non_specified,non_energetic,3,Landbouw
+waste_non_specified,non_energetic,5,Elektriciteit
+energy_fugitive_emissions,non_energetic,1.B,Elektriciteit
+other_heating,energetic,-,Mobiliteit

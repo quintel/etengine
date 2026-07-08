@@ -1,2 +1,4 @@
 - groups = []
 - graph_methods = [demand_setter]
+- sector_label = industry_refineries
+- use = non_energetic

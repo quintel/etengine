@@ -1,3 +1,5 @@
 - groups = [emissions]
 - from_energy.source = molecule_source
 - input.co2 = 1.0
+- sector_label = waste_non_specified
+- use = non_energetic

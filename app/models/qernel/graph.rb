@@ -264,6 +264,18 @@ class Graph
     nodes.map(&:sector_key).uniq.compact
   end
 
+  # Resolver for scheme-based sector mapping queries (SECTOR(scheme, value)).
+  #
+  # Memoized per graph instance.
+  #
+  # @return [Qernel::Sectors]
+  def sector_map
+    @sector_map ||= begin
+      sectors = Etsource::Sectors.new
+      Qernel::Sectors.new(self, sectors.mapping, sectors.node_index(@name))
+    end
+  end
+
   # Return all nodes in the given sector.
   #
   # @param sector_key [String,Symbol] sector identifier
