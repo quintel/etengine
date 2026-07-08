@@ -1,1 +1,3 @@
 - groups = [application_group]
+- sector_label = industry_refineries
+- use = energetic

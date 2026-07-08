@@ -116,19 +116,36 @@ module Gql::Runtime
       end
       alias MEG EDGE_GROUP
 
-      # Returns an Array of {Qernel::Node} for given energy sector.
+      # Returns an Array of {Qernel::Node} for an energy sector.
       #
-      # Examples
+      # Dispatches on arity:
       #
-      #   SECTOR(households)
+      #   * One argument  - namespace-sector filter.
+      #       SECTOR(households)
+      #   * Two or more   - a classification scheme followed by one or more
+      #                     values; returns the union of matching nodes.
+      #       SECTOR(klimaattafel, 'Industrie')
+      #       SECTOR(ipcc_crt_code_agg, '1.A.1', '1.A.2')
       #
+      # Unknown scheme or value raises; a valid value with no labelled nodes
+      # returns an empty array.
       def SECTOR(*keys)
-        scope.energy_sector_nodes(keys)
+        if keys.size <= 1
+          scope.energy_sector_nodes(keys)
+        else
+          scope.energy_sector_map(keys.first, keys.drop(1))
+        end
       end
 
-      # Returns an Array of {Qernel::Node} for given molecule sector. See SECTOR.
+      # Returns an Array of {Qernel::Node} for a molecule sector. See SECTOR;
+      # identical dispatch, normalization and error contract, resolved against
+      # the molecule graph.
       def MSECTOR(*keys)
-        scope.molecule_sector_nodes(keys)
+        if keys.size <= 1
+          scope.molecule_sector_nodes(keys)
+        else
+          scope.molecule_sector_map(keys.first, keys.drop(1))
+        end
       end
 
       # Returns an Array with {Qernel::Node} for given energy use.
@@ -362,6 +379,12 @@ module Gql::Runtime
       def EMISSIONS(*keys)
         return scope.graph.emissions if keys.empty?
 
+        # Mapped form: EMISSIONS(scheme, value, ghg[, 1990]). Dispatches on the
+        # first argument being a known classification scheme, because the legacy
+        # arities overlap. Read-only: sums the store over the mapping's resolved
+        # (sector label, use) pairs; never returns a scoped-sector handle.
+        return mapped_emissions(keys) if scope.sector_resolver.scheme?(keys.first)
+
         # Convert dashes/dots to underscores in the first key (sector)
         keys[0] = keys.first.to_s.tr('-.', '_').to_sym
 
@@ -373,6 +396,28 @@ module Gql::Runtime
         scope.graph.emissions[
           [*keys.first(3), (1990 if keys[3].to_i == 1990)].compact.join('_').to_sym
         ]
+      end
+
+      private
+
+      # Internal: Sums the emissions store over every (sector label, use) pair
+      # the mapping resolves for `scheme`/`value`. Present year is implicit;
+      # only 1990 is suffixed. Missing store keys count as zero.
+      def mapped_emissions(keys)
+        scheme, value, ghg, year = keys
+
+        if ghg.nil?
+          raise Gql::GqlError, "EMISSIONS(#{scheme.inspect}, ...) needs a GHG argument, e.g. " \
+                               "EMISSIONS(#{scheme.inspect}, #{value.inspect}, co2)"
+        end
+
+        suffix    = ('1990' if year.to_i == 1990)
+        emissions = scope.graph.emissions
+
+        scope.sector_resolver.pairs(scheme, value).sum do |label, use|
+          key = [label, use, ghg, suffix].compact.join('_').to_sym
+          emissions[key] || 0.0
+        end
       end
     end
   end
