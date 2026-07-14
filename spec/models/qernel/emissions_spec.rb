@@ -40,6 +40,60 @@ module Qernel
       end
     end
 
+    describe '.key_for' do
+      it 'joins the parts with underscores' do
+        expect(described_class.key_for(:households, :energetic, :co2))
+          .to eq(:households_energetic_co2)
+      end
+
+      it 'suffixes 1990 for the historic baseline' do
+        expect(described_class.key_for(:households, :energetic, :co2, year: 1990))
+          .to eq(:households_energetic_co2_1990)
+      end
+
+      it 'ignores any other year (the present year is implicit)' do
+        expect(described_class.key_for(:households, :energetic, :co2, year: 2019))
+          .to eq(:households_energetic_co2)
+      end
+    end
+
+    describe '#value_for' do
+      before do
+        emissions[:households_non_specified_energetic_co2] = 40.0
+        emissions[:households_non_specified_energetic_co2_1990] = 60.0
+      end
+
+      it 'reads the present-year value' do
+        expect(emissions.value_for(:households_non_specified, :energetic, :co2)).to eq(40.0)
+      end
+
+      it 'reads the 1990 baseline when asked' do
+        expect(emissions.value_for(:households_non_specified, :energetic, :co2, year: 1990))
+          .to eq(60.0)
+      end
+
+      it 'returns nil for a missing key' do
+        expect(emissions.value_for(:industry_steel, :energetic, :co2)).to be_nil
+      end
+    end
+
+    describe '#sum_pairs' do
+      before do
+        emissions[:households_non_specified_energetic_co2] = 40.0
+        emissions[:agriculture_non_specified_energetic_co2] = 2.0
+      end
+
+      it 'sums the stored values over the pairs' do
+        pairs = [%i[households_non_specified energetic], %i[agriculture_non_specified energetic]]
+        expect(emissions.sum_pairs(pairs, :co2)).to eq(42.0)
+      end
+
+      it 'counts pairs without a stored value as zero' do
+        pairs = [%i[households_non_specified energetic], %i[industry_steel energetic]]
+        expect(emissions.sum_pairs(pairs, :co2)).to eq(40.0)
+      end
+    end
+
     describe '#scope' do
       it 'returns a ScopedSector instance' do
         scoped = emissions.scope(:households_non_specified_energetic)

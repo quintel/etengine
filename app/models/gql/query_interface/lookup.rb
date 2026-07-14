@@ -66,7 +66,7 @@ module Gql
 
       # Scheme-based sector mapping lookups. `energy`/`molecule` select the
       # graph whose live nodes are returned; the mapping itself is shared.
-      def energy_sector_map(scheme, values)
+      def energy_sector_node_map(scheme, values)
         graph.sector_map.lookup(scheme, values)
       end
 

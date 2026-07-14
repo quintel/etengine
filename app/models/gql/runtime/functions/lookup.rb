@@ -124,7 +124,7 @@ module Gql::Runtime
       #       SECTOR(households)
       #   * Two or more   - a classification scheme followed by one or more
       #                     values; returns the union of matching nodes.
-      #       SECTOR(klimaattafel, 'Industrie')
+      #       SECTOR(emissions_subsector, 'Electricity and heat production')
       #       SECTOR(ipcc_crt_code_agg, '1.A.1', '1.A.2')
       #
       # Unknown scheme or value raises; a valid value with no labelled nodes
@@ -133,7 +133,7 @@ module Gql::Runtime
         if keys.size <= 1
           scope.energy_sector_nodes(keys)
         else
-          scope.energy_sector_map(keys.first, keys.drop(1))
+          scope.energy_sector_node_map(keys.first, keys.drop(1))
         end
       end
 
@@ -393,16 +393,13 @@ module Gql::Runtime
 
         # EMISSIONS(sector, use, ghg [, year]) -> return value.
         # The present year is implicit; only 1990 is suffixed with a year.
-        scope.graph.emissions[
-          [*keys.first(3), (1990 if keys[3].to_i == 1990)].compact.join('_').to_sym
-        ]
+        scope.graph.emissions.value_for(*keys.first(3), year: keys[3])
       end
 
       private
 
-      # Internal: Sums the emissions store over every (sector label, use) pair
-      # the mapping resolves for `scheme`/`value`. Present year is implicit;
-      # only 1990 is suffixed. Missing store keys count as zero.
+      # Internal: The mapped EMISSIONS form. Resolves `scheme`/`value` to
+      # (sector label, use) pairs and lets the emissions store sum over them.
       def mapped_emissions(keys)
         scheme, value, ghg, year = keys
 
@@ -411,13 +408,9 @@ module Gql::Runtime
                                "EMISSIONS(#{scheme.inspect}, #{value.inspect}, co2)"
         end
 
-        suffix    = ('1990' if year.to_i == 1990)
-        emissions = scope.graph.emissions
-
-        scope.sector_resolver.pairs(scheme, value).sum do |label, use|
-          key = [label, use, ghg, suffix].compact.join('_').to_sym
-          emissions[key] || 0.0
-        end
+        scope.graph.emissions.sum_pairs(
+          scope.sector_resolver.pairs(scheme, value), ghg, year: year
+        )
       end
     end
   end
