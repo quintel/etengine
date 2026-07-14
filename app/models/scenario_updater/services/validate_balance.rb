@@ -6,7 +6,7 @@ class ScenarioUpdater
     class ValidateBalance
       include Dry::Monads[:result]
 
-      TOLERANCE = 1.0E-12
+      TOLERANCE = 1.0E-2
       SHARE_GROUP_TOTAL = 1.0E2
 
       def call(scenario, user_values:, balanced_values:, provided_values:, skip_validation: false)
@@ -24,12 +24,12 @@ class ScenarioUpdater
       private
 
       def check_group_balance(group, inputs, scenario, user_values, balanced_values, errors)
-        values = inputs.map do |input|
+        values = inputs.filter_map do |input|
           input_cache = Input.cache(scenario).read(scenario, input)
           next if input_cache[:disabled]
 
           user_values[input.key] || balanced_values[input.key] || input_cache[:default]
-        end.compact
+        end
 
         return if values.sum.between?(SHARE_GROUP_TOTAL - TOLERANCE, SHARE_GROUP_TOTAL + TOLERANCE)
 
