@@ -1,8 +1,10 @@
 schema:
-  - name: Group
-    type: node_group
   - name: Sector
+    type: sector_mapping
+    value: emissions_sector
   - name: Subsector
+    type: sector_mapping
+    value: emissions_subsector
   - name: Key
     type: node_attribute
     value: key
@@ -25,12 +27,11 @@ schema:
     value: direct_reporting_emissions_other_ghg_emissions
     transform: "(value * 1e-6).round(6)"
   - name: Total_GHG_emissions
-    label: "Total GHG emissions[kton CO2-eq]"
+    label: "Total GHG emissions [kton CO2-eq]"
     type: node_attribute
     value: direct_reporting_emissions_total_ghg_emissions
     transform: "(value * 1e-6).round(6)"
 
 rows:
-  - Group: emissions_industry_chemicals
-    Sector: Industry
-    Subsector: Chemicals
+  require: emissions_sector
+  order_by: ipcc_crt_code

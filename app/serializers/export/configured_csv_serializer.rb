@@ -11,10 +11,11 @@
 #
 # - schema: An array of hashes describing each column in the CSV. Each hash should contain a `name`
 #           key and optionally a `type` key.
-# - rows:   An array of hashes, each matching the schema. Any keys contained in a hash which are not
-#           present in the schema are ignored.
+# - rows:   Either an array of hashes, each matching the schema (query-driven mode; any keys not
+#           present in the schema are ignored), or a hash `{ require: <mapping column>, order_by:
+#           <mapping column> }` (mapping-driven mode, see below). `order_by` is optional.
 #
-# For example:
+# Query-driven example:
 #
 #    {
 #      schema: [
@@ -36,131 +37,206 @@
 # - "future":         The value will be the result of evaluating the query in the future.
 # - "unit":           The value will be the unit of the specified query.
 # - "query":          This expands into three columns: `present`, `future` and `unit` for specified query.
-# - "node_group":     Hidden column. Its value names a node group; the row is expanded into one row per
-#                     node in that group. Requires a `period:` to be set on the serializer.
+#
+# Mapping-driven mode: `rows: { require: <mapping column> }` selects every (sector label, use) pair
+# in the sector mapping (see Atlas::SectorMapping) whose cell in `require`'s column has a value, in
+# mapping-file order by default. An optional `order_by: <mapping column>` instead orders pairs by the
+# raw display value of that column (ascending string comparison), regardless of whether the column is
+# included in `schema:`; a pair whose `order_by` cell is blank/`-` sorts last, and pairs tied on
+# `order_by` keep their relative mapping-file order. Each pair expands to the energy and molecule
+# nodes whose own `sector_label` and `use` match the pair AND which belong to the node's `:emissions`
+# group (key-sorted). A pair with zero labelled nodes, or whose only matching nodes aren't in the
+# `:emissions` group, legally yields zero rows. Requires a `period:` to be set on the serializer. Two
+# extra column types apply:
+#
 # - "node_attribute": The value will be the result of calling the attribute named by `value:` in the
-#                     schema on node_api for each expanded node. Requires `node_group` column in schema.
-#                     `value:` may be any Ruby expression evaluated on node_api via instance_eval.
-#                     Supports an optional `transform:` Ruby expression evaluated with `value` bound
-#                     to the result of `value:`. For example:
+#                     schema on node_api for each expanded node. `value:` may be any Ruby expression
+#                     evaluated on node_api via instance_eval. A nil result (e.g. a node not in the
+#                     :emissions group) renders as an empty string without evaluating `transform`.
+#                     Otherwise, an optional `transform:` Ruby expression is evaluated with `value`
+#                     bound to the result of `value:`. For example:
 #                       transform: "value * 10e-6"
 #                       transform: "value ? :other_ghg : :co2"
-class Export::ConfiguredCSVSerializer
-  # Represents the schema for a column in the CSV file.
-  class Column
-    attr_reader :name, :type, :label, :value, :transform
-
-    def initialize(name, type, label: name, value: nil, transform: nil)
-      @name = name
-      @type = type || 'literal'
-      @label = label || name
-      @value = value
-      @transform = transform
+# - "sector_mapping": The value will be the raw display value (never a normalized slug) of the
+#                     mapping column named by `value:`, for the row's pair. A `-`/blank mapping cell
+#                     renders as an empty string.
+#
+# An unknown mapping column named by `require:`, `order_by:`, or a `sector_mapping` column's `value:`
+# raises Export::ConfiguredCSVSerializer::UnknownMappingColumnError at construction, naming the valid
+# columns.
+module Export
+  class ConfiguredCSVSerializer # rubocop:disable Style/Documentation
+    class UnknownMappingColumnError < StandardError
     end
-  end
 
-  # Creates a serializer using an ETSource config.
-  #
-  # period - optional :present or :future; when set, node_group rows are expanded using that graph
-  #          and node_attribute columns are evaluated against it. Existing present/future/unit column
-  #          types continue to work regardless of this setting.
-  def initialize(config, gql, period: nil)
-    @config = config.symbolize_keys
-    @config[:schema] = @config[:schema].map(&:symbolize_keys)
+    # Represents the schema for a column in the CSV file.
+    class Column
+      attr_reader :name, :type, :label, :value, :transform
 
-    @columns = @config[:schema].flat_map { |c| create_columns(c) }
-    @columns.delete(@node_group_column) if unpack_nodes?
-    @gql = gql
-    @period = period
-  end
-
-  def data
-    rows = [@columns.map(&:label)]
-    @config[:rows].each { |row| serialize_row(row) { |csv_row| rows << csv_row } }
-    rows
-  end
-
-  def as_csv
-    CSV.generate do |csv|
-      data.each { |row| csv << row }
-    end
-  end
-
-  private
-
-  def serialize_row(row)
-    if unpack_nodes?
-      group_name = row[@node_group_column.name]
-      nodes = graph_interface.group_energy_nodes(group_name) +
-              graph_interface.group_molecule_nodes(group_name)
-      nodes.each do |node|
-        yield @columns.map { |column| serialize_node_column(column, row, node) }
+      def initialize(name, type, label: name, value: nil, transform: nil)
+        @name = name
+        @type = type || 'literal'
+        @label = label || name
+        @value = value
+        @transform = transform
       end
-    else
-      yield @columns.map { |column| serialize_column(column, row) }
-    end
-  end
-
-  def serialize_column(column, row)
-    value = row[column.name]
-
-    return '' if value.blank?
-
-    case column.type
-    when 'future'  then @gql.future.subquery(value).to_s
-    when 'present' then @gql.present.subquery(value).to_s
-    when 'unit'    then Gquery.get(value).unit.to_s
-    else value
-    end
-  end
-
-  def serialize_node_column(column, row, node)
-    case column.type
-    when 'node_attribute'
-      value = node.node_api.instance_eval(column.value)
-      value = eval(column.transform) if column.transform
-      value.to_s
-    else serialize_column(column, row)
-    end
-  end
-
-  def unpack_nodes?
-    node_group_column.present?
-  end
-
-  def node_group_column
-    @node_group_column ||= @columns.find { |c| c.type == 'node_group' }
-  end
-
-  def graph_interface
-    @gql.public_send(@period)
-  end
-
-  def create_columns(column)
-    if column[:type] != 'query'
-      return Column.new(
-        column[:name],
-        column[:type],
-        label: column[:label],
-        value: column[:value],
-        transform: column[:transform]
-      )
     end
 
-    %w[present future unit].map do |subtype|
-      Column.new(
-        column[:name],
-        subtype,
-        label: column[:"#{subtype}_label"] || default_label_for(subtype, column[:name])
-      )
-    end
-  end
+    # Creates a serializer using an ETSource config.
+    #
+    # period - optional :present or :future; required when `rows:` is mapping-driven.
+    def initialize(config, gql, period: nil)
+      @config = config.symbolize_keys
+      @config[:schema] = @config[:schema].map(&:symbolize_keys)
+      @config[:rows] = @config[:rows].symbolize_keys if @config[:rows].is_a?(Hash)
 
-  def default_label_for(subtype, column_name)
-    if subtype == 'unit'
-      "#{column_name} Unit"
-    else
-      "#{subtype.capitalize} #{column_name}"
+      @columns = @config[:schema].flat_map { |c| create_columns(c) }
+      @gql = gql
+      @period = period
+
+      validate_mapping_references! if mapping_driven?
+    end
+
+    def data
+      rows = [@columns.map(&:label)]
+
+      if mapping_driven?
+        serialize_mapping_rows { |row| rows << row }
+      else
+        @config[:rows].each { |row| rows << @columns.map { |column| serialize_column(column, row) } }
+      end
+
+      rows
+    end
+
+    def as_csv
+      CSV.generate do |csv|
+        data.each { |row| csv << row }
+      end
+    end
+
+    private
+
+    def mapping_driven?
+      @config[:rows].is_a?(Hash)
+    end
+
+    def membership_scheme
+      @config[:rows][:require].to_sym
+    end
+
+    def order_scheme
+      @config[:rows][:order_by]&.to_sym
+    end
+
+    def serialize_mapping_rows
+      eligible_rows.each do |raw_row|
+        nodes_for_pair(raw_row.pair).each do |node|
+          yield @columns.map { |column| serialize_mapping_column(column, raw_row, node) }
+        end
+      end
+    end
+
+    # Rows whose `require:` cell has a value, in mapping-file order. When `order_by:` is set, sorted
+    # by that column's raw value instead (blank/`-` last), with ties broken by mapping-file order.
+    def eligible_rows
+      rows = sectors.raw_rows.select { |raw_row| raw_row.cells[membership_scheme] }
+      return rows unless order_scheme
+
+      rows.each_with_index.sort_by { |raw_row, index| [raw_row.cells[order_scheme].nil? ? 1 : 0, raw_row.cells[order_scheme].to_s, index] }
+        .map(&:first)
+    end
+
+    def serialize_mapping_column(column, raw_row, node)
+      case column.type
+      when 'node_attribute'
+        value = node.node_api.instance_eval(column.value)
+        return '' if value.nil?
+
+        value = eval(column.transform) if column.transform
+        value.to_s
+      when 'sector_mapping'
+        raw_row.cells[column.value.to_sym].to_s
+      else
+        ''
+      end
+    end
+
+    def nodes_for_pair(pair)
+      nodes = %i[energy molecules].flat_map do |graph_type|
+        sectors.node_index(graph_type).fetch(pair, []).filter_map do |key|
+          node_for(graph_type, key)
+        end
+      end
+      nodes.select(&:emissions?).sort_by { |node| node.node_api.key.to_s }
+    end
+
+    def node_for(graph_type, key)
+      graph_type == :molecules ? graph_interface.molecules.node(key) : graph_interface.graph.node(key)
+    end
+
+    def graph_interface
+      @gql.public_send(@period)
+    end
+
+    def sectors
+      @sectors ||= Etsource::Sectors.new
+    end
+
+    def validate_mapping_references!
+      valid = sectors.mapping.keys
+      references = [@config[:rows][:require], @config[:rows][:order_by]] + @columns.select { |c|
+        c.type == 'sector_mapping'
+      }.map(&:value)
+
+      references.compact.each do |reference|
+        next if valid.include?(reference.to_sym)
+
+        raise UnknownMappingColumnError,
+          "Unknown sector mapping column #{reference.inspect}. " \
+          "Valid columns: #{valid.map(&:inspect).join(', ')}."
+      end
+    end
+
+    def serialize_column(column, row)
+      value = row[column.name]
+
+      return '' if value.blank?
+
+      case column.type
+      when 'future'  then @gql.future.subquery(value).to_s
+      when 'present' then @gql.present.subquery(value).to_s
+      when 'unit'    then Gquery.get(value).unit.to_s
+      else value
+      end
+    end
+
+    def create_columns(column)
+      if column[:type] != 'query'
+        return Column.new(
+          column[:name],
+          column[:type],
+          label: column[:label],
+          value: column[:value],
+          transform: column[:transform]
+        )
+      end
+
+      %w[present future unit].map do |subtype|
+        Column.new(
+          column[:name],
+          subtype,
+          label: column[:"#{subtype}_label"] || default_label_for(subtype, column[:name])
+        )
+      end
+    end
+
+    def default_label_for(subtype, column_name)
+      if subtype == 'unit'
+        "#{column_name} Unit"
+      else
+        "#{subtype.capitalize} #{column_name}"
+      end
     end
   end
 end
