@@ -9,9 +9,9 @@ module Qernel
   # key index are read once from {Etsource::Sectors}; resolution turns node keys
   # into the live nodes of this graph.
   #
-  # Dispatch, arity and aggregation live in the GQL layer; this class answers
-  # two questions: which (label, use) pairs, and which live nodes, belong to
-  # (scheme, values)?
+  # Dispatch and arity live in the GQL layer; aggregation lives on
+  # {Qernel::Emissions}. This class answers two questions: which (label, use)
+  # pairs, and which live nodes, belong to (scheme, values)?
   class Sectors
     def initialize(graph, mapping, node_index)
       @graph      = graph

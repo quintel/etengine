@@ -4,9 +4,6 @@ module Etsource
   # Reads the sector mapping and node labels from Atlas and caches the two
   # structures GQL needs to resolve `SECTOR(scheme, value)` style queries.
   #
-  # Mirrors the merit order import precedent: the expensive Atlas read happens
-  # once and the result is memoized in the Rails cache, so per-request cost is a
-  # couple of hash lookups.
   #
   #   * mapping        - {scheme => {value => [[label, use], ...]}}
   #   * node_index(g)  - {[label, use] => [node_key, ...]} for one graph type,
@@ -19,7 +16,7 @@ module Etsource
 
     # Public: The inverted mapping index, keyed by scheme then normalized value.
     def mapping
-      Rails.cache.fetch('sector_mapping_hash') do
+      NastyCache.instance.fetch('sector_mapping_hash') do
         Atlas::SectorMapping.load.to_h
       end
     end
@@ -27,7 +24,7 @@ module Etsource
     # Public: The (label, use) -> node keys index for the given graph type
     # (:energy or :molecules).
     def node_index(graph_type)
-      Rails.cache.fetch("sector_node_index_#{graph_type}") do
+      NastyCache.instance.fetch("sector_node_index_#{graph_type}") do
         build_node_index(node_class_for(graph_type))
       end
     end

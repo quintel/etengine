@@ -24,6 +24,14 @@ module Qernel
     dataset_accessors ::Etsource::Dataset.emissions_keys
     attr_accessor :graph
 
+    # Public: The flat store key for the given parts, e.g. (sector, use, ghg).
+    # The single place the `parts_joined_by_underscores[_1990]` schema lives.
+    #
+    # Returns a Symbol.
+    def self.key_for(*parts, year: nil)
+      [*parts, (1990 if year.to_i == 1990)].compact.join('_').to_sym
+    end
+
     # Queryable object that provides scoped access to emissions data
     #
     # GQL uses this to scope the sector for easier queries and input/update
@@ -40,11 +48,11 @@ module Qernel
       end
 
       def [](attr_name)
-        @emissions[scoped_method(attr_name).to_sym]
+        @emissions[scoped_method(attr_name)]
       end
 
       def []=(attr_name, value)
-        @emissions[scoped_method(attr_name).to_sym] = value
+        @emissions[scoped_method(attr_name)] = value
       end
 
       def inspect
@@ -52,8 +60,7 @@ module Qernel
       end
 
       def scoped_method(method_name)
-        attr = method_name.to_s.delete_suffix('=')
-        @year.to_i == 1990 ? "#{@scope}_#{attr}_1990" : "#{@scope}_#{attr}"
+        Emissions.key_for(@scope, method_name.to_s.delete_suffix('='), year: @year)
       end
 
       def respond_to_missing?(method_name, include_private = false)
@@ -65,7 +72,7 @@ module Qernel
       end
 
       def method_missing(method_name, *args)
-        key = scoped_method(method_name).to_sym
+        key = scoped_method(method_name)
 
         if method_name.to_s.end_with?('=')
           unless scope_exists?
@@ -101,6 +108,18 @@ module Qernel
     # Returns a scoped version of the emissions data
     def scope(sector, year = nil)
       ScopedSector.new(self, sector, year)
+    end
+
+    # Public: The stored value for (sector, use, ghg), or nil when the store
+    # has no such key. Pass year: 1990 to read the historic baseline.
+    def value_for(sector, use, ghg, year: nil)
+      self[self.class.key_for(sector, use, ghg, year: year)]
+    end
+
+    # Public: Sums the store over (sector, use) pairs for one GHG. Pairs
+    # without a stored value count as zero.
+    def sum_pairs(pairs, ghg, year: nil)
+      pairs.sum { |sector, use| value_for(sector, use, ghg, year: year) || 0.0 }
     end
   end
 end

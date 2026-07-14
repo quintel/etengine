@@ -155,6 +155,12 @@ module Gql::Runtime::Functions
       end
     end
 
+    describe "SECTOR(klimaattafel, 'Gebouwde omgeving')" do
+      it 'resolves a quoted value containing a space' do
+        expect(keys_of(result)).to eq(%i[buildings_space_heating_demand])
+      end
+    end
+
     describe "SECTOR(klimaattafel, 'Landbouw')" do
       it 'returns [] for a valid value with no labelled nodes' do
         expect(result).to eq([])
