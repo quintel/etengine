@@ -122,108 +122,311 @@ RSpec.describe Export::ConfiguredCSVSerializer do
     end
   end
 
-  context 'when given a "node_group" column' do
-    let(:node_api_1) { instance_double('Qernel::NodeApi::EnergyApi', key: 'node_a') }
-    let(:node_api_2) { instance_double('Qernel::NodeApi::EnergyApi', key: 'node_b') }
-    let(:node_1)     { instance_double('Qernel::Node', node_api: node_api_1) }
-    let(:node_2)     { instance_double('Qernel::Node', node_api: node_api_2) }
+  context 'when given mapping-driven rows' do
+    # Real pairs from spec/fixtures/etsource/config/sector_mapping.csv, joined against the real
+    # labelled fixture nodes (spec/fixtures/etsource/graphs). In mapping-file order:
+    #
+    #   energy_electricity_and_heat_production/energetic -> Energy,   emissions_sector set, 0 nodes
+    #   industry_refineries/energetic                    -> Industry, node `bar`   (dual-use label)
+    #   industry_refineries/non_energetic                -> Industry, node `baz`   (dual-use label)
+    #   industry_non_specified/energetic                 -> emissions_sector blank -> excluded
+    #                                                        (node `foo` exists but must not appear)
+    #   buildings_non_specified/energetic                -> Buildings, node `buildings_space_heating_demand`
+    #   households_non_specified/energetic               -> 0 nodes
+    #   agriculture_non_specified/energetic              -> 0 nodes
+    #   agriculture_non_specified/non_energetic           -> 0 nodes
+    #   waste_non_specified/non_energetic                -> Waste, node `m_waste` (molecule graph)
+    #   energy_fugitive_emissions/non_energetic          -> 0 nodes
+    #   other_heating/energetic                          -> Other, node `lft`, blank ipcc cell
 
     let(:config) do
       {
         schema: [
-          { name: 'Group', type: 'node_group' },
-          { name: 'Sector' },
-          { name: 'Node', type: 'node_attribute', value: 'key' }
+          { name: 'Sector', type: 'sector_mapping', value: 'emissions_sector' },
+          { name: 'Key', type: 'node_attribute', value: 'key' },
+          { name: 'IPCC', type: 'sector_mapping', value: 'ipcc_crt_code_agg' }
         ],
-        rows: [
-          { 'Group' => 'some_group', 'Sector' => 'Industry' }
-        ]
+        rows: { require: 'emissions_sector' }
       }
     end
 
-    let(:node_api_3) { instance_double('Qernel::NodeApi::MoleculeApi', key: 'node_c') }
-    let(:node_3)     { instance_double('Qernel::Node', node_api: node_api_3) }
-
-    let(:gql)        { Scenario.default.gql }
+    let(:gql) { Scenario.default.gql }
     let(:serializer) { described_class.new(config, gql, period: :future) }
 
+    let(:node_bar) do
+      instance_double(
+        'Qernel::Node',
+        emissions?: true,
+        node_api: instance_double(
+          'Qernel::NodeApi::EnergyApi', key: :bar, direct_reporting_emissions_co2_production: nil
+        )
+      )
+    end
+    let(:node_baz) do
+      instance_double('Qernel::Node', emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :baz))
+    end
+    let(:node_foo) do
+      instance_double('Qernel::Node', emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :foo))
+    end
+    let(:node_buildings) do
+      instance_double(
+        'Qernel::Node', emissions?: true,
+        node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :buildings_space_heating_demand)
+      )
+    end
+    let(:node_lft) do
+      instance_double('Qernel::Node', emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :lft))
+    end
+    let(:node_waste) do
+      instance_double('Qernel::Node', emissions?: true, node_api: instance_double('Qernel::NodeApi::MoleculeApi', key: :m_waste))
+    end
+
+    let(:energy_nodes) do
+      { bar: node_bar, baz: node_baz, foo: node_foo, buildings_space_heating_demand: node_buildings, lft: node_lft }
+    end
+
     before do
-      allow(gql.future).to receive(:group_energy_nodes).with('some_group').and_return([node_1, node_2])
-      allow(gql.future).to receive(:group_molecule_nodes).with('some_group').and_return([node_3])
+      allow(gql.future.graph).to receive(:node) { |key| energy_nodes[key.to_sym] }
+      allow(gql.future).to receive(:molecules)
+        .and_return(instance_double('Qernel::Graph').tap { |g| allow(g).to receive(:node).with(:m_waste).and_return(node_waste) })
     end
 
-    it 'excludes the node_group column from the header' do
-      expect(serializer.data[0]).to eq(%w[Sector Node])
+    it 'includes the CSV headers' do
+      expect(serializer.data[0]).to eq(%w[Sector Key IPCC])
     end
 
-    it 'expands the row into one row per node from both graphs' do
-      expect(serializer.data.length).to eq(4) # header + 2 energy + 1 molecule
+    it 'emits rows in mapping-file order, skipping pairs with zero labelled nodes' do
+      expect(serializer.data[1..].map { |row| row[1] }).to eq(
+        %w[bar baz buildings_space_heating_demand m_waste lft]
+      )
     end
 
-    it 'includes the literal column value on each expanded row' do
+    it 'excludes a pair whose require column cell is blank, even though it has a labelled node' do
+      expect(serializer.data.flatten).not_to include('foo')
+    end
+
+    context 'with an "order_by" rule' do
+      let(:config) do
+        {
+          schema: [{ name: 'Key', type: 'node_attribute', value: 'key' }],
+          rows: { require: 'emissions_sector', order_by: 'ipcc_crt_code' }
+        }
+      end
+
+      it 'orders rows by the raw value of the order_by column, not the mapping-file order' do
+        # ipcc_crt_code: bar 1.A.1.b, buildings 1.A.4.a, baz 1.B.2.a.iv, m_waste 5, lft blank.
+        expect(serializer.data[1..].flatten).to eq(
+          %w[bar buildings_space_heating_demand baz m_waste lft]
+        )
+      end
+
+      it 'sorts a pair with a blank order_by cell last' do
+        expect(serializer.data.last).to eq(['lft'])
+      end
+    end
+
+    context 'when a labelled node is not in the :emissions group' do
+      before { allow(node_baz).to receive(:emissions?).and_return(false) }
+
+      it 'excludes it, even though its pair matches an exported row' do
+        expect(serializer.data.flatten).not_to include('baz')
+      end
+
+      it 'still includes the other node under the same dual-use label' do
+        expect(serializer.data.flatten).to include('bar')
+      end
+    end
+
+    it 'renders the raw display value of the require column (not a slug)' do
       expect(serializer.data[1][0]).to eq('Industry')
-      expect(serializer.data[2][0]).to eq('Industry')
-      expect(serializer.data[3][0]).to eq('Industry')
+      expect(serializer.data[4][0]).to eq('Waste')
     end
 
-    it 'includes energy node_attribute values' do
-      expect(serializer.data[1][1]).to eq('node_a')
-      expect(serializer.data[2][1]).to eq('node_b')
+    it 'joins a dual-use label by the node\'s own (label, use) pair, not by name alone' do
+      # `bar` and `baz` share sector_label industry_refineries but differ in `use`, and land under
+      # different IPCC codes as a result.
+      expect(serializer.data[1]).to eq(%w[Industry bar 1.A.1])
+      expect(serializer.data[2]).to eq(%w[Industry baz 1.B])
     end
 
-    it 'includes molecule node_attribute values' do
-      expect(serializer.data[3][1]).to eq('node_c')
+    it 'includes molecule-graph nodes alongside energy nodes' do
+      expect(serializer.data[4]).to eq(%w[Waste m_waste 5])
     end
 
-    context 'with a transform for numeric conversion' do
-      let(:node_api_1) { instance_double('Qernel::NodeApi::EnergyApi', key: 'node_a', demand: 1_000_000.0) }
+    it 'renders a raw value with punctuation unchanged' do
+      expect(serializer.data[1][2]).to eq('1.A.1')
+    end
 
+    it 'renders a blank mapping cell as an empty string' do
+      expect(serializer.data[5]).to eq(['Other', 'lft', ''])
+    end
+
+    context 'with an isolated pair (stubbed Etsource::Sectors)' do
+      let(:sectors) { instance_double(Etsource::Sectors) }
+      let(:pair) { %i[industry_refineries energetic] }
+      let(:raw_row) { Atlas::SectorMapping::RawRow.new(pair, { emissions_sector: 'Industry' }) }
+
+      before do
+        allow(Etsource::Sectors).to receive(:new).and_return(sectors)
+        allow(sectors).to receive(:mapping).and_return({ emissions_sector: {} })
+        allow(sectors).to receive(:raw_rows).and_return([raw_row])
+        allow(sectors).to receive(:node_index).with(:molecules).and_return({})
+      end
+
+      context 'sorting nodes within a pair' do
+        let(:config) do
+          {
+            schema: [{ name: 'Key', type: 'node_attribute', value: 'key' }],
+            rows: { require: 'emissions_sector' }
+          }
+        end
+
+        let(:node_z) do
+          instance_double('Qernel::Node', emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :z_node))
+        end
+        let(:node_a) do
+          instance_double('Qernel::Node', emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :a_node))
+        end
+
+        before do
+          allow(sectors).to receive(:node_index).with(:energy).and_return({ pair => %i[z_node a_node] })
+          allow(gql.future.graph).to receive(:node).with(:z_node).and_return(node_z)
+          allow(gql.future.graph).to receive(:node).with(:a_node).and_return(node_a)
+        end
+
+        it 'sorts the expanded nodes by key, regardless of node_index order' do
+          expect(serializer.data[1..].map { |row| row[0] }).to eq(%w[a_node z_node])
+        end
+      end
+
+      context 'with an "order_by" rule and rows tied on that column' do
+        let(:pair_a) { %i[pair_a energetic] }
+        let(:pair_b) { %i[pair_b energetic] }
+        let(:pair_c) { %i[pair_c energetic] }
+
+        let(:raw_row_a) { Atlas::SectorMapping::RawRow.new(pair_a, { emissions_sector: 'A', ipcc_crt_code: '1' }) }
+        let(:raw_row_b) { Atlas::SectorMapping::RawRow.new(pair_b, { emissions_sector: 'B', ipcc_crt_code: '1' }) }
+        let(:raw_row_c) { Atlas::SectorMapping::RawRow.new(pair_c, { emissions_sector: 'C', ipcc_crt_code: '0' }) }
+
+        let(:config) do
+          {
+            schema: [{ name: 'Key', type: 'node_attribute', value: 'key' }],
+            rows: { require: 'emissions_sector', order_by: 'ipcc_crt_code' }
+          }
+        end
+
+        let(:node_a) do
+          instance_double('Qernel::Node', emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :node_a))
+        end
+        let(:node_b) do
+          instance_double('Qernel::Node', emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :node_b))
+        end
+        let(:node_c) do
+          instance_double('Qernel::Node', emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :node_c))
+        end
+
+        before do
+          allow(sectors).to receive(:mapping).and_return({ emissions_sector: {}, ipcc_crt_code: {} })
+          # File order: A, B, C. A and B tie on ipcc_crt_code ("1"); C has a lower code ("0").
+          allow(sectors).to receive(:raw_rows).and_return([raw_row_a, raw_row_b, raw_row_c])
+          allow(sectors).to receive(:node_index).with(:energy).and_return(
+            pair_a => [:node_a], pair_b => [:node_b], pair_c => [:node_c]
+          )
+          allow(gql.future.graph).to receive(:node).with(:node_a).and_return(node_a)
+          allow(gql.future.graph).to receive(:node).with(:node_b).and_return(node_b)
+          allow(gql.future.graph).to receive(:node).with(:node_c).and_return(node_c)
+        end
+
+        it 'sorts by the order_by value first, breaking ties by mapping-file order' do
+          expect(serializer.data[1..].flatten).to eq(%w[node_c node_a node_b])
+        end
+      end
+
+      context 'when a node_attribute value is nil (node not in the :emissions group)' do
+        let(:config) do
+          {
+            schema: [
+              { name: 'Key', type: 'node_attribute', value: 'key' },
+              { name: 'CO2', type: 'node_attribute', value: 'direct_reporting_emissions_co2_production',
+                transform: 'value * 1e-6' }
+            ],
+            rows: { require: 'emissions_sector' }
+          }
+        end
+
+        let(:node_bar) do
+          instance_double(
+            'Qernel::Node',
+            emissions?: true,
+            node_api: instance_double(
+              'Qernel::NodeApi::EnergyApi', key: :bar, direct_reporting_emissions_co2_production: nil
+            )
+          )
+        end
+
+        before do
+          allow(sectors).to receive(:node_index).with(:energy).and_return({ pair => [:bar] })
+          allow(gql.future.graph).to receive(:node).with(:bar).and_return(node_bar)
+        end
+
+        it 'renders an empty string without evaluating the transform' do
+          expect(serializer.data[1]).to eq(['bar', ''])
+        end
+      end
+    end
+  end
+
+  context 'when given an unknown sector mapping column' do
+    let(:gql) { Scenario.default.gql }
+    let(:serializer) { described_class.new(config, gql, period: :future) }
+
+    context 'as a "rows: require:" reference' do
       let(:config) do
         {
-          schema: [
-            { name: 'Group', type: 'node_group' },
-            { name: 'Demand', type: 'node_attribute', value: 'demand', transform: 'value * 1e-6' }
-          ],
-          rows: [{ 'Group' => 'some_group' }]
+          schema: [{ name: 'Key', type: 'node_attribute', value: 'key' }],
+          rows: { require: 'impossible' }
         }
       end
 
-      before do
-        allow(gql.future).to receive(:group_energy_nodes).with('some_group').and_return([node_1])
-        allow(gql.future).to receive(:group_molecule_nodes).with('some_group').and_return([])
-      end
-
-      it 'applies the transform to the value' do
-        expect(serializer.data[1][0]).to eq('1.0')
+      it 'raises at construction, naming the invalid reference and the valid columns' do
+        expect { serializer }.to raise_error(
+          Export::ConfiguredCSVSerializer::UnknownMappingColumnError,
+          /impossible.*Valid columns.*emissions_sector/m
+        )
       end
     end
 
-    context 'with a transform for conditional mapping' do
-      let(:node_api_1) { double('node_api', key: 'node_a', is_special: true) }
-      let(:node_api_2) { double('node_api', key: 'node_b', is_special: false) }
-
+    context 'as a "sector_mapping" column value' do
       let(:config) do
         {
           schema: [
-            { name: 'Group', type: 'node_group' },
-            { name: 'Type', type: 'node_attribute', value: 'is_special',
-              transform: "value ? 'other_ghg' : 'co2'" }
+            { name: 'Sector', type: 'sector_mapping', value: 'impossible' }
           ],
-          rows: [{ 'Group' => 'some_group' }]
+          rows: { require: 'emissions_sector' }
         }
       end
 
-      before do
-        allow(gql.future).to receive(:group_energy_nodes).with('some_group').and_return([node_1, node_2])
-        allow(gql.future).to receive(:group_molecule_nodes).with('some_group').and_return([])
+      it 'raises at construction, naming the invalid reference and the valid columns' do
+        expect { serializer }.to raise_error(
+          Export::ConfiguredCSVSerializer::UnknownMappingColumnError,
+          /impossible.*Valid columns.*emissions_sector/m
+        )
+      end
+    end
+
+    context 'as a "rows: order_by:" reference' do
+      let(:config) do
+        {
+          schema: [{ name: 'Key', type: 'node_attribute', value: 'key' }],
+          rows: { require: 'emissions_sector', order_by: 'impossible' }
+        }
       end
 
-      it 'maps a truthy result via transform' do
-        expect(serializer.data[1][0]).to eq('other_ghg')
-      end
-
-      it 'maps a falsy result via transform' do
-        expect(serializer.data[2][0]).to eq('co2')
+      it 'raises at construction, naming the invalid reference and the valid columns' do
+        expect { serializer }.to raise_error(
+          Export::ConfiguredCSVSerializer::UnknownMappingColumnError,
+          /impossible.*Valid columns.*emissions_sector/m
+        )
       end
     end
   end
