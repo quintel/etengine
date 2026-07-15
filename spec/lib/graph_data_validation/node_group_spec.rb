@@ -5,7 +5,7 @@ RSpec.describe GraphDataValidation::NodeGroup, :etsource_fixture do
   let(:gql) { Scenario.default.gql }
 
   context 'with an existing group key' do
-    let(:node_group) { described_class.new(:emissions, gql) }
+    let(:node_group) { described_class.new(:direct_emissions, gql) }
 
     it 'does not contains molecule nodes' do
       expect(node_group.any? {|n| n.is_a?(Qernel::NodeApi::MoleculeApi) } ).to be_falsey

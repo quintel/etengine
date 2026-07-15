@@ -44,16 +44,16 @@
 # raw display value of that column (ascending string comparison), regardless of whether the column is
 # included in `schema:`; a pair whose `order_by` cell is blank/`-` sorts last, and pairs tied on
 # `order_by` keep their relative mapping-file order. Each pair expands to the energy and molecule
-# nodes whose own `sector_label` and `use` match the pair AND which belong to the node's `:emissions`
+# nodes whose own `sector_label` and `use` match the pair AND which belong to the node's `:direct_emissions`
 # group (key-sorted). A pair with zero labelled nodes, or whose only matching nodes aren't in the
-# `:emissions` group, legally yields zero rows. Mapping-driven mode requires a `period:` (raises
+# `:direct_emissions` group, legally yields zero rows. Mapping-driven mode requires a `period:` (raises
 # ArgumentError at construction otherwise) and permits only the two column types below (any other
 # type raises UnsupportedColumnTypeError at construction):
 #
 # - "node_attribute": The value will be the result of calling the attribute named by `value:` in the
 #                     schema on node_api for each expanded node. `value:` may be any Ruby expression
 #                     evaluated on node_api via instance_eval. A nil result (e.g. a node not in the
-#                     :emissions group) renders as an empty string without evaluating `transform`.
+#                     :direct_emissions group) renders as an empty string without evaluating `transform`.
 #                     Otherwise, an optional `transform:` Ruby expression is evaluated with `value`
 #                     bound to the result of `value:`. For example:
 #                       transform: "value * 10e-6"
@@ -177,13 +177,13 @@ module Export
       end
     end
 
-    # The `:emissions`-group nodes of both live graphs whose (sector_label, use) matches `pair`.
+    # The `:direct_emissions`-group nodes of both live graphs whose (sector_label, use) matches `pair`.
     def nodes_for_pair(pair)
       nodes = [graph_interface.graph, graph_interface.molecules].flat_map do |graph|
         graph.sector_map.nodes_for_pair(pair)
       end
 
-      nodes.select(&:emissions?).sort_by { |node| node.node_api.key.to_s }
+      nodes.select(&:direct_emissions?).sort_by { |node| node.node_api.key.to_s }
     end
 
     def graph_interface

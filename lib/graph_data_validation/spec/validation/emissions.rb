@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples "emissions" do |dataset|
-  GraphDataValidation::NodeGroup.new(:emissions, dataset).each do |node|
+  GraphDataValidation::NodeGroup.new(:direct_emissions, dataset).each do |node|
     context "emissions for node #{node.key}" do
       it 'should balance for fossil' do
         expect((

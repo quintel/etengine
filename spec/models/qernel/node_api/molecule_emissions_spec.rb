@@ -8,7 +8,7 @@ RSpec.describe Qernel::NodeApi::MoleculeEmissions do
     let(:node) { Qernel::Node.new(key: :test_node, graph_name: :molecules, groups: node_groups).with(demand: node_demand) }
 
     let(:node_demand) { 1000.0 }
-    let(:node_groups) { [:emissions] }
+    let(:node_groups) { [:direct_emissions] }
 
     before do
       graph.add(node)
@@ -59,7 +59,7 @@ RSpec.describe Qernel::NodeApi::MoleculeEmissions do
       end
 
       context 'with a CCUS captured node (ccus_captured group)' do
-        let(:node_groups) { [:emissions, :ccus_captured] }
+        let(:node_groups) { [:direct_emissions, :ccus_captured] }
 
         before do
           allow(node).to receive(:input).with(:co2).and_return(double('slot'))
@@ -87,7 +87,7 @@ RSpec.describe Qernel::NodeApi::MoleculeEmissions do
       end
 
       context 'with a CCUS captured node (ccus_captured group)' do
-        let(:node_groups) { [:emissions, :ccus_captured] }
+        let(:node_groups) { [:direct_emissions, :ccus_captured] }
         let(:node_demand) { 750.0 }
 
         it 'returns the node demand (includes CCUS captured as capture)' do
@@ -170,7 +170,7 @@ RSpec.describe Qernel::NodeApi::MoleculeEmissions do
       end
 
       context 'with a CCUS captured node' do
-        let(:node_groups) { [:emissions, :ccus_captured] }
+        let(:node_groups) { [:direct_emissions, :ccus_captured] }
         let(:node_demand) { 400.0 }
 
         before do
