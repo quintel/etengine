@@ -97,7 +97,7 @@ describe Api::V3::ExportController do
       )
     end
 
-    it 'renders Sector/Subsector as mapping lookups for a labelled, :emissions-group node' do
+    it 'renders Sector/Subsector as mapping lookups for a labelled, :direct_emissions-group node' do
       row = CSV.parse(response.body).find { |r| r[2] == 'm_waste' }
       expect(row).to eq(%w[Waste Non-specified m_waste co2 0.0 0.0 0.0 0.0])
     end
@@ -106,9 +106,9 @@ describe Api::V3::ExportController do
       expect(CSV.parse(response.body).flatten).not_to include('foo')
     end
 
-    it 'excludes a labelled node that is not in the :emissions group' do
+    it 'excludes a labelled node that is not in the :direct_emissions group' do
       # `bar`/`baz`/`lft`/`buildings_space_heating_demand` all carry a sector_label/use that
-      # matches an exported mapping row, but none is in the :emissions node group.
+      # matches an exported mapping row, but none is in the :direct_emissions node group.
       expect(CSV.parse(response.body).flatten).not_to include('bar', 'baz', 'lft', 'buildings_space_heating_demand')
     end
   end

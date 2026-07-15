@@ -29,9 +29,9 @@ module Qernel
       # Excludes nodes in the CCUS captured group, as these represent capture
       # rather than production.
       #
-      # @return [Float, nil] CO2 production in kg, or nil if node is not in emissions group
+      # @return [Float, nil] CO2 production in kg, or nil if node is not in the direct_emissions group
       def direct_reporting_emissions_co2_production
-        with_emissions_node do
+        with_direct_emissions_node do
           return 0.0 if node.ccus_captured?
           node.input(:co2) ? node.demand : 0.0
         end
@@ -43,9 +43,9 @@ module Qernel
       # For molecule nodes representing other GHG flows (CH4, N2O, etc.), the demand
       # represents the amount in kg CO2-equivalent/year.
       #
-      # @return [Float, nil] Other GHG emissions in kg CO2-equivalent, or nil if node is not in emissions group
+      # @return [Float, nil] Other GHG emissions in kg CO2-equivalent, or nil if node is not in the direct_emissions group
       def direct_reporting_emissions_other_ghg_emissions
-        with_emissions_node do
+        with_direct_emissions_node do
           node.input(:other_ghg) ? node.demand : 0.0
         end
       end
@@ -55,9 +55,9 @@ module Qernel
       # Returns the node demand for nodes in the CCUS captured group, which
       # represent CO2 removals from technological capture.
       #
-      # @return [Float, nil] CO2 capture in kg, or nil if node is not in emissions group
+      # @return [Float, nil] CO2 capture in kg, or nil if node is not in the direct_emissions group
       def direct_reporting_emissions_co2_capture
-        with_emissions_node do
+        with_direct_emissions_node do
           node.ccus_captured? ? node.demand : 0.0
         end
       end
@@ -66,9 +66,9 @@ module Qernel
       #
       # Formula: CO2 production - CO2 capture + other GHG emissions
       #
-      # @return [Float, nil] Total GHG emissions in kg CO2-equivalent, or nil if node is not in emissions group
+      # @return [Float, nil] Total GHG emissions in kg CO2-equivalent, or nil if node is not in the direct_emissions group
       def direct_reporting_emissions_total_ghg_emissions
-        with_emissions_node do
+        with_direct_emissions_node do
           direct_reporting_emissions_co2_production -
             direct_reporting_emissions_co2_capture +
             direct_reporting_emissions_other_ghg_emissions
@@ -79,9 +79,9 @@ module Qernel
       #
       # Fossil CO2 input utilisation.
       #
-      # @return [Float, nil] CO2 utilisation in kg, or nil if node is not in emissions group
+      # @return [Float, nil] CO2 utilisation in kg, or nil if node is not in the direct_emissions group
       def direct_reporting_emissions_co2_utilisation
-        with_emissions_node do
+        with_direct_emissions_node do
           0.0
         end
       end
@@ -90,20 +90,20 @@ module Qernel
       #
       # Biogenic CO2 emissions from production.
       #
-      # @return [Float, nil] Biogenic CO2 emissions in kg, or nil if node is not in emissions group
+      # @return [Float, nil] Biogenic CO2 emissions in kg, or nil if node is not in the direct_emissions group
       def direct_reporting_emissions_biogenic_co2_emissions
-        with_emissions_node do
+        with_direct_emissions_node do
           0.0
         end
       end
 
       private
 
-      # Yields the given block only if the node belongs to the :emissions group.
+      # Yields the given block only if the node belongs to the :direct_emissions group.
       #
-      # @return [Float, nil] Result of the block, or nil if node is not in emissions group
-      def with_emissions_node
-        yield if node.emissions?
+      # @return [Float, nil] Result of the block, or nil if node is not in the direct_emissions group
+      def with_direct_emissions_node
+        yield if node.direct_emissions?
       end
     end
   end

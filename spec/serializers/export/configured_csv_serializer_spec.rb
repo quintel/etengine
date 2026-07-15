@@ -156,29 +156,29 @@ RSpec.describe Export::ConfiguredCSVSerializer do
     let(:node_bar) do
       instance_double(
         'Qernel::Node',
-        emissions?: true,
+        direct_emissions?: true,
         node_api: instance_double(
           'Qernel::NodeApi::EnergyApi', key: :bar, direct_reporting_emissions_co2_production: nil
         )
       )
     end
     let(:node_baz) do
-      instance_double('Qernel::Node', emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :baz))
+      instance_double('Qernel::Node', direct_emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :baz))
     end
     let(:node_foo) do
-      instance_double('Qernel::Node', emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :foo))
+      instance_double('Qernel::Node', direct_emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :foo))
     end
     let(:node_buildings) do
       instance_double(
-        'Qernel::Node', emissions?: true,
+        'Qernel::Node', direct_emissions?: true,
         node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :buildings_space_heating_demand)
       )
     end
     let(:node_lft) do
-      instance_double('Qernel::Node', emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :lft))
+      instance_double('Qernel::Node', direct_emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :lft))
     end
     let(:node_waste) do
-      instance_double('Qernel::Node', emissions?: true, node_api: instance_double('Qernel::NodeApi::MoleculeApi', key: :m_waste))
+      instance_double('Qernel::Node', direct_emissions?: true, node_api: instance_double('Qernel::NodeApi::MoleculeApi', key: :m_waste))
     end
 
     let(:energy_nodes) do
@@ -232,8 +232,8 @@ RSpec.describe Export::ConfiguredCSVSerializer do
       end
     end
 
-    context 'when a labelled node is not in the :emissions group' do
-      before { allow(node_baz).to receive(:emissions?).and_return(false) }
+    context 'when a labelled node is not in the :direct_emissions group' do
+      before { allow(node_baz).to receive(:direct_emissions?).and_return(false) }
 
       it 'excludes it, even though its pair matches an exported row' do
         expect(serializer.data.flatten).not_to include('baz')
@@ -289,10 +289,10 @@ RSpec.describe Export::ConfiguredCSVSerializer do
         end
 
         let(:node_z) do
-          instance_double('Qernel::Node', emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :z_node))
+          instance_double('Qernel::Node', direct_emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :z_node))
         end
         let(:node_a) do
-          instance_double('Qernel::Node', emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :a_node))
+          instance_double('Qernel::Node', direct_emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :a_node))
         end
 
         before do
@@ -323,13 +323,13 @@ RSpec.describe Export::ConfiguredCSVSerializer do
         end
 
         let(:node_a) do
-          instance_double('Qernel::Node', emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :node_a))
+          instance_double('Qernel::Node', direct_emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :node_a))
         end
         let(:node_b) do
-          instance_double('Qernel::Node', emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :node_b))
+          instance_double('Qernel::Node', direct_emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :node_b))
         end
         let(:node_c) do
-          instance_double('Qernel::Node', emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :node_c))
+          instance_double('Qernel::Node', direct_emissions?: true, node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :node_c))
         end
 
         before do
@@ -349,7 +349,7 @@ RSpec.describe Export::ConfiguredCSVSerializer do
         end
       end
 
-      context 'when a node_attribute value is nil (node not in the :emissions group)' do
+      context 'when a node_attribute value is nil (node not in the :direct_emissions group)' do
         let(:config) do
           {
             schema: [
@@ -364,7 +364,7 @@ RSpec.describe Export::ConfiguredCSVSerializer do
         let(:node_bar) do
           instance_double(
             'Qernel::Node',
-            emissions?: true,
+            direct_emissions?: true,
             node_api: instance_double(
               'Qernel::NodeApi::EnergyApi', key: :bar, direct_reporting_emissions_co2_production: nil
             )
