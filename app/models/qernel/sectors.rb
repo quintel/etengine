@@ -21,7 +21,7 @@ module Qernel
       @pair_cache = {}
     end
 
-    # Public: Whether `scheme`` names a classification scheme in the mapping.
+    # Public: Whether `scheme` names a classification scheme in the mapping.
     # Used by the EMISSIONS first-argument dispatch.
     def scheme?(scheme)
       @mapping.key?(normalize(scheme))
@@ -40,14 +40,21 @@ module Qernel
     end
 
     # Public: The live nodes of this graph whose (label, use) pair falls under
-    # any of `values` of 'scheme` (the union). A value which resolves to pairs
+    # any of `values` of `scheme` (the union). A value which resolves to pairs
     # with no labelled nodes contributes nothing.
     def lookup(scheme, values)
       value_list = Array(values)
       key = [normalize(scheme), value_list.map { |value| normalize(value) }]
 
       @node_cache[key] ||=
-        pairs(scheme, value_list).flat_map { |pair| nodes_for(pair) }.uniq
+        pairs(scheme, value_list).flat_map { |pair| nodes_for_pair(pair) }.uniq
+    end
+
+    # Public: The live nodes of this graph whose (label, use) pair equals
+    # `pair` (an already-normalized [label, use]). Used by mapping-driven CSV
+    # exports as well as {#lookup}.
+    def nodes_for_pair(pair)
+      Array(@node_index[pair]).filter_map { |key| @graph.node(key) }
     end
 
     private
@@ -60,10 +67,6 @@ module Qernel
         value_map[normalize(value)] ||
           raise(Gql::UnknownSectorValueError.new(scheme, value))
       end.uniq
-    end
-
-    def nodes_for(pair)
-      Array(@node_index[pair]).filter_map { |key| @graph.node(key) }
     end
 
     def normalize(value)

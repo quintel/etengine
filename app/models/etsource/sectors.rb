@@ -12,10 +12,6 @@ module Etsource
   #   * raw_rows       - mapping rows in file order with raw display values,
   #                      for mapping-driven CSV exports.
   class Sectors
-    def initialize(etsource = Etsource::Base.instance)
-      @etsource = etsource
-    end
-
     # Public: The inverted mapping index, keyed by scheme then normalized value.
     def mapping
       NastyCache.instance.fetch('sector_mapping_hash') do
