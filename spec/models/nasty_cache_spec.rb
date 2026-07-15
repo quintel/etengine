@@ -54,6 +54,16 @@ describe NastyCache do
     end
   end
 
+  context 'Input derived caches' do
+    before { @cache.set('Input#inputs_grouped', { 'stale' => [] }) }
+
+    it 'clears memoized share groups so they are recomputed from fresh data' do
+      expect { @cache.expire! }
+        .to change { @cache.get('Input#inputs_grouped') }
+        .to(nil)
+    end
+  end
+
   it "should cache with Rails.cache" do
     expect(@cache.fetch_cached('cache_1_baz') { "bar" }).to eq("bar")
   end

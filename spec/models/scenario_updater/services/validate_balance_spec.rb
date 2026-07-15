@@ -6,6 +6,11 @@ RSpec.describe ScenarioUpdater::Services::ValidateBalance do
   let(:scenario) { FactoryBot.create(:scenario) }
   let(:service) { described_class.new }
 
+  def balance(share_of_second_input)
+    values = { 'grouped_input_one' => 60, 'grouped_input_two' => share_of_second_input }
+    service.call(scenario, user_values: values, balanced_values: {}, provided_values: values)
+  end
+
   it 'returns Success if skip_validation is true' do
     result = service.call(
       scenario,
@@ -17,17 +22,27 @@ RSpec.describe ScenarioUpdater::Services::ValidateBalance do
     expect(result).to be_success
   end
 
-  it 'returns Success if all groups sum to 100' do
-    input = double('Input', key: 'a', share_group: 'group')
-    allow(Input).to receive(:get).and_return(input)
-    allow(Input).to receive(:in_share_group).and_return([input])
-    allow(Input).to receive(:cache).and_return(double(read: { disabled: false }))
-    result = service.call(
-      scenario,
-      user_values: { 'a' => 100 },
-      balanced_values: {},
-      provided_values: { 'a' => 100 }
+  it 'returns Success when a share group sums to exactly 100' do
+    expect(balance(40)).to be_success
+  end
+
+  it 'returns Success when a share group sum has floating point drift (regression for pyetm#197)' do
+    expect(balance(40.0000000001)).to be_success
+  end
+
+  it 'returns Success when a share group sum is within tolerance of 100' do
+    expect(balance(40 - (described_class::TOLERANCE / 2))).to be_success
+  end
+
+  it 'returns Failure when a share group sum is outside tolerance of 100' do
+    expect(balance(40 - (described_class::TOLERANCE * 2))).to be_failure
+  end
+
+  it 'includes the group name, sum, and contributing input values in the failure message' do
+    result = balance(39)
+    expect(result.failure.first).to eq(
+      '"grouped" group does not balance: group sums to 99 using ' \
+      'grouped_input_one=60 grouped_input_two=39'
     )
-    expect(result).to be_success
   end
 end

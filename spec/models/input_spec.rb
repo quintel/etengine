@@ -493,4 +493,24 @@ describe Input do
       end
     end
   end # when the input have nil GQL start, minimum, and maximum
+
+  describe '.clear!' do
+    let(:input) { FactoryBot.build(:input, key: 'test-input') }
+
+    it 'clears memoized derived data (share groups, coupling groups)' do
+      # Memoize each derived cache via NastyCache before clearing it.
+      Input.before_inputs
+      Input.inputs_grouped
+      Input.coupling_inputs_keys
+      Input.coupling_groups
+
+      Input.clear!
+
+      cache = NastyCache.instance
+      expect(cache.get('Input#before_inputs')).to be_nil
+      expect(cache.get('Input#inputs_grouped')).to be_nil
+      expect(cache.get('Input#coupling_inputs_keys')).to be_nil
+      expect(cache.get('Input#coupling_groups')).to be_nil
+    end
+  end
 end

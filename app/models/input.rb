@@ -47,24 +47,43 @@ class Input
   end
 
   def self.before_inputs
-    @before_inputs ||= all.select(&:before_update?)
+    derived_cache(:before_inputs) { all.select(&:before_update?) }
   end
 
   def self.inputs_grouped
-    @inputs_grouped ||= Input.with_share_group.group_by(&:share_group)
+    derived_cache(:inputs_grouped) { Input.with_share_group.group_by(&:share_group) }
   end
 
   def self.coupling_inputs_keys
-    @coupling_inputs_keys ||= Input.with_coupling_group.map(&:id)
+    derived_cache(:coupling_inputs_keys) { Input.with_coupling_group.map(&:id) }
   end
 
   def self.coupling_groups
-    @coupling_groups ||=
+    derived_cache(:coupling_groups) do
       Input.with_coupling_group
            .flat_map(&:coupling_groups)
            .uniq
            .freeze
+    end
   end
+
+  DERIVED_CACHE_KEYS = %i[before_inputs inputs_grouped coupling_inputs_keys coupling_groups].freeze
+  private_constant :DERIVED_CACHE_KEYS
+
+  # Data derived from `all`/`records` (share groups, coupling groups, etc) is
+  # also memoized via NastyCache, so a data reload clears both together
+  # instead of leaving stale groupings behind on already-running processes.
+  def self.clear!
+    super
+    DERIVED_CACHE_KEYS.each { |key| NastyCache.instance.delete("#{name}##{key}") }
+  end
+
+  # Memoizes the result of the block via NastyCache, using the same
+  # per-process cache store (and invalidation) as `all` and `records`.
+  def self.derived_cache(key, &block)
+    NastyCache.instance.fetch("#{name}##{key}", &block)
+  end
+  private_class_method :derived_cache
 
   def disabled_by
     @disabled_by || []
