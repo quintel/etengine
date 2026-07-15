@@ -91,13 +91,13 @@ module Gql::Runtime
       def GROUP(*keys)
         scope.group_energy_nodes(keys)
       end
-      alias G GROUP
+      alias_method :G, :GROUP
 
       # Returns an Array of {Qernel::Node} for given molecule group. See GROUP.
       def MGROUP(*keys)
         scope.group_molecule_nodes(keys)
       end
-      alias MG MGROUP
+      alias_method :MG, :MGROUP
 
       # Returns an Array of {Qernel::Edges} for given energy group.
       #
@@ -108,13 +108,13 @@ module Gql::Runtime
       def EDGE_GROUP(*keys)
         scope.group_energy_edges(keys)
       end
-      alias EG EDGE_GROUP
+      alias_method :EG, :EDGE_GROUP
 
       # Returns an Array of {Qernel::Edges} for given molecule group. See EDGE_GROUP.
       def MEDGE_GROUP(*keys)
         scope.group_molecule_edges(keys)
       end
-      alias MEG EDGE_GROUP
+      alias_method :MEG, :MEDGE_GROUP
 
       # Returns an Array of {Qernel::Node} for an energy sector.
       #
@@ -401,6 +401,11 @@ module Gql::Runtime
       # Internal: The mapped EMISSIONS form. Resolves `scheme`/`value` to
       # (sector label, use) pairs and lets the emissions store sum over them.
       def mapped_emissions(keys)
+        if keys.size > 4
+          raise Gql::GqlError, "EMISSIONS(#{keys.first.inspect}, ...) accepts a single value: " \
+                               'EMISSIONS(scheme, value, ghg[, 1990]).'
+        end
+
         scheme, value, ghg, year = keys
 
         if ghg.nil?

@@ -272,6 +272,12 @@ module Gql::Runtime::Functions
       end
     end
 
+    describe "EMISSIONS(ipcc_crt_code_agg, '1.A.1', '3', co2, 1990)" do
+      it 'raises on a multi-value call instead of misreading a value as the GHG' do
+        expect { result }.to raise_error(Gql::GqlError, /single value/)
+      end
+    end
+
     it 'rejects UPDATE on a mapped EMISSIONS expression' do
       expect do
         gql.query_future("UPDATE(EMISSIONS(ipcc_crt_code_agg, '1.A.1', co2), co2, 1.0)")

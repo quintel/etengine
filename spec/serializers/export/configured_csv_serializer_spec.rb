@@ -185,10 +185,17 @@ RSpec.describe Export::ConfiguredCSVSerializer do
       { bar: node_bar, baz: node_baz, foo: node_foo, buildings_space_heating_demand: node_buildings, lft: node_lft }
     end
 
+    let(:molecule_graph) { instance_double('Qernel::Graph') }
+
     before do
       allow(gql.future.graph).to receive(:node) { |key| energy_nodes[key.to_sym] }
-      allow(gql.future).to receive(:molecules)
-        .and_return(instance_double('Qernel::Graph').tap { |g| allow(g).to receive(:node).with(:m_waste).and_return(node_waste) })
+      allow(gql.future).to receive(:molecules).and_return(molecule_graph)
+      allow(molecule_graph).to receive(:node).with(:m_waste).and_return(node_waste)
+
+      allow(molecule_graph).to receive(:sector_map) do
+        sectors = Etsource::Sectors.new
+        Qernel::Sectors.new(molecule_graph, sectors.mapping, sectors.node_index(:molecules))
+      end
     end
 
     it 'includes the CSV headers' do
@@ -372,6 +379,53 @@ RSpec.describe Export::ConfiguredCSVSerializer do
         it 'renders an empty string without evaluating the transform' do
           expect(serializer.data[1]).to eq(['bar', ''])
         end
+      end
+    end
+  end
+
+  context 'when a mapping-driven config is invalid' do
+    let(:gql) { Scenario.default.gql }
+    let(:mapping_rows) { { require: 'emissions_sector' } }
+    let(:schema) { [{ name: 'Key', type: 'node_attribute', value: 'key' }] }
+
+    context 'with no period' do
+      let(:serializer) { described_class.new({ schema: schema, rows: mapping_rows }, gql) }
+
+      it 'raises at construction' do
+        expect { serializer }.to raise_error(ArgumentError, /period/)
+      end
+    end
+
+    context 'with no require: column' do
+      let(:serializer) do
+        described_class.new({ schema: schema, rows: { order_by: 'ipcc_crt_code' } }, gql, period: :future)
+      end
+
+      it 'raises at construction' do
+        expect { serializer }.to raise_error(ArgumentError, /require/)
+      end
+    end
+
+    context 'with a column type only valid for query-driven rows' do
+      let(:schema) { super() + [{ name: 'Total', type: 'query' }] }
+      let(:serializer) { described_class.new({ schema: schema, rows: mapping_rows }, gql, period: :future) }
+
+      it 'raises at construction instead of rendering silent blank cells' do
+        expect { serializer }.to raise_error(
+          Export::ConfiguredCSVSerializer::UnsupportedColumnTypeError,
+          /node_attribute.*sector_mapping/
+        )
+      end
+    end
+
+    context 'with an untyped (literal) column' do
+      let(:schema) { super() + [{ name: 'Sector' }] }
+      let(:serializer) { described_class.new({ schema: schema, rows: mapping_rows }, gql, period: :future) }
+
+      it 'raises at construction instead of rendering silent blank cells' do
+        expect { serializer }.to raise_error(
+          Export::ConfiguredCSVSerializer::UnsupportedColumnTypeError, /literal/
+        )
       end
     end
   end
