@@ -1,2 +1,6 @@
 - groups = []
 - preset_demand = 0.0
+
+# Sector mapping test assignment (blank-cell case: "-" ipcc, reachable via klimaattafel)
+- sector_label = other_heating
+- use = energetic

@@ -78,12 +78,7 @@ describe Api::V3::ExportController do
     end
   end
 
-  describe 'GET direct_emissions_present.csv' do
-    before do
-      request.headers.merge!(headers)
-      get :direct_emissions_present, params: { id: scenario.id }, format: :csv
-    end
-
+  shared_examples 'a mapping-driven direct emissions export' do
     it 'is successful' do
       expect(response).to be_ok
     end
@@ -91,6 +86,40 @@ describe Api::V3::ExportController do
     it 'sets the content type to text/csv' do
       expect(response.media_type).to eq('text/csv')
     end
+
+    it 'includes the eight legacy columns, byte-identical to the pre-rework export' do
+      expect(CSV.parse(response.body).first).to eq(
+        [
+          'Sector', 'Subsector', 'Key', 'GHG',
+          'CO2 production [kton CO2-eq]', 'CO2 capture [kton CO2-eq]',
+          'Other GHG emissions [kton CO2-eq]', 'Total GHG emissions [kton CO2-eq]'
+        ]
+      )
+    end
+
+    it 'renders Sector/Subsector as mapping lookups for a labelled, :emissions-group node' do
+      row = CSV.parse(response.body).find { |r| r[2] == 'm_waste' }
+      expect(row).to eq(%w[Waste Non-specified m_waste co2 0.0 0.0 0.0 0.0])
+    end
+
+    it 'excludes a labelled node whose pair has no value in the require column' do
+      expect(CSV.parse(response.body).flatten).not_to include('foo')
+    end
+
+    it 'excludes a labelled node that is not in the :emissions group' do
+      # `bar`/`baz`/`lft`/`buildings_space_heating_demand` all carry a sector_label/use that
+      # matches an exported mapping row, but none is in the :emissions node group.
+      expect(CSV.parse(response.body).flatten).not_to include('bar', 'baz', 'lft', 'buildings_space_heating_demand')
+    end
+  end
+
+  describe 'GET direct_emissions_present.csv' do
+    before do
+      request.headers.merge!(headers)
+      get :direct_emissions_present, params: { id: scenario.id }, format: :csv
+    end
+
+    include_examples 'a mapping-driven direct emissions export'
 
     it 'sets the CSV filename' do
       expect(response.headers['Content-Disposition']).to include("direct_emissions_present.#{scenario.id}.csv")
@@ -103,13 +132,7 @@ describe Api::V3::ExportController do
       get :direct_emissions_future, params: { id: scenario.id }, format: :csv
     end
 
-    it 'is successful' do
-      expect(response).to be_ok
-    end
-
-    it 'sets the content type to text/csv' do
-      expect(response.media_type).to eq('text/csv')
-    end
+    include_examples 'a mapping-driven direct emissions export'
 
     it 'sets the CSV filename' do
       expect(response.headers['Content-Disposition']).to include("direct_emissions_future.#{scenario.id}.csv")

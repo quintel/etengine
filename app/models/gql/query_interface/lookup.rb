@@ -64,8 +64,28 @@ module Gql
         molecule_graph_helper.sector_nodes(keys)
       end
 
+      # Scheme-based sector mapping lookups. `energy`/`molecule` select the
+      # graph whose live nodes are returned; the mapping itself is shared.
+      def energy_sector_node_map(scheme, values)
+        graph.sector_map.lookup(scheme, values)
+      end
+
+      def molecule_sector_map(scheme, values)
+        molecules.sector_map.lookup(scheme, values)
+      end
+
+      # The energy graph's resolver, used for EMISSIONS scheme dispatch and
+      # pair resolution (the mapping is graph-independent).
+      def sector_resolver
+        graph.sector_map
+      end
+
       def energy_use_nodes(keys)
         energy_graph_helper.use_nodes(keys)
+      end
+
+      def molecule_use_nodes(keys)
+        molecule_graph_helper.use_nodes(keys)
       end
 
       def group_energy_nodes(keys)

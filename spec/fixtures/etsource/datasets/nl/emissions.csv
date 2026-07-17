@@ -1,9 +1,19 @@
-etm_sector,etm_subsector,use,ghg,unit,value
-Energy,Electricity and heat production,energetic,other_ghg,kg CO2eq,18.0
-Energy,Fugitive emissions,non_energetic,co2,kg CO2eq,20.0
-Households,Non-specified,energetic,other_ghg,kg CO2eq,7.0
-Buildings,Non-specified,energetic,other_ghg,kg CO2eq,2796620.0
-Industry,Non-specified,energetic,other_ghg,kg CO2eq,100.0
-Agriculture,Non-specified,energetic,other_ghg,kg CO2eq,50.0
-Agriculture,Non-specified,non_energetic,co2,kg CO2eq,75.0
-Waste,Non-specified,non_energetic,co2,kg CO2eq,25.0
+etm_sector,etm_subsector,use,ghg,year,unit,value
+Energy,Electricity and heat production,energetic,other_ghg,2023,kg CO2eq,18.0
+Energy,Electricity and heat production,energetic,other_ghg,1990,kg CO2eq,25.0
+Energy,Fugitive emissions,non_energetic,co2,2023,kg CO2eq,20.0
+Energy,Fugitive emissions,non_energetic,co2,1990,kg CO2eq,30.0
+Households,Non-specified,energetic,other_ghg,2023,kg CO2eq,7.0
+Households,Non-specified,energetic,other_ghg,1990,kg CO2eq,10.0
+Buildings,Non-specified,energetic,other_ghg,2023,kg CO2eq,2796620.0
+Buildings,Non-specified,energetic,other_ghg,1990,kg CO2eq,3000000.0
+Industry,Non-specified,energetic,other_ghg,2023,kg CO2eq,100.0
+Industry,Non-specified,energetic,other_ghg,1990,kg CO2eq,150.0
+Agriculture,Non-specified,energetic,other_ghg,2023,kg CO2eq,50.0
+Agriculture,Non-specified,energetic,other_ghg,1990,kg CO2eq,75.0
+Agriculture,Non-specified,non_energetic,other_ghg,2023,kg CO2eq,100.0
+Agriculture,Non-specified,non_energetic,other_ghg,1990,kg CO2eq,125.0
+Agriculture,Non-specified,non_energetic,co2,2023,kg CO2eq,75.0
+Agriculture,Non-specified,non_energetic,co2,1990,kg CO2eq,100.0
+Waste,Non-specified,non_energetic,co2,2023,kg CO2eq,25.0
+Waste,Non-specified,non_energetic,co2,1990,kg CO2eq,35.0

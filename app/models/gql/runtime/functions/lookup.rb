@@ -91,13 +91,13 @@ module Gql::Runtime
       def GROUP(*keys)
         scope.group_energy_nodes(keys)
       end
-      alias G GROUP
+      alias_method :G, :GROUP
 
       # Returns an Array of {Qernel::Node} for given molecule group. See GROUP.
       def MGROUP(*keys)
         scope.group_molecule_nodes(keys)
       end
-      alias MG MGROUP
+      alias_method :MG, :MGROUP
 
       # Returns an Array of {Qernel::Edges} for given energy group.
       #
@@ -108,32 +108,47 @@ module Gql::Runtime
       def EDGE_GROUP(*keys)
         scope.group_energy_edges(keys)
       end
-      alias EG EDGE_GROUP
+      alias_method :EG, :EDGE_GROUP
 
       # Returns an Array of {Qernel::Edges} for given molecule group. See EDGE_GROUP.
       def MEDGE_GROUP(*keys)
         scope.group_molecule_edges(keys)
       end
-      alias MEG EDGE_GROUP
+      alias_method :MEG, :MEDGE_GROUP
 
-      # Returns an Array of {Qernel::Node} for given energy sector.
+      # Returns an Array of {Qernel::Node} for an energy sector.
       #
-      # Examples
+      # Dispatches on arity:
       #
-      #   SECTOR(households)
+      #   * One argument  - namespace-sector filter.
+      #       SECTOR(households)
+      #   * Two or more   - a classification scheme followed by one or more
+      #                     values; returns the union of matching nodes.
+      #       SECTOR(emissions_subsector, 'Electricity and heat production')
+      #       SECTOR(ipcc_crt_code_agg, '1.A.1', '1.A.2')
       #
+      # Unknown scheme or value raises; a valid value with no labelled nodes
+      # returns an empty array.
       def SECTOR(*keys)
-        scope.energy_sector_nodes(keys)
+        if keys.size <= 1
+          scope.energy_sector_nodes(keys)
+        else
+          scope.energy_sector_node_map(keys.first, keys.drop(1))
+        end
       end
 
-      # Returns an Array of {Qernel::Node} for given molecule sector. See SECTOR.
+      # Returns an Array of {Qernel::Node} for a molecule sector. See SECTOR;
+      # identical dispatch, normalization and error contract, resolved against
+      # the molecule graph.
       def MSECTOR(*keys)
-        scope.molecule_sector_nodes(keys)
+        if keys.size <= 1
+          scope.molecule_sector_nodes(keys)
+        else
+          scope.molecule_sector_map(keys.first, keys.drop(1))
+        end
       end
 
       # Returns an Array with {Qernel::Node} for given energy use.
-      #
-      # See Qernel::Node::USES
       #
       # Examples
       #
@@ -143,6 +158,11 @@ module Gql::Runtime
       #
       def USE(*keys)
         scope.energy_use_nodes(keys)
+      end
+
+      # Returns an Array of {Qernel::Node} for given molecule use. See USE.
+      def MUSE(*keys)
+        scope.molecule_use_nodes(keys)
       end
 
       # Returns an Array of {Qernel::Carrier} for given key(s). Returns carriers belonging to the
@@ -321,16 +341,17 @@ module Gql::Runtime
       # Returns an attribute {Qernel::Emissions} or {Qernel::Emissions::ScopedSector} or a value.
       #
       # Emissions data is loaded from CSV files in ETSource with the following structure:
-      #   etm_sector, etm_subsector, use, ghg, unit, value
+      #   etm_sector, etm_subsector, use, ghg, year, unit, value
       #
       # Parameters:
       #   - sector: ETM sector name (e.g., 'households', 'buildings_non_specified')
       #             Dashes/dots in sector names are converted to underscores for key generation
       #   - use: Emission use type (energetic, non_energetic) - REQUIRED when accessing values
       #   - ghg: GHG type (co2, other_ghg) - optional
-      #   - year: Year of emission (e.g., 1990) - optional, reads from emissions_YEAR.csv files
+      #   - year: Pass 1990 to read the historic baseline; the present year is
+      #           implicit and needs no argument
       #
-      # Key generation combines: sector_[subsector_]use_ghg[_year]
+      # Key generation combines: sector_[subsector_]use_ghg[_1990]
       # Note: Unit column from CSV is not included in keys, blank values return nil
       #
       # EMISSIONS() without any keys returns {Qernel::Emissions}
@@ -351,12 +372,18 @@ module Gql::Runtime
       # EMISSIONS(sector, use, ghg) or EMISSIONS(sector, use, ghg, year) returns an emission value
       #
       # Examples
-      #   EMISSIONS(households, energetic, other_ghg) # => 12.0 (from emissions.csv)
-      #   EMISSIONS(households, energetic, co2, 1990) # => value (from emissions_1990.csv)
+      #   EMISSIONS(households, energetic, other_ghg) # => 12.0 (present year)
+      #   EMISSIONS(households, energetic, co2, 1990) # => value for 1990
       #   EMISSIONS(buildings_non_specified, energetic, other_ghg) # => 18.0
       #
       def EMISSIONS(*keys)
         return scope.graph.emissions if keys.empty?
+
+        # Mapped form: EMISSIONS(scheme, value, ghg[, 1990]). Dispatches on the
+        # first argument being a known classification scheme, because the legacy
+        # arities overlap. Read-only: sums the store over the mapping's resolved
+        # (sector label, use) pairs; never returns a scoped-sector handle.
+        return mapped_emissions(keys) if scope.sector_resolver.scheme?(keys.first)
 
         # Convert dashes/dots to underscores in the first key (sector)
         keys[0] = keys.first.to_s.tr('-.', '_').to_sym
@@ -364,8 +391,31 @@ module Gql::Runtime
         # EMISSIONS(sector, use) -> return ScopedSector for UPDATE operations
         return scope.graph.emissions.scope(keys.join('_').to_sym) if keys.size == 2
 
-        # EMISSIONS(sector, use, ghg [, year]) -> return value
-        scope.graph.emissions[keys.join('_').to_sym]
+        # EMISSIONS(sector, use, ghg [, year]) -> return value.
+        # The present year is implicit; only 1990 is suffixed with a year.
+        scope.graph.emissions.value_for(*keys.first(3), year: keys[3])
+      end
+
+      private
+
+      # Internal: The mapped EMISSIONS form. Resolves `scheme`/`value` to
+      # (sector label, use) pairs and lets the emissions store sum over them.
+      def mapped_emissions(keys)
+        if keys.size > 4
+          raise Gql::GqlError, "EMISSIONS(#{keys.first.inspect}, ...) accepts a single value: " \
+                               'EMISSIONS(scheme, value, ghg[, 1990]).'
+        end
+
+        scheme, value, ghg, year = keys
+
+        if ghg.nil?
+          raise Gql::GqlError, "EMISSIONS(#{scheme.inspect}, ...) needs a GHG argument, e.g. " \
+                               "EMISSIONS(#{scheme.inspect}, #{value.inspect}, co2)"
+        end
+
+        scope.graph.emissions.sum_pairs(
+          scope.sector_resolver.pairs(scheme, value), ghg, year: year
+        )
       end
     end
   end

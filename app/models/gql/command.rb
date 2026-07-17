@@ -108,12 +108,15 @@ module Gql
       string.length > (length - 3) ? "#{ string[0..length] }..." : string
     end
 
-    # Internal: Removes extra "artifacts" from the source.
+    # Internal: Removes extra "artifacts" from the source. Whitespace is
+    # insignificant in GQL and stripped, except inside string literals, where
+    # it may be meaningful (e.g. SECTOR scheme values such as 'Fuels
+    # production').
     def clean(string)
       cleaned = (string || '').dup
 
-      cleaned.gsub!(/[\n\s\t]/, '')
-      cleaned.gsub!(/^[a-z]+\:/,'')
+      cleaned.gsub!(/('[^']*'|"[^"]*")|\s+/) { Regexp.last_match(1) || '' }
+      cleaned.sub!(/\A[a-z]+\:/, '')
 
       cleaned
     end

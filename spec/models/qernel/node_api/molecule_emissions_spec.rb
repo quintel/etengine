@@ -190,6 +190,38 @@ RSpec.describe Qernel::NodeApi::MoleculeEmissions do
       end
     end
 
+    describe '#direct_reporting_emissions_co2_utilisation' do
+      context 'node in emissions group' do
+        it 'returns 0.0' do
+          expect(node.query.direct_reporting_emissions_co2_utilisation).to eq(0.0)
+        end
+      end
+
+      context 'node not in emissions group' do
+        let(:node_groups) { [] }
+
+        it 'returns nil' do
+          expect(node.query.direct_reporting_emissions_co2_utilisation).to be_nil
+        end
+      end
+    end
+
+    describe '#direct_reporting_emissions_biogenic_co2_emissions' do
+      context 'node in emissions group' do
+        it 'returns 0.0' do
+          expect(node.query.direct_reporting_emissions_biogenic_co2_emissions).to eq(0.0)
+        end
+      end
+
+      context 'node not in emissions group' do
+        let(:node_groups) { [] }
+
+        it 'returns nil' do
+          expect(node.query.direct_reporting_emissions_biogenic_co2_emissions).to be_nil
+        end
+      end
+    end
+
     describe '#ghg_carrier' do
       context 'with a co2 input slot' do
         before do
@@ -222,6 +254,8 @@ RSpec.describe Qernel::NodeApi::MoleculeEmissions do
         expect(node.query.direct_reporting_emissions_co2_capture).to be_nil
         expect(node.query.direct_reporting_emissions_other_ghg_emissions).to be_nil
         expect(node.query.direct_reporting_emissions_total_ghg_emissions).to be_nil
+        expect(node.query.direct_reporting_emissions_co2_utilisation).to be_nil
+        expect(node.query.direct_reporting_emissions_biogenic_co2_emissions).to be_nil
       end
     end
   end

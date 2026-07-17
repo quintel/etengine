@@ -3,3 +3,5 @@
 - merit_order.type = dispatchable
 - merit_order.group = solar_pv
 - graph_methods = [demand_setter]
+- sector_label = industry_non_specified
+- use = energetic

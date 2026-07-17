@@ -1,2 +1,3 @@
 - output.co2 = 1.0
+- use = non_energetic
 ~ demand = 0.25
