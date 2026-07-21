@@ -88,31 +88,6 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       end
     end
 
-    pending 'with CCS capture (free_co2_factor)' do
-      # Create a graph:
-      # [Gas Producer] -> [CCS Plant] -> [Terminus]
-      let(:builder) do
-        TestGraphBuilder.new.tap do |builder|
-          builder.add(:terminus, demand: 100)
-          builder.add(:ccs_plant, groups: [:direct_emissions], free_co2_factor: 0.85)
-          builder.add(:gas_producer, groups: [:primary_energy_demand])
-
-          builder.connect(:gas_producer, :ccs_plant, :natural_gas, type: :share)
-          builder.connect(:ccs_plant, :terminus, :electricity, type: :share)
-
-          builder.carrier_attrs(:natural_gas, co2_conversion_per_mj: 0.0564)
-        end
-      end
-
-      let(:graph) { builder.to_qernel }
-      let(:ccs_plant) { graph.node(:ccs_plant) }
-
-      it 'reduces emissions by capture rate' do
-        # 100 MJ * 0.0564 kg/MJ * (1 - 0.85) = 0.846 kg CO2
-        expect(ccs_plant).to have_query_value(:direct_co2_input_content_carriers_fossil, 0.846)
-      end
-    end
-
     context 'with multi-level supply chain' do
       # Create a graph:
       # [Coal Producer] -> [Coal Plant] -> [Electricity Grid] -> [Data Center] -> [Terminus]
@@ -561,6 +536,162 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
   end
 
   describe 'CO2 capture methods' do
+    context 'with a CCS plant whose output carries no CO2' do
+      # [Gas Producer] -> [CCS Plant] -> [Terminus]
+      #
+      # Electricity is given an explicit zero CO2 content, so the plant's output
+      # content is lower than its input content and the capture rate is applied
+      # to a non-zero amount. The other capture contexts all have output content
+      # equal to input content, which makes capture zero whatever the rate is.
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:ccs_plant, groups: [:emissions], ccs_capture_rate: 0.85)
+          builder.add(:gas_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:gas_producer, :ccs_plant, :natural_gas, type: :share)
+          builder.connect(:ccs_plant, :terminus, :electricity, type: :share)
+
+          builder.carrier_attrs(:natural_gas, co2_conversion_per_mj: 0.0564)
+          builder.carrier_attrs(:electricity, co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:ccs_plant) { graph.node(:ccs_plant) }
+
+      it 'multiplies the available CO2 by the capture rate' do
+        # A (input): 100 MJ * 0.0564 kg/MJ = 5.64 kg
+        # C (output): 100 MJ * 0.0 kg/MJ   = 0.0 kg
+        # Captured: (A + B - C) * 0.85 = 5.64 * 0.85 = 4.794 kg
+        expect(ccs_plant).to have_query_value(:direct_co2_output_production_capture_fossil, 4.794)
+      end
+
+      it 'captures no biogenic CO2 (no biogenic input)' do
+        expect(ccs_plant).to have_query_value(:direct_co2_output_production_capture_biogenic, 0.0)
+      end
+
+      it 'reports production before capture' do
+        expect(ccs_plant).to have_query_value(:direct_reporting_emissions_co2_production, 5.64)
+      end
+
+      it 'reports total capture as fossil plus biogenic' do
+        expect(ccs_plant).to have_query_value(:direct_reporting_emissions_co2_capture, 4.794)
+      end
+
+      it 'leaves the uncaptured share as total GHG emissions' do
+        # 5.64 - 4.794 = 0.846 kg
+        expect(ccs_plant).to have_query_value(:direct_reporting_emissions_total_ghg_emissions, 0.846)
+      end
+    end
+
+    context 'with a BECCS plant whose output carries no biogenic CO2' do
+      # [Bio Producer] -> [BECCS Plant] -> [Terminus]
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:beccs_plant, groups: [:emissions], ccs_capture_rate: 0.95)
+          builder.add(:bio_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:bio_producer, :beccs_plant, :biogenic_waste, type: :share)
+          builder.connect(:beccs_plant, :terminus, :steam_hot_water, type: :share)
+
+          builder.carrier_attrs(:biogenic_waste, potential_co2_conversion_per_mj: 0.06)
+          builder.carrier_attrs(:steam_hot_water, potential_co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:beccs_plant) { graph.node(:beccs_plant) }
+
+      it 'multiplies the available biogenic CO2 by the capture rate' do
+        # A (input): 100 MJ * 0.06 kg/MJ = 6.0 kg
+        # C (output): 100 MJ * 0.0 kg/MJ = 0.0 kg
+        # Captured: (A - C) * 0.95 = 5.7 kg
+        expect(beccs_plant).to have_query_value(:direct_co2_output_production_capture_biogenic, 5.7)
+      end
+
+      it 'leaves the uncaptured share as biogenic emissions' do
+        # 6.0 - 5.7 = 0.3 kg
+        expect(beccs_plant).to have_query_value(:direct_reporting_emissions_biogenic_co2_emissions, 0.3)
+      end
+    end
+
+    context 'with CCS plant capturing 85% of emissions' do
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:ccs_plant, groups: [:direct_emissions], ccs_capture_rate: 0.85)
+          builder.add(:gas_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:gas_producer, :ccs_plant, :natural_gas, type: :share)
+          builder.connect(:ccs_plant, :terminus, :electricity, type: :share)
+
+          builder.carrier_attrs(:natural_gas, co2_conversion_per_mj: 0.0564)
+          builder.carrier_attrs(:electricity, co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:ccs_plant) { graph.node(:ccs_plant) }
+
+      it 'multiplies the available CO2 by the capture rate' do
+        # A (input): 100 MJ * 0.0564 kg/MJ = 5.64 kg
+        # C (output): 100 MJ * 0.0 kg/MJ   = 0.0 kg
+        # Captured: (A + B - C) * 0.85 = 5.64 * 0.85 = 4.794 kg
+        expect(ccs_plant).to have_query_value(:direct_co2_output_production_capture_fossil, 4.794)
+      end
+
+      it 'captures no biogenic CO2 (no biogenic input)' do
+        expect(ccs_plant).to have_query_value(:direct_co2_output_production_capture_biogenic, 0.0)
+      end
+
+      it 'reports production before capture' do
+        expect(ccs_plant).to have_query_value(:direct_reporting_emissions_co2_production, 5.64)
+      end
+
+      it 'reports total capture as fossil plus biogenic' do
+        expect(ccs_plant).to have_query_value(:direct_reporting_emissions_co2_capture, 4.794)
+      end
+
+      it 'leaves the uncaptured share as total GHG emissions' do
+        # 5.64 - 4.794 = 0.846 kg
+        expect(ccs_plant).to have_query_value(:direct_reporting_emissions_total_ghg_emissions, 0.846)
+      end
+    end
+
+    context 'with a BECCS plant whose output carries no biogenic CO2' do
+      # [Bio Producer] -> [BECCS Plant] -> [Terminus]
+      let(:builder) do
+        TestGraphBuilder.new.tap do |builder|
+          builder.add(:terminus, demand: 100)
+          builder.add(:beccs_plant, groups: [:emissions], ccs_capture_rate: 0.95)
+          builder.add(:bio_producer, groups: [:primary_energy_demand])
+
+          builder.connect(:bio_producer, :beccs_plant, :biogenic_waste, type: :share)
+          builder.connect(:beccs_plant, :terminus, :steam_hot_water, type: :share)
+
+          builder.carrier_attrs(:biogenic_waste, potential_co2_conversion_per_mj: 0.06)
+          builder.carrier_attrs(:steam_hot_water, potential_co2_conversion_per_mj: 0.0)
+        end
+      end
+
+      let(:graph) { builder.to_qernel }
+      let(:beccs_plant) { graph.node(:beccs_plant) }
+
+      it 'multiplies the available biogenic CO2 by the capture rate' do
+        # A (input): 100 MJ * 0.06 kg/MJ = 6.0 kg
+        # C (output): 100 MJ * 0.0 kg/MJ = 0.0 kg
+        # Captured: (A - C) * 0.95 = 5.7 kg
+        expect(beccs_plant).to have_query_value(:direct_co2_output_production_capture_biogenic, 5.7)
+      end
+
+      it 'leaves the uncaptured share as biogenic emissions' do
+        # 6.0 - 5.7 = 0.3 kg
+        expect(beccs_plant).to have_query_value(:direct_reporting_emissions_biogenic_co2_emissions, 0.3)
+      end
+    end
+
     context 'with CCS plant capturing 85% of emissions' do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
