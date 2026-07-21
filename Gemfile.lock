@@ -21,8 +21,8 @@ GIT
 
 GIT
   remote: https://github.com/quintel/identity_rails.git
-  revision: 759060417940e07220252ad4d60bad72afcb90c1
-  ref: 7590604
+  revision: 44e9dcdbe994bbade8ede0489e20e00f19dc3594
+  ref: 44e9dcd
   specs:
     identity (0.1.0)
       dry-configurable (>= 1.0)
@@ -31,9 +31,7 @@ GIT
       dry-validation (>= 1.10)
       faraday (>= 2)
       jwt (>= 2.5)
-      omniauth (>= 2.1)
-      omniauth-rails_csrf_protection (~> 1.0)
-      omniauth_openid_connect (~> 0.4)
+      openid_connect (>= 2.2)
       rails (>= 7.0.0)
 
 GIT
@@ -327,8 +325,6 @@ GEM
       temple (>= 0.8.2)
       thor
       tilt
-    hashie (5.1.0)
-      logger
     highline (3.1.2)
       reline
     http-accept (1.7.0)
@@ -458,17 +454,6 @@ GEM
     nokogiri (1.19.4-x86_64-linux-gnu)
       racc (~> 1.4)
     numo-narray (0.9.2.1)
-    omniauth (2.1.4)
-      hashie (>= 3.4.6)
-      logger
-      rack (>= 2.2.3)
-      rack-protection
-    omniauth-rails_csrf_protection (1.0.2)
-      actionpack (>= 4.2)
-      omniauth (~> 2.0)
-    omniauth_openid_connect (0.8.0)
-      omniauth (>= 1.9, < 3)
-      openid_connect (~> 2.2)
     openid_connect (2.3.1)
       activemodel
       attr_required (>= 1.0.0)
@@ -549,10 +534,6 @@ GEM
       faraday-follow_redirects
       json-jwt (>= 1.11.0)
       rack (>= 2.1.0)
-    rack-protection (4.2.1)
-      base64 (>= 0.1.0)
-      logger (>= 1.6.0)
-      rack (>= 3.0.0, < 4)
     rack-session (2.1.2)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
