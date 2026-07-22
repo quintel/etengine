@@ -1,4 +1,4 @@
-FROM ruby:4.0-slim
+FROM ruby:4.0.5-slim
 
 LABEL maintainer="info@energytransitionmodel.com"
 
