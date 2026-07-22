@@ -37,9 +37,9 @@ $(document).on("turbo:load", function () {
       cm.focus();
     }
 
-    // Ctrl+Enter (Windows/Linux) or Cmd+Enter (Mac) submit on any CodeMirror instance
+    // Alt+Enter (Windows/Linux) or Option+Enter (Mac) submit on any CodeMirror instance
     cm.on("keydown", function (el, event) {
-      if ((event.ctrlKey || event.metaKey) && event.keyCode === 13) {
+      if (event.altKey && event.keyCode === 13) {
         $(event.target).closest("form").submit();
       }
     });
