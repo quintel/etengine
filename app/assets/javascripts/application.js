@@ -37,9 +37,9 @@ $(document).on("turbo:load", function () {
       cm.focus();
     }
 
-    // Ctrl+Enter submit on any CodeMirror instance
+    // Alt+Enter (Windows/Linux) or Option+Enter (Mac) submit on any CodeMirror instance
     cm.on("keydown", function (el, event) {
-      if (event.ctrlKey && event.keyCode === 13) {
+      if (event.altKey && event.keyCode === 13) {
         $(event.target).closest("form").submit();
       }
     });
@@ -138,12 +138,6 @@ $(document).on("turbo:load", function () {
       $('.edge-flows .nav-tabs a[href="' + selectedPeriod + '"]').click();
     }
   }
-
-  $(".gql-debug #query").keyup(function (event) {
-    if (event.ctrlKey && event.keyCode === 13) {
-      $(event.target).parent("form").submit();
-    }
-  });
 
   $(".gql-debug").on("submit", function () {
     $(".gql-debug button").attr("disabled", true);
