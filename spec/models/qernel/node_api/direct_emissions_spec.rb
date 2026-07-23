@@ -546,7 +546,7 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 100)
-          builder.add(:ccs_plant, groups: [:emissions], ccs_capture_rate: 0.85)
+          builder.add(:ccs_plant, groups: [:direct_emissions], ccs_capture_rate: 0.85)
           builder.add(:gas_producer, groups: [:primary_energy_demand])
 
           builder.connect(:gas_producer, :ccs_plant, :natural_gas, type: :share)
@@ -590,7 +590,7 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 100)
-          builder.add(:beccs_plant, groups: [:emissions], ccs_capture_rate: 0.95)
+          builder.add(:beccs_plant, groups: [:direct_emissions], ccs_capture_rate: 0.95)
           builder.add(:bio_producer, groups: [:primary_energy_demand])
 
           builder.connect(:bio_producer, :beccs_plant, :biogenic_waste, type: :share)
@@ -665,7 +665,7 @@ RSpec.describe Qernel::NodeApi::DirectEmissions do
       let(:builder) do
         TestGraphBuilder.new.tap do |builder|
           builder.add(:terminus, demand: 100)
-          builder.add(:beccs_plant, groups: [:emissions], ccs_capture_rate: 0.95)
+          builder.add(:beccs_plant, groups: [:direct_emissions], ccs_capture_rate: 0.95)
           builder.add(:bio_producer, groups: [:primary_energy_demand])
 
           builder.connect(:bio_producer, :beccs_plant, :biogenic_waste, type: :share)

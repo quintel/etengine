@@ -386,7 +386,7 @@ RSpec.describe Export::ConfiguredCSVSerializer do
           allow(gql.future.graph).to receive(:node).with(:node).and_return(
             instance_double(
               'Qernel::Node',
-              emissions?: true,
+              direct_emissions?: true,
               node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :node)
             )
           )
