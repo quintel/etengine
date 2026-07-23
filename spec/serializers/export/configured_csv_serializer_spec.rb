@@ -264,8 +264,14 @@ RSpec.describe Export::ConfiguredCSVSerializer do
       expect(serializer.data[1][2]).to eq('1.A.1')
     end
 
-    it 'renders a blank mapping cell as an empty string' do
-      expect(serializer.data[5]).to eq(['Other', 'lft', ''])
+    it 'renders a blank mapping cell as the mapping\'s own "-" token' do
+      expect(serializer.data[5]).to eq(%w[Other lft -])
+    end
+
+    it 'still excludes a pair whose require column carries "-"' do
+      # `industry_non_specified/energetic` has "-" in emissions_sector. Rendering "-" is display
+      # only; it must not make the pair eligible for export.
+      expect(serializer.data.flatten).not_to include('foo')
     end
 
     context 'with an isolated pair (stubbed Etsource::Sectors)' do
@@ -346,6 +352,50 @@ RSpec.describe Export::ConfiguredCSVSerializer do
 
         it 'sorts by the order_by value first, breaking ties by mapping-file order' do
           expect(serializer.data[1..].flatten).to eq(%w[node_c node_a node_b])
+        end
+      end
+
+      context 'with an "order_by" column holding multi-digit codes' do
+        # Real IPCC CRT code shapes. In mapping-file order the codes are 1-2, 10.a, 3-7..., 8.a;
+        # a character-by-character comparison would leave "2.B.10.a" second, between "2.B.1-2" and
+        # "2.B.3-7,8.b-g,9,10.b".
+        let(:codes) { ['2.B.1-2', '2.B.10.a', '2.B.3-7,8.b-g,9,10.b', '2.B.8.a'] }
+
+        let(:raw_rows) do
+          codes.each_with_index.map do |code, index|
+            Atlas::SectorMapping::RawRow.new(
+              [:"pair_#{index}", :energetic],
+              { emissions_sector: 'Industry', ipcc_crt_code: code }
+            )
+          end
+        end
+
+        let(:config) do
+          {
+            schema: [{ name: 'IPCC', type: 'sector_mapping', value: 'ipcc_crt_code' }],
+            rows: { require: 'emissions_sector', order_by: 'ipcc_crt_code' }
+          }
+        end
+
+        before do
+          allow(sectors).to receive(:mapping).and_return({ emissions_sector: {}, ipcc_crt_code: {} })
+          allow(sectors).to receive(:raw_rows).and_return(raw_rows)
+          allow(sectors).to receive(:node_index).with(:energy).and_return(
+            raw_rows.to_h { |raw_row| [raw_row.pair, [:node]] }
+          )
+          allow(gql.future.graph).to receive(:node).with(:node).and_return(
+            instance_double(
+              'Qernel::Node',
+              direct_emissions?: true,
+              node_api: instance_double('Qernel::NodeApi::EnergyApi', key: :node)
+            )
+          )
+        end
+
+        it 'compares digit runs by value, not character by character' do
+          expect(serializer.data[1..].flatten).to eq(
+            ['2.B.1-2', '2.B.3-7,8.b-g,9,10.b', '2.B.8.a', '2.B.10.a']
+          )
         end
       end
 

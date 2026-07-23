@@ -41,9 +41,10 @@
 # Mapping-driven mode: `rows: { require: <mapping column> }` selects every (sector label, use) pair
 # in the sector mapping (see Atlas::SectorMapping) whose cell in `require`'s column has a value, in
 # mapping-file order by default. An optional `order_by: <mapping column>` instead orders pairs by the
-# raw display value of that column (ascending string comparison), regardless of whether the column is
-# included in `schema:`; a pair whose `order_by` cell is blank/`-` sorts last, and pairs tied on
-# `order_by` keep their relative mapping-file order. Each pair expands to the energy and molecule
+# raw display value of that column (ascending, comparing digit runs by value so "2.B.10.a" follows
+# "2.B.8.a"), regardless of whether the column is included in `schema:`; a pair whose `order_by` cell
+# is blank/`-` sorts last, and pairs tied on `order_by` keep their relative mapping-file order.
+# Each pair expands to the energy and molecule
 # nodes whose own `sector_label` and `use` match the pair AND which belong to the node's `:direct_emissions`
 # group (key-sorted). A pair with zero labelled nodes, or whose only matching nodes aren't in the
 # `:direct_emissions` group, legally yields zero rows. Mapping-driven mode requires a `period:` (raises
@@ -59,7 +60,11 @@
 #                       transform: "value * 10e-6"
 #                       transform: "value ? :other_ghg : :co2"
 # - "sector_mapping": The value will be the raw display value of the mapping column named by `value:`,
-#                     for the row's pair. A `-`/blank mapping cell renders as an empty string.
+#                     for the row's pair. A `-`/blank mapping cell renders as `-`, the mapping's own
+#                     "no value" token (Atlas::SectorMapping::BLANK_CELL), so the exported cell reads
+#                     back the way it is written in the mapping. Note this is display only: such a
+#                     cell stays unqueryable, and a `-` in the `rows: require:` column still excludes
+#                     the pair from the export entirely.
 #
 # An unknown mapping column named by `require:`, `order_by:`, or a `sector_mapping` column's `value:`
 # raises Export::ConfiguredCSVSerializer::UnknownMappingColumnError at construction, naming the valid
@@ -74,6 +79,11 @@ module Export
 
     # Column types which may appear in a mapping-driven schema.
     MAPPING_COLUMN_TYPES = %w[node_attribute sector_mapping].freeze
+
+    # Width digit runs are zero-padded to in an `order_by` sort key. Any width wider than the
+    # longest run in the data orders those runs numerically; 10 covers far more than the codes
+    # being sorted (IPCC CRT numbers are one or two digits).
+    ORDER_DIGIT_WIDTH = 10
 
     # Represents the schema for a column in the CSV file.
     class Column
@@ -152,7 +162,8 @@ module Export
     end
 
     # Rows whose `require:` cell has a value, in mapping-file order. When `order_by:` is set, sorted
-    # by that column's raw value instead (blank/`-` last), with ties broken by mapping-file order.
+    # by that column's raw value instead (naturally; blank/`-` last), ties broken by mapping-file
+    # order.
     def eligible_rows
       rows = sectors.raw_rows.select { |raw_row| raw_row.cells[@membership_scheme] }
       return rows unless @order_scheme
@@ -162,7 +173,12 @@ module Export
 
     def order_key(raw_row, index)
       cell = raw_row.cells[@order_scheme]
-      [cell.nil? ? 1 : 0, cell.to_s, index]
+      [cell.nil? ? 1 : 0, natural_order_key(cell), index]
+    end
+
+    # Internal: A sort key comparing digit runs by value rather than character by character
+    def natural_order_key(value)
+      value.to_s.gsub(/\d+/) { |digits| digits.rjust(ORDER_DIGIT_WIDTH, '0') }
     end
 
     def serialize_mapping_column(column, raw_row, node)
@@ -173,7 +189,7 @@ module Export
         value = column.transform.call(value) if column.transform
         value.to_s
       else # 'sector_mapping'; the only other type validate_mapping_config! admits
-        raw_row.cells[column.value.to_sym].to_s
+        (raw_row.cells[column.value.to_sym] || Atlas::SectorMapping::BLANK_CELL).to_s
       end
     end
 
