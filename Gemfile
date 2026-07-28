@@ -93,6 +93,12 @@ gem "stackprof"
 gem 'sentry-ruby'
 gem "sentry-rails"
 
+# opentelemetry gems
+gem 'opentelemetry-sdk', '~> 1.13'
+gem 'opentelemetry-exporter-otlp', '~> 0.34.1'
+gem 'opentelemetry-instrumentation-rack', '~> 0.31.1'
+gem 'opentelemetry-instrumentation-action_pack', '~> 0.18.0'
+
 group :development do
   # gem 'quiet_assets'
   gem 'better_errors'
