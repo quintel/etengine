@@ -78,7 +78,7 @@ gem 'fever',         ref: '2afebd1', github: 'quintel/fever'
 gem 'refinery',      ref: '36b8e34', github: 'quintel/refinery'
 gem 'rubel',         ref: '9fe7010', github: 'quintel/rubel'
 gem 'osmosis',       ref: '16fac7c', github: 'quintel/osmosis'
-gem 'identity',      ref: 'f902106', github: 'quintel/identity_rails'
+gem 'identity',      ref: 'cbcdeb6', github: 'quintel/identity_rails'
 gem 'turbine-graph', '>=0.1',        require: 'turbine'
 
 # system gems
