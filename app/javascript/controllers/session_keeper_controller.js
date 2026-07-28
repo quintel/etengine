@@ -6,10 +6,18 @@ import { startSessionKeeper } from "identity/session_keeper";
 // a state in which the server sees no current_user. The shared logic guards against guest reload
 // loops, so an unconditional mount is safe. See identity/session_keeper in the identity gem.
 export default class extends Controller {
-  static values = { idpUrl: String };
+  // expCookie names the hint cookie the keeper times off; suffixed on deployments that share a
+  // cookie domain, so it comes from the server (Identity::ApplicationHelper) rather than assumed.
+  static values = {
+    idpUrl: String,
+    expCookie: { type: String, default: "etm_session_exp" },
+  };
 
   connect() {
-    this.teardown = startSessionKeeper({ idpUrl: this.idpUrlValue });
+    this.teardown = startSessionKeeper({
+      idpUrl: this.idpUrlValue,
+      expCookieName: this.expCookieValue,
+    });
   }
 
   disconnect() {
