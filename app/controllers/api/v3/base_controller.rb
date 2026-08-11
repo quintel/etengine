@@ -2,6 +2,7 @@ module Api
   module V3
     class BaseController < ActionController::API
       include ActionController::MimeResponds
+      include Identity::ResourceServer
 
       rescue_from ActionController::ParameterMissing do |e|
         render json: { errors: [e.message] }, status: :bad_request
@@ -26,10 +27,6 @@ module Api
         end
       end
 
-      rescue_from ETEngine::TokenDecoder::DecodeError, JSON::JWT::Exception do
-        render json: { errors: ['Invalid or expired token'] }, status: :unauthorized
-      end
-
       def set_current_scenario
         @scenario = if params[:scenario_id]
           Scenario.find(params[:scenario_id])
@@ -46,27 +43,17 @@ module Api
 
       private
 
-      # Returns the contents of the current token, if an Authorization header is set.
-      def token
-        return @token if @token
-        return nil if request.authorization.blank?
-
-        request.authorization.to_s.match(/\ABearer (.+)\z/) do |match|
-          return @token = ETEngine::TokenDecoder.decode(match[1])
-        end
-      end
-
       # Returns the current user, if a token is set and is valid.
       def current_user
-        return nil unless token
+        return nil unless decoded_token
 
-        @current_user ||= User.from_jwt!(token) if token
+        @current_user ||= User.from_jwt!(decoded_token)
       end
 
       def current_ability
         @current_ability ||=
           if current_user
-            TokenAbility.new(token, current_user)
+            TokenAbility.new(decoded_token, current_user)
           else
             GuestAbility.new
           end

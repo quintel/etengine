@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 # Pin npm packages by running ./bin/importmap
 
 pin 'identity', preload: true
+pin 'identity/session_keeper' # shared session keep-alive/recovery, shipped by the identity gem
 pin 'inspect', preload: true
 pin '@hotwired/turbo-rails', to: 'turbo.min.js', preload: true
 pin '@hotwired/stimulus', to: 'stimulus.min.js', preload: true

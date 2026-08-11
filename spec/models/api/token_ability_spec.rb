@@ -5,20 +5,6 @@ require 'cancan/matchers'
 RSpec.describe Api::TokenAbility do
   let(:user) { create(:user, roles:) }
   let(:roles) { :scenario_viewer }
-  let(:test_token) { JSON.parse(File.read(Rails.root.join('spec/fixtures/identity/token/idp_token.json')))['token'] }
-  let(:mock_jwk_set) do
-    {
-      keys: [
-        {
-          kty: 'RSA',
-          kid: 'test-key-id',
-          use: 'sig',
-          n: 'test-modulus',
-          e: 'AQAB'
-        }
-      ]
-    }
-  end
   let(:scopes) { '' }
 
   let(:mock_decoded_token) do
@@ -29,23 +15,6 @@ RSpec.describe Api::TokenAbility do
       exp: 1730367768, # Static future expiration
       scopes: scopes
     }.with_indifferent_access
-  end
-
-  before do
-    # Stub Faraday to prevent actual HTTP requests
-    allow(Faraday).to receive(:new).and_return(
-      double('Faraday::Connection').tap do |connection|
-        allow(connection).to receive(:get).and_return(
-          double('Faraday::Response', body: mock_jwk_set.to_json)
-        )
-      end
-    )
-
-    # Stub the jwk_set method to return the mock JWK set
-    allow(described_class).to receive(:jwk_set).and_return(JSON::JWK::Set.new(mock_jwk_set))
-
-    # Mock the TokenDecoder behavior
-    allow(ETEngine::TokenDecoder).to receive(:decode).with(test_token).and_return(mock_decoded_token)
   end
 
   let(:ability) { described_class.new(mock_decoded_token, user) }

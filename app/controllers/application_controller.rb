@@ -21,7 +21,8 @@ class ApplicationController < ActionController::Base
   end
 
   def current_user
-    @current_user ||= User.from_session_user!(identity_user) if signed_in?
+    @current_user ||=
+      (User.from_jwt!(identity_token) if identity_token)
   rescue ActiveRecord::RecordNotFound
     reset_session
     redirect_to root_path
