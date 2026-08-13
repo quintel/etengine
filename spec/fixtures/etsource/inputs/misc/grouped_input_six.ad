@@ -1,0 +1,7 @@
+# An input which belongs to a group.
+- key = grouped_input_six
+- share_group = grouped
+- start_value = 0
+- min_value = 0
+- max_value = 100
+- query = 2 * 2

@@ -3,46 +3,52 @@
 class ScenarioUpdater
   module Services
     # Calculates balanced values for input share groups to ensure they sum to 100%.
+    #
+    # Balancing errors are swallowed here: the balancer computes, and
+    # ValidateBalance judges and reports, so exactly one service owns
+    # share-group error messages.
     class CalculateBalancedValues
       include Dry::Monads[:result]
 
       def call(scenario, user_values:, provided_values:, uncoupled_inputs:, reset: false, autobalance: true, force_balance: false)
-        return Success({}) if user_values.blank?
+        return Success(user_values:, balanced_values: {}) if user_values.blank?
 
-        balanced = base_balanced_values(scenario, uncoupled_inputs, reset)
+        user_values = user_values.dup
+        balanced    = base_balanced_values(scenario, uncoupled_inputs, reset)
 
-        # Remove balanced values for groups being updated
         ShareGroups.each(provided_values) do |_, inputs|
+          # Remove balanced values for groups being updated.
           inputs.each { |input| balanced.delete(input.key) }
+
+          corrections = balance_group(
+            scenario, inputs, user_values, provided_values, autobalance, force_balance
+          )
+
+          apply_corrections(corrections, user_values, balanced)
         end
 
-        balance_groups(scenario, provided_values, user_values, autobalance, force_balance, balanced) if autobalance
-
-        Success(balanced)
+        Success(user_values:, balanced_values: balanced)
       end
 
       private
 
-      def balance_groups(scenario, provided_values, user_values, autobalance, force_balance, balanced)
-        ShareGroups.each(provided_values) do |_, inputs|
-          if (balanced_group = balance_group(scenario, inputs, user_values, provided_values, force_balance))
-            balanced.merge!(balanced_group)
+      # Corrections for keys the user set land in user_values; everything else
+      # is a balanced value.
+      def apply_corrections(corrections, user_values, balanced)
+        corrections.each do |key, value|
+          if user_values.key?(key)
+            user_values[key] = value
+          else
+            balanced[key] = value
           end
         end
       end
 
-      def balance_group(scenario, inputs, user_values, provided_values, force_balance)
-        if force_balance
-          values_to_balance = user_values.dup
-          inputs.each do |input|
-            values_to_balance.delete(input.key) unless provided_values.key?(input.key)
-          end
-          ::Balancer.new(inputs).balance(scenario, provided_values)
-        else
-          ::Balancer.new(inputs).balance(scenario, user_values)
-        end
+      def balance_group(scenario, inputs, user_values, provided_values, autobalance, force_balance)
+        values = force_balance ? provided_values : user_values
+        ::Balancer.new(inputs).balance(scenario, values, autobalance:)
       rescue ::Balancer::BalancerError
-        nil
+        {}
       end
 
       def base_balanced_values(scenario, uncoupled_inputs, reset)
