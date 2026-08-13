@@ -12,14 +12,16 @@ class SimplifiedBuildingsHeatInputs < ActiveRecord::Migration[7.1]
       # If the old input is not present, we don't need to do anything.
       return unless scenario.user_values.key?(old_key)
 
+      requested_demand = scenario.user_values.delete(old_key)
+
       # Without a typical demand there is nothing to compare the old value against,
-      # so the old input is left as it is.
+      # so only the key of the old input goes.
       default_demand = scenario.area[demand_attribute]
       return if default_demand.nil? || default_demand.zero?
 
       # The new input only expresses a reduction of the demand. A demand above the default is not
       # an insulation improvement and has nowhere to go, so it is left out.
-      ratio = scenario.user_values.delete(old_key) / default_demand
+      ratio = requested_demand / default_demand
       reduction = ((1.0 - ratio) * 100.0).round(INSULATION_DECIMALS)
       scenario.user_values[new_key] = reduction if reduction.positive?
     end
