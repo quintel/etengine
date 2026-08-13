@@ -49,8 +49,13 @@ module Etsource
 
         watched_dirs = DIRS.map(&Regexp.method(:escape)).join('|')
 
-        @listener = Listen.to(ETSOURCE_EXPORT_DIR.to_s) do |(modified_path, *)|
-          path = Pathname.new(modified_path).relative_path_from(Atlas.data_dir)
+        listen_options = { force_polling: ENV['ETSOURCE_LIVE_RELOAD_FORCE_POLLING'] == 'true' }
+
+        @listener = Listen.to(ETSOURCE_EXPORT_DIR.to_s, **listen_options) do |modified, added, removed|
+          changed_path = (modified + added + removed).first
+          next unless changed_path
+
+          path = Pathname.new(changed_path).relative_path_from(Atlas.data_dir)
           type = path.to_s.split('/').first
 
           if RECORD_RELOAD.include?(type)
@@ -83,6 +88,7 @@ module Etsource
         "Atlas::#{class_name}".constantize.manager.clear!
         class_name.constantize.clear!
         Etsource::Loader.instance.clear!(type)
+        Rails.cache.clear
 
         Rails.logger.info "ETSource live reload: Cleared cache for #{type}."
       end
