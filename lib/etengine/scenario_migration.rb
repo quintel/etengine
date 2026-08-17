@@ -5,6 +5,10 @@ module ETEngine
   module ScenarioMigration
     NoScenariosMigrated = Class.new(RuntimeError)
 
+    NO_CHANGES_MESSAGE =
+      'No scenarios were changed. If this database holds no scenarios the migration ' \
+      'applies to, re-run with SKIP_SCENARIO_CHECK=1 to record it as applied.'
+
     # Public: Yields all migrateable scenarios. If a scenario is changed while
     # yielded it will be saved.
     #
@@ -18,7 +22,8 @@ module ETEngine
     #   Raises an error if no scenarios were migrated. This is useful if you are
     #   expecting scenarios to be migrated and want to fail the migration if
     #   none were. This is particularly valuable when deploying automatically
-    #   where this might not be noticed. (default: true)
+    #   where this might not be noticed. Never raises while migrating the test
+    #   database. (default: true)
     #
     # since: -
     #   By default, all read-only scenarios and writeable scenarios modified
@@ -53,9 +58,10 @@ module ETEngine
       say("#{total}/#{total} (#{changed} migrated)")
 
       # With continuous deployment, it might go unnoticed if no scenarios are
-      # migrated. If the developer knows that zero migrated scenarios is an
-      # error, they may
-      raise NoScenariosMigrated if changed.zero? && raise_if_no_changes
+      # migrated.
+      if raise_if_no_changes && changed.zero? && !skip_no_changes_check?
+        raise NoScenariosMigrated, NO_CHANGES_MESSAGE
+      end
 
       nil
     end
@@ -65,6 +71,15 @@ module ETEngine
     end
 
     private
+
+    def skip_no_changes_check?
+      test_database? || ENV['SKIP_SCENARIO_CHECK'].present?
+    end
+
+    # True while migrating the test database.
+    def test_database?
+      ActiveRecord::Base.connection_db_config.env_name == 'test'
+    end
 
     def scenarios(since)
       since.nil? ? Scenario.migratable : Scenario.migratable_since(since)
