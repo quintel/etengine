@@ -29,7 +29,7 @@ class SimplifiedHouseholdsHeatInputs < ActiveRecord::Migration[7.1]
   NEW_PERIOD = Period.new(
     name: 'future',
     demolished_key: nil,
-    insulation_key: 'households_insulation_new_houses'
+    insulation_key: 'households_insulation_new_residences'
   ).freeze
 
   ALL_PERIODS = (EXISTING_PERIODS + [NEW_PERIOD]).freeze
