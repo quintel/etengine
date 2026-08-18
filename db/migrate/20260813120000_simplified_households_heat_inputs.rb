@@ -10,6 +10,7 @@ class SimplifiedHouseholdsHeatInputs < ActiveRecord::Migration[7.1]
     def insulation_level_key(type) = "households_insulation_level_#{type}_#{name}"
     def present_attribute(type) = "present_number_of_#{type}_#{name}"
     def demand_attribute(type) = "typical_useful_demand_for_space_heating_#{type}_#{name}"
+    def demand_node(type) = "households_useful_demand_for_space_heating_#{type}_#{name}"
   end
 
   HOUSING_TYPES = %w[apartments detached_houses semi_detached_houses terraced_houses].freeze
@@ -63,9 +64,17 @@ class SimplifiedHouseholdsHeatInputs < ActiveRecord::Migration[7.1]
   INSULATION_DECIMALS = 1
 
   def up
+    # The heat demand of every housing type and period in the start year, dumped from the graph of
+    # each dataset. The demand of the residences standing today is not an area attribute: the graph
+    # derives it, so the insulation conversion cannot recalculate it here.
+    @start_year_demands = JSON.load(File.read(
+      Rails.root.join("db/migrate/#{File.basename(__FILE__, '.rb')}/dataset_values.json")
+    ))
+
     migrate_scenarios do |scenario|
       # The present housing stock is mandatory for the conversions ahead.
       next unless Atlas::Dataset.exists?(scenario.area_code)
+      next unless @start_year_demands.key?(scenario.area_code)
 
       # Both conversions return the number of residences of every type and period,
       # which the insulation conversion will use to weight its housing types.
@@ -189,7 +198,7 @@ class SimplifiedHouseholdsHeatInputs < ActiveRecord::Migration[7.1]
         next if typical_demand.zero?
 
         # A type weighs in the shared input by the demand its residences carry.
-        weight = residences[[type, period.name]].to_f * FLOOR_AREAS[type] * typical_demand
+        weight = insulation_weight(scenario, period, type, residences[[type, period.name]].to_f, typical_demand)
         requested_demand += weight * (requested.nil? ? 1.0 : requested / typical_demand)
         default_demand += weight
       end
@@ -203,5 +212,17 @@ class SimplifiedHouseholdsHeatInputs < ActiveRecord::Migration[7.1]
       reduction = ((1.0 - (requested_demand / default_demand)) * 100.0).round(INSULATION_DECIMALS)
       scenario.user_values[period.insulation_key] = reduction if reduction.positive?
     end
+  end
+
+  # New residences carry the demand the model builds for them: their number, their floor area and
+  # the demand per m2. Residences standing today carry the demand they had in the start year,
+  # reduced by the ones demolished since, which is how the model scales them into the future year.
+  def insulation_weight(scenario, period, type, residences, typical_demand)
+    return residences * FLOOR_AREAS[type] * typical_demand if period == NEW_PERIOD
+
+    present = present_residences(scenario, period.present_attribute(type))
+    return 0.0 if present.zero?
+
+    @start_year_demands[scenario.area_code][period.demand_node(type)].to_f * (residences / present)
   end
 end
