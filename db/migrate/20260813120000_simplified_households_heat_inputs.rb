@@ -5,7 +5,8 @@ class SimplifiedHouseholdsHeatInputs < ActiveRecord::Migration[7.1]
 
   # A construction period of the housing stock. The old inputs exist for every housing type, the new
   # ones cover all types of the period at once.
-  Period = Struct.new(:name, :demolished_key, :insulation_key) do
+  Period = Struct.new(:name, :insulation_key) do
+    def demolished_key = "households_demolished_#{name}"
     def residences_key(type) = "households_number_of_#{type}_#{name}"
     def insulation_level_key(type) = "households_insulation_level_#{type}_#{name}"
     def present_attribute(type) = "present_number_of_#{type}_#{name}"
@@ -18,20 +19,12 @@ class SimplifiedHouseholdsHeatInputs < ActiveRecord::Migration[7.1]
   # The periods of the residences standing today. The old input is the number of them left standing in
   # the future year, the new input the number demolished. Both are absolute counts.
   EXISTING_PERIODS = %w[before_1945 1945_1964 1965_1984 1985_2004 2005_present].map do |name|
-    Period.new(
-      name: name,
-      demolished_key: "households_demolished_#{name}",
-      insulation_key: "households_insulation_#{name}"
-    )
+    Period.new(name: name, insulation_key: "households_insulation_#{name}")
   end.freeze
 
   # Residences built in the future year. They are not demolished, and their insulation input carries a
   # name of its own.
-  NEW_PERIOD = Period.new(
-    name: 'future',
-    demolished_key: nil,
-    insulation_key: 'households_insulation_new_residences'
-  ).freeze
+  NEW_PERIOD = Period.new(name: 'future', insulation_key: 'households_insulation_new_residences').freeze
 
   ALL_PERIODS = (EXISTING_PERIODS + [NEW_PERIOD]).freeze
 
@@ -57,9 +50,9 @@ class SimplifiedHouseholdsHeatInputs < ActiveRecord::Migration[7.1]
     'terraced_houses' => 130.419159051538
   }.freeze
 
-  # The new inputs are written with the precision of their own step value:
-  # whole residences, and tenths of a percent.
-  RESIDENCES_DECIMALS = 0
+  # The new inputs are written with the precision of their own step value: whole residences, and
+  # tenths of a percent. Residences are floored rather than rounded, since a scaled area holds a
+  # fractional stock and rounding up could land above the maximum of the input.
   RESIDENCE_SHARE_DECIMALS = 1
   INSULATION_DECIMALS = 1
 
@@ -119,7 +112,7 @@ class SimplifiedHouseholdsHeatInputs < ActiveRecord::Migration[7.1]
       total = [built, present_residences(scenario, PRESENT_RESIDENCES_ATTRIBUTE)].min
       residences.transform_values! { |of_type| of_type * total / built } if total < built
 
-      scenario.user_values[NEW_RESIDENCES_KEY] = total.round(RESIDENCES_DECIMALS).to_f
+      scenario.user_values[NEW_RESIDENCES_KEY] = total.floor.to_f
       migrate_new_residences_shares(scenario, residences, total) if total.positive?
     end
 
@@ -173,7 +166,7 @@ class SimplifiedHouseholdsHeatInputs < ActiveRecord::Migration[7.1]
       next if present.values.sum.zero?
 
       demolished = HOUSING_TYPES.sum { |type| present[type] - residences[[type, period.name]] }
-      scenario.user_values[period.demolished_key] = demolished.round(RESIDENCES_DECIMALS).to_f
+      scenario.user_values[period.demolished_key] = demolished.floor.to_f
     end
   end
 
