@@ -64,7 +64,8 @@ class SimplifiedHouseholdsHeatInputs < ActiveRecord::Migration[7.1]
       Rails.root.join("db/migrate/#{File.basename(__FILE__, '.rb')}/dataset_values.json")
     ))
 
-    migrate_scenarios do |scenario|
+    # Scenarios already holding the new inputs are left untouched, so a repeated run changes nothing.
+    migrate_scenarios(raise_if_no_changes: false) do |scenario|
       # The present housing stock is mandatory for the conversions ahead.
       next unless Atlas::Dataset.exists?(scenario.area_code)
       next unless @start_year_demands.key?(scenario.area_code)
