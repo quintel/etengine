@@ -69,6 +69,12 @@ class SimplifiedHouseholdsHeatInputs < ActiveRecord::Migration[7.1]
       next unless Atlas::Dataset.exists?(scenario.area_code)
       next unless @start_year_demands.key?(scenario.area_code)
 
+      # A user value may hold a NaN, left by rescaling an input for a differently-sized area, and a
+      # scaler with a zero base value scales every area attribute to NaN or infinity. Neither
+      # leaves anything to convert, and neither scenario can be calculated, so both are skipped.
+      next if scenario.user_values.any? { |_, value| value.is_a?(Float) && !value.finite? }
+      next if scenario.scaler && !scenario.scaler.multiplier.finite?
+
       # Both conversions return the number of residences of every type and period,
       # which the insulation conversion will use to weight its housing types.
       residences = migrate_new_residences(scenario)
