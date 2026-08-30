@@ -305,4 +305,83 @@ RSpec.describe Api::TokenAbility do
     include_examples 'a token with the "scenarios:write" scope'
     include_examples 'a token with the "scenarios:delete" scope'
   end
+
+  # ------------------------------------------------------------------------------------------------
+
+  describe 'a scenario_access grant' do
+    let(:scopes) { 'scenarios:read scenarios:write scenarios:delete' }
+    let(:granted) { other_private_scenario }
+    let(:level) { 'write' }
+
+    let(:mock_decoded_token) do
+      {
+        iss: Settings.identity.api_url,
+        aud: 'all_clients',
+        sub: user.id,
+        exp: 1_730_367_768,
+        scopes: scopes,
+        scenario_access: { 'scenario_id' => granted.id, 'level' => level }
+      }.with_indifferent_access
+    end
+
+    context 'with the setting off' do
+      before { Settings.scenario_access_grants = false }
+
+      it 'is ignored for reads' do
+        expect(ability).not_to be_able_to(:read, granted)
+      end
+
+      it 'is ignored for writes' do
+        expect(ability).not_to be_able_to(:update, granted)
+      end
+    end
+
+    context 'with the setting on' do
+      before { Settings.scenario_access_grants = true }
+      after { Settings.scenario_access_grants = false }
+
+      it 'permits reading the scenario it names' do
+        expect(ability).to be_able_to(:read, granted)
+      end
+
+      it 'permits writing the scenario it names' do
+        expect(ability).to be_able_to(:update, granted)
+      end
+
+      it 'permits cloning the scenario it names' do
+        expect(ability).to be_able_to(:clone, granted)
+      end
+
+      it 'permits nothing on any other scenario' do
+        expect(ability).not_to be_able_to(:read, create(:scenario, user: create(:user), private: true))
+      end
+
+      it 'never permits deleting' do
+        expect(ability).not_to be_able_to(:destroy, granted)
+      end
+
+      it 'leaves an unowned public scenario writable' do
+        expect(ability).to be_able_to(:update, public_scenario)
+      end
+
+      it 'leaves a self-owned private scenario readable' do
+        expect(ability).to be_able_to(:read, owned_private_scenario)
+      end
+    end
+
+    context 'with the setting on and a read-level grant' do
+      let(:level) { 'read' }
+
+      before { Settings.scenario_access_grants = true }
+      after { Settings.scenario_access_grants = false }
+
+      it 'permits reading the scenario it names' do
+        expect(ability).to be_able_to(:read, granted)
+      end
+
+      it 'does not permit writing it' do
+        expect(ability).not_to be_able_to(:update, granted)
+      end
+    end
+  end
 end

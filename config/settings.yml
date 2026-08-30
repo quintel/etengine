@@ -49,3 +49,7 @@ identity:
   client_id: <%= ENV['IDENTITY_CLIENT_ID'] %>
   client_secret: <%= ENV['IDENTITY_CLIENT_SECRET'] %>
   client_uri: <%= ENV.fetch('IDENTITY_CLIENT_URI', 'http://localhost:3000') %>
+
+# Authorize a scenario from the scenario_access claim MyETM mints into the identity token, as well
+# as from the scenario_users join.
+scenario_access_grants: <%= ENV.fetch('SCENARIO_ACCESS_GRANTS', 'false') == 'true' %>
