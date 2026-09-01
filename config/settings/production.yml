@@ -7,3 +7,8 @@ etmodel: https://energytransitionmodel.com
 identity:
   issuer: https://my.energytransitionmodel.com
   client_uri: https://engine.energytransitionmodel.com
+
+hooks:
+  collections:
+    base_url: 'http://collections.local.energytransitionmodel.com:3005'
+    session: '/hooks/invalidate/session'
