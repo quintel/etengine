@@ -9,9 +9,9 @@ identity:
   client_secret: client_secret_test
   client_uri: http://localhost:3000
 
-collections_url: http://localhost:3005
+collections_url: http://collections.local.energytransitionmodel.com:3005
 
 hooks:
   collections:
     base_url: 'http://collections.local.energytransitionmodel.com:3005'
-    session: '/hooks/invalidate/session'
+    session: '/api/invalidate/sessions'

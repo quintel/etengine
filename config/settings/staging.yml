@@ -8,7 +8,8 @@ identity:
   issuer: <%= ENV.fetch('OPENID_ISSUER', 'https://beta.my.energytransitionmodel.com') %>
   client_uri: <%= ENV.fetch('IDENTITY_CLIENT_URI', 'https://beta.engine.energytransitionmodel.com') %>
 
+# TODO: Collections invalidation is not wired up in this environment yet
 hooks:
   collections:
     base_url: 'http://collections.local.energytransitionmodel.com:3005'
-    session: '/hooks/invalidate/session'
+    session: '/api/invalidate/session'
