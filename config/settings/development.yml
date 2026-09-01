@@ -3,5 +3,5 @@ etmodel: http://localhost:3001
 hooks:
   collections:
     base_url: 'http://collections.local.energytransitionmodel.com:3005'
-    session: '/hooks/invalidate/session'
+    session: '/api/invalidate/sessions'
 
