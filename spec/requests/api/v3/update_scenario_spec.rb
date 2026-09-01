@@ -121,4 +121,29 @@ describe 'Updating a scenario with API v3' do
       expect(scenario.scenario_version_tag.user.id).to eq(user.id)
     end
   end
+
+  context 'with update webhooks configured' do
+    ActiveJob::Base.queue_adapter = :test
+    let(:user) { create(:user) }
+
+    context 'when user values were updated' do
+      let(:params) { { scenario: { user_values: { bool: 0.0 } } } }
+
+      it 'collections session invalidation was triggered' do
+        expect { update_scenario(params:, headers: access_token_header(user, :delete)) }.to(
+          have_enqueued_job(InvalidateCollectionSessionJob)
+        )
+      end
+    end
+
+    context 'when user values were not updated' do
+      let(:params) { { scenario: { private: true } } }
+
+      it 'collections session invalidation was triggered' do
+        expect { update_scenario(params:, headers: access_token_header(user, :delete)) }.not_to(
+          have_enqueued_job(InvalidateCollectionSessionJob)
+        )
+      end
+    end
+  end
 end

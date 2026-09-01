@@ -39,6 +39,8 @@ module Api
 
       around_action :wrap_with_sentry_context, only: :update
 
+      after_action :trigger_update_webhooks, only: :update
+
       # GET /api/v3/scenarios
       #
       # Lists all scenarios belonging to the current user.
@@ -609,6 +611,17 @@ module Api
       # Returns the result of the block.
       def wrap_with_sentry_context(&)
         ScenarioSentryContext.with_context(@scenario, &)
+      end
+
+      # Internal: triggers a webhooks to invalidate cached session data in
+      # the Collections interface, if any user values were updated
+      def trigger_update_webhooks
+        return if filtered_params[:scenario].blank?
+
+        # Only trigger if user values were changed: @scenario.changed? is not working here
+        if filtered_params[:scenario][:user_values].present?
+          InvalidateCollectionSessionJob.perform_later(@scenario)
+        end
       end
     end
   end
