@@ -10,7 +10,10 @@ class InvalidateCollectionSessionJob < ApplicationJob
   def perform(session)
     InvalidateCollectionSessionJob.client.post(
       "#{Settings.hooks.collections.session}/#{session.id}"
-    )
+    ) do |request|
+      request.headers['Content-Type'] = 'application/json'
+      request.body = { stamp: session.updated_at.utc.iso8601(6) }.to_json
+    end
   end
 
   def self.client
