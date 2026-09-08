@@ -8,8 +8,7 @@ identity:
   issuer: https://my.energytransitionmodel.com
   client_uri: https://engine.energytransitionmodel.com
 
-# TODO: Collections invalidation is not wired up properly in this environment yet
 hooks:
   collections:
-    base_url: 'http://collections.local.energytransitionmodel.com:3005'
-    session: '/api/invalidate/session'
+    base_url: 'https://collections.energytransitionmodel.com'
+    session: '/api/invalidate/sessions'
