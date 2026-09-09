@@ -5,8 +5,10 @@ module AuthorizationHelper
     @key ||= OpenSSL::PKey::RSA.new(2048)
   end
 
-  def access_token_header(user = nil, scopes = [])
-    user ? { 'Authorization' => "Bearer #{generate_jwt(user, scopes: match_scopes(scopes))}" } : {}
+  def access_token_header(user = nil, scopes = [], grant: nil)
+    return {} unless user
+
+    { 'Authorization' => "Bearer #{generate_jwt(user, scopes: match_scopes(scopes), grant:)}" }
   end
 
   def generate_jwt(user, **kwargs)
@@ -22,9 +24,10 @@ module AuthorizationHelper
     aud: Settings.identity.client_uri,
     iat: Time.now.to_i,
     exp: 1.hour.from_now.to_i,
-    scopes: []
+    scopes: [],
+    grant: nil
   )
-    {
+    payload = {
       'iss' => Settings.identity.issuer,
       'aud' => aud,
       'iat' => iat,
@@ -37,6 +40,8 @@ module AuthorizationHelper
       },
       'scopes' => scopes
     }
+    payload['scenario_access'] = grant if grant
+    payload
   end
 
   def match_scopes(scopes)
