@@ -6,7 +6,7 @@ RSpec.describe ScenarioUpdater::Services::CalculateBalancedValues do
   let(:scenario) { FactoryBot.create(:scenario, balanced_values: { 'a' => 10 }) }
   let(:service) { described_class.new }
 
-  it 'returns Success with empty hash if user_values is blank' do
+  it 'returns Success with empty hashes if user_values is blank' do
     result = service.call(
       scenario,
       user_values: {},
@@ -17,7 +17,7 @@ RSpec.describe ScenarioUpdater::Services::CalculateBalancedValues do
       force_balance: false
     )
     expect(result).to be_success
-    expect(result.value!).to eq({})
+    expect(result.value!).to eq(user_values: {}, balanced_values: {})
   end
 
   it 'removes balanced values for groups being updated' do
