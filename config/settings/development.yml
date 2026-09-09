@@ -1,7 +1,4 @@
 etmodel: http://localhost:3001
 
-hooks:
-  collections:
-    base_url: 'http://collections.local.energytransitionmodel.com:3005'
-    session: '/api/invalidate/sessions'
+collections_invalidate_url: http://collections:3005/api/invalidate/sessions
 
