@@ -463,3 +463,30 @@ table.scenario-list .actions span.muted {
 .compat-warning .btn + .btn {
   margin-left: 0.5rem;
 }
+
+/* The monospace stack used wherever the inspect interface shows a key, an order or a value. */
+:root {
+  --inspect-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
+    monospace;
+}
+
+/* A section of the scenario inspect page which can be collapsed out of the way. The summary
+   carries a tag saying what the section holds, so it stays informative while closed. */
+.inspect-section {
+  border-top: 1px solid #eee;
+  padding: 4px 0 8px;
+}
+
+.inspect-section > summary {
+  cursor: pointer;
+}
+
+.inspect-section > summary h3 {
+  display: inline-block;
+  margin: 0 8px 0 4px;
+  vertical-align: middle;
+}
+
+.inspect-section > summary .tag {
+  vertical-align: middle;
+}
