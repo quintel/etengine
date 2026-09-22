@@ -293,7 +293,6 @@ module Inspect
       heat_network_order_lt: 'Heat network (LT) dispatchables order',
       households_space_heating_producer_order: 'Households space heating producer order'
     }.freeze
-    private_constant :SORTABLE_LABELS
 
     def format_sortable_errors(errors)
       errors.flat_map do |key, messages|
