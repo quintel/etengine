@@ -1,0 +1,58 @@
+.row
+  .span10
+    %details.inspect-section
+      %summary
+        %h3 Curves
+        - if curves.any?
+          %span.tag.orange= pluralize(curves.length, 'curve')
+        - else
+          %span.tag.gray No updates
+      - if curves.any?
+        %table.table.table-condensed.curves
+          %thead
+            %tr
+              %th.curves-key Key
+              %th.curves-source Custom curve
+              %th.curves-download
+          %tbody
+            - curves.each do |curve|
+              %tr
+                %td.curves-key
+                  %code= curve.key
+                %td.curves-source
+                  - if curve.source_scenario?
+                    = link_to "Scenario #{curve.source_scenario_id}",
+                        source_scenario_path(curve),
+                        title: source_scenario_description(curve)
+                  - elsif curve.name.present?
+                    %code= curve.name
+                  - else
+                    %span.muted Unknown
+                %td.curves-download
+                  = link_to 'CSV', download_path(curve), class: 'btn btn-mini'
+
+:css
+  .curves {
+    table-layout: fixed;
+  }
+
+  .curves code {
+    background: none;
+    border: 0;
+    color: #333;
+    font-family: var(--inspect-mono);
+    font-size: inherit;
+    padding: 0;
+    white-space: normal;
+    word-break: break-all;
+  }
+
+  .curves-key,
+  .curves-source {
+    width: 46%;
+  }
+
+  .curves-download {
+    text-align: right;
+    width: 60px;
+  }

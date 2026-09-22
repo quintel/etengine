@@ -1,0 +1,27 @@
+.row
+  .span10
+    %details.inspect-section
+      %summary
+        %h3 Sortables
+        - if customised.any?
+          %span.tag.orange= pluralize(customised.length, 'sortable')
+        - else
+          %span.tag.gray No updates
+      - customised.each do |label, sortable|
+        .user-sortable
+          %strong= label
+          %span.muted== #{sortable.useable_order.length} items
+          %ol.user-sortable-order
+            - sortable.useable_order.each do |item|
+              %li= item
+
+:css
+  .user-sortable {
+    border-bottom: 1px solid #eee;
+    padding: 6px 0;
+  }
+
+  .user-sortable-order {
+    font-family: var(--inspect-mono);
+    margin: 6px 0 6px 3em;
+  }
