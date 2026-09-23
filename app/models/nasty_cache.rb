@@ -51,7 +51,16 @@ class NastyCache
   end
 
   def initialize_request
-    if expired?
+    global = global_timestamp
+
+    if global.nil?
+      # Rails.cache expires entries by age, and rewriting the timestamp does not make its entry
+      # any younger, so it eventually disappears. Its absence does not mean another process has
+      # expired the cache, so restore it rather than expiring every process at once. Every
+      # process holds the same timestamp, so concurrent writes agree on the value.
+      log("NastyCache(#{Process.pid})#restore: global timestamp was missing")
+      Rails.cache.write(MEMORY_CACHE_KEY, local_timestamp)
+    elsif local_timestamp != global
       expire_local!
 
       # We need to get rid of the local Atlas cache, but DO NOT do anything with
@@ -152,7 +161,8 @@ class NastyCache
   end
 
   def expired?
-    local_timestamp != global_timestamp
+    global = global_timestamp
+    !global.nil? && local_timestamp != global
   end
 
   def init_timestamp
