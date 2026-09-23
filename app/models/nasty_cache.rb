@@ -4,13 +4,8 @@
 # Caveats: Using NastyCache local store with the Qernel Graph
 #          makes the app NO LONGER THREADSAFE
 #
-# @example Add this to your application_controller.rb
-#
-#   before_action :initialize_memory_cache
-#
-#   def initialize_memory_cache
-#     NastyCache.instance.initialize_request
-#   end
+# config/initializers/nasty_cache.rb calls #initialize_request on each unit of work, discarding the
+# local store when another process has expired the cache.
 #
 # @example setting and getting
 #
