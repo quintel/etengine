@@ -69,7 +69,44 @@ class ScenarioUpdater
         # and will be validated after balancing
         return if input.share_group.present?
 
+        # Validate step alignment first - skip min/max check if step invalid
+        step_valid = validate_step(key, value, input_data[:min], input_data[:step], errors)
+        return unless step_valid
+
         validate_min_max(key, value, input_data[:min], input_data[:max], errors)
+      end
+
+      def validate_step(key, value, min, step, errors)
+        return true unless step.present? && step.positive?
+        return true if value_on_valid_step?(value, min, step)
+
+        nearest_lower = calculate_nearest_step(value, min, step)
+        nearest_higher = nearest_lower + step
+        precision = decimal_places(step)
+
+        errors << "Input #{key} value #{value} must align with step size #{step}. " \
+                  "Nearest valid values: #{nearest_lower.round(precision)} or #{nearest_higher.round(precision)}"
+
+        false
+      end
+
+      def value_on_valid_step?(value, min, step)
+        remainder = ((value - min) % step).abs
+        remainder < 0.0001 || (step - remainder).abs < 0.0001
+      end
+
+      def calculate_nearest_step(value, min, step)
+        steps_from_min = ((value - min) / step).round
+        min + (steps_from_min * step)
+      end
+
+      def decimal_places(num)
+        return 0 if num.to_i == num
+
+        num_str = num.to_s
+        return 0 unless num_str.include?('.')
+
+        num_str.split('.')[1].gsub(/0+$/, '').length
       end
 
       def validate_min_max(key, value, min, max, errors)
