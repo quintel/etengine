@@ -3,7 +3,6 @@ class ApplicationController < ActionController::Base
   helper_method :current_user
 
   before_action :current_user
-  before_action :initialize_memory_cache
   before_action :set_locale
   before_action :configure_sentry
   before_action :store_user_location!, if: :storable_location?
@@ -14,10 +13,6 @@ class ApplicationController < ActionController::Base
     else
       redirect_to sign_in_path
     end
-  end
-
-  def initialize_memory_cache
-    NastyCache.instance.initialize_request
   end
 
   def current_user
