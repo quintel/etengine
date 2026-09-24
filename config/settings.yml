@@ -42,6 +42,9 @@ mailer:
   # E-mail address from which to send e-mails.
   from: "Energy Transition Model <info@energytransitionmodel.com>"
 
+# The endpoint where the Collections app is listening for invalidation notices
+collections_invalidate_url: <%= ENV['COLLECTIONS_INVALIDATE_URL'] %>
+
 # Authentication
 # --------------
 identity:

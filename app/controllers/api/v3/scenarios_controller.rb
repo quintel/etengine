@@ -616,6 +616,7 @@ module Api
       # Internal: triggers a webhooks to invalidate cached session data in
       # the Collections interface, if any user values were updated
       def trigger_update_webhooks
+        return unless response.successful?
         return if filtered_params[:scenario].blank?
 
         # Only trigger if user values were changed: @scenario.changed? is not working here
