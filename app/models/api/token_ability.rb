@@ -12,6 +12,7 @@ module Api
     def initialize(token, user)
       @scopes = token[:scopes]
       @user   = user
+      @grant  = grant_from(token)
 
       allow_public_read
       return unless read_scope?
@@ -24,6 +25,13 @@ module Api
 
     private
 
+    # Nil unless the setting is on.
+    def grant_from(token)
+      return nil unless Settings.scenario_access_grants
+
+      ScenarioGrant.from_token(token)
+    end
+
     # Methods to allow access to scenarios based on the role.
     # Everyone can read public scenarios.
     def allow_public_read
@@ -34,7 +42,7 @@ module Api
       if admin?
         can :read, Scenario
       else
-        can :read, Scenario, id: viewer_scenario_ids
+        can :read, Scenario, id: viewer_scenario_ids + readable_grant_ids
       end
     end
 
@@ -46,16 +54,18 @@ module Api
         can :update, Scenario
         can :clone, Scenario
       else
+        writable = collaborator_scenario_ids + writable_grant_ids
+
         # Non-admins
         # Allow updating unowned public scenarios except when any association exists.
         can :update, Scenario, private: false
         cannot :update, Scenario, private: false, id: ScenarioUser.pluck(:scenario_id)
         # Allow updating scenarios where the user is a collaborator.
-        can :update, Scenario, id: collaborator_scenario_ids
+        can :update, Scenario, id: writable
 
         # Allow cloning both unowned public scenarios and self-owned scenarios.
         can :clone, Scenario, private: false
-        can :clone, Scenario, id: collaborator_scenario_ids
+        can :clone, Scenario, id: writable
       end
     end
 
@@ -87,6 +97,16 @@ module Api
         user_id: @user.id,
         role_id: User::ROLES.key(:scenario_owner)
       ).pluck(:scenario_id)
+    end
+
+    # The scenario a grant names, empty when there is none. A grant carries read or write and no
+    # notion of ownership, so there is deliberately no owner counterpart: a grant never deletes.
+    def readable_grant_ids
+      @grant ? [@grant.scenario_id] : []
+    end
+
+    def writable_grant_ids
+      @grant&.write? ? [@grant.scenario_id] : []
     end
 
     # Methods to check the scopes of the token.
