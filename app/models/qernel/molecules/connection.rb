@@ -67,7 +67,14 @@ module Qernel
 
           return slot.carrier.public_send(attribute) if slot.carrier.respond_to?(attribute)
 
-          raise "Invalid molecule conversion attribute for #{slot.carrier.key} carrier " \
+          raise "Invalid molecule conversion carrier attribute for #{slot.carrier.key} carrier " \
+                "on #{slot.node.key} node: #{factor.inspect}"
+        elsif factor.to_s.start_with?('node:')
+          attribute = factor[5..].strip
+
+          return slot.node.query.public_send(attribute) if slot.node.query.respond_to?(attribute)
+
+          raise "Invalid molecule conversion node attribute for #{slot.carrier.key} carrier " \
                 "on #{slot.node.key} node: #{factor.inspect}"
         elsif factor.to_s.start_with?('edges:')
           attribute = factor[6..].strip
