@@ -120,6 +120,35 @@ RSpec.describe Qernel::Molecules::Connection do
     end
   end
 
+  context 'when the config specifies to use electricity output (10) with node attribute (0.3)' do
+    let(:config) do
+      Atlas::NodeAttributes::EnergyToMolecules.new(
+        direction: :output, conversion: { electricity: 'node: co2_utilisation_per_mj' }
+      )
+    end
+
+    before do
+      source.query.co2_utilisation_per_mj = 0.3
+    end
+
+    it 'calculates demand of 3' do
+      expect(connection.demand).to be_within(1e-9).of(3.0)
+    end
+  end
+
+  context 'when the config specifies a node attribute which does not exist' do
+    let(:config) do
+      Atlas::NodeAttributes::EnergyToMolecules.new(
+        direction: :output, conversion: { electricity: 'node: not_a_real_attribute' }
+      )
+    end
+
+    it 'raises an error' do
+      expect { connection.demand }
+        .to raise_error(/Invalid molecule conversion node attribute/)
+    end
+  end
+
   context 'when the config specifies to use natural_gas input with edge attribute' do
     let(:config) do
       Atlas::NodeAttributes::EnergyToMolecules.new(

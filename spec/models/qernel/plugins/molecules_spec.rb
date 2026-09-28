@@ -110,7 +110,7 @@ RSpec.shared_examples_for 'running the molecule graph plugin' do
 
     it 'raises an error' do
       expect { graph.calculate }.to raise_error(
-        'Invalid molecule conversion attribute for electricity carrier on molecule_source node: ' \
+        'Invalid molecule conversion carrier attribute for electricity carrier on molecule_source node: ' \
         '"carrier: not_a_real_attribute"'
       )
     end
