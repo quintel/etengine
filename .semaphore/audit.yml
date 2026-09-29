@@ -23,7 +23,7 @@ blocks:
       jobs:
         - name: Brakeman
           commands:
-            - brakeman
+            - 'brakeman -f junit -o report && test-results publish report.xml'
         - name: Bundler
           commands:
             - bundle-audit
