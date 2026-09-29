@@ -21,10 +21,10 @@ blocks:
       jobs:
         - name: Brakeman
           commands:
-            - brakeman -f junit -o report
+            - brakeman -f junit -o report.xml
         - name: Bundler
           commands:
-            - bundle-audit
+            - bundle-audit check --format junit > report.xml
       epilogue:
         always:
           commands:
