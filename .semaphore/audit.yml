@@ -15,17 +15,15 @@ blocks:
       prologue:
         commands:
           - checkout
-          - sem-service start mysql 8
           - sudo apt-get update
-          - sudo apt-get install -y libmysqlclient-dev
           - cache restore
-          - gem install bundler
-          - bundle install
+          - gem install brakeman
+          - gem install bundle-audit
           - cache store
       jobs:
         - name: Brakeman
           commands:
-            - bundle exec brakeman
+            - brakeman
         - name: Bundler
           commands:
-            - bundle exec bundle-audit
+            - bundle-audit
