@@ -20,7 +20,6 @@ blocks:
           - sudo apt-get install -y libmysqlclient-dev
           - cache restore
           - gem install bundler
-          - bundle config set --local deployment 'true'
           - bundle install
           - cache store
       jobs:
