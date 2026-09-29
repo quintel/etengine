@@ -1,0 +1,33 @@
+name: ETEngine Audit
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2404
+execution_time_limit:
+  hours: 6
+blocks:
+  - name: Brakeman
+    task:
+      env_vars:
+        - name: RAILS_ENV
+          value: test
+      prologue:
+        commands:
+          - checkout
+          - sem-service start mysql 8
+          - sudo apt-get update
+          - sudo apt-get install -y libmysqlclient-dev
+          - cache restore
+          - gem install bundler
+          - bundle config set --local deployment 'true'
+          - bundle install
+          - cache store
+          - 'bundle exec rails db:setup'
+          - 'bundle exec rails assets:precompile'
+      jobs:
+        - name: Brakeman
+          commands:
+            - bundle exec brakeman
+        - name: Bundler
+          commands:
+            - bundle exec bundle-audit

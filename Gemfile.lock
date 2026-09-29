@@ -177,6 +177,11 @@ GEM
     bootsnap (1.23.0)
       msgpack (~> 1.2)
     builder (3.3.0)
+    bundle-audit (0.2.0)
+      bundler-audit
+    bundler-audit (0.9.3)
+      bundler (>= 1.2.0)
+      thor (~> 1.0)
     byebug (13.0.0)
       reline (>= 0.6.0)
     cancancan (3.6.1)
@@ -723,6 +728,7 @@ DEPENDENCIES
   better_errors
   binding_of_caller (~> 2.0.0)
   bootsnap
+  bundle-audit
   cancancan (~> 3.0)
   capybara
   coffee-rails
