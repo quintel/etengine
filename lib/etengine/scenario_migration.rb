@@ -72,6 +72,29 @@ module ETEngine
 
     private
 
+    # Internal: Prints a heading followed by the number of scenarios per area,
+    # for example those a migration skipped. Prints nothing when there are none.
+    #
+    # heading - The line printed above the tally.
+    # areas   - A Hash of area codes to their number of scenarios.
+    #
+    # For example:
+    #
+    #   skipped = Hash.new(0)
+    #   skipped[scenario.area_code] += 1
+    #   print_report('Skipped scenarios:', skipped)
+    #
+    # Returns nothing.
+    def print_report(heading, areas)
+      return if areas.empty?
+
+      say(heading)
+
+      areas.sort.each do |area_code, scenarios|
+        say("#{scenarios} #{'scenario'.pluralize(scenarios)} from #{area_code}", true)
+      end
+    end
+
     def skip_no_changes_check?
       test_database? || ENV['SKIP_SCENARIO_CHECK'].present?
     end
