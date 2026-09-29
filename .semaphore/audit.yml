@@ -21,10 +21,14 @@ blocks:
       jobs:
         - name: Brakeman
           commands:
-            - 'brakeman -f junit -o report && test-results publish report.xml'
+            - brakeman -f junit -o report
         - name: Bundler
           commands:
             - bundle-audit
+      epilogue:
+        always:
+          commands:
+            - '[[ -f report.xml ]] && test-results publish report.xml'
 after_pipeline:
   task:
     jobs:
