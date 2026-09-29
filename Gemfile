@@ -130,7 +130,6 @@ group :test do
 
   gem 'simplecov', '~> 0.7.1', require: false
 
-  gem 'bundle-audit'
 end
 
 group :production, :staging do

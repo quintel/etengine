@@ -4,8 +4,6 @@ agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu2404
-execution_time_limit:
-  hours: 6
 blocks:
   - name: Brakeman
     task:
@@ -27,3 +25,9 @@ blocks:
         - name: Bundler
           commands:
             - bundle-audit
+after_pipeline:
+  task:
+    jobs:
+      - name: Merge reports
+        commands:
+          - test-results gen-pipeline-report
