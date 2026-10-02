@@ -87,6 +87,28 @@ describe NastyCache do
     end
   end
 
+  context 'when the global timestamp has been evicted from Rails.cache' do
+    before do
+      @cache.initialize_request
+      @cache.set('kept', 'value')
+      Rails.cache.delete(NastyCache::MEMORY_CACHE_KEY)
+    end
+
+    it 'does not expire the local store' do
+      expect { @cache.initialize_request }.not_to (change { @cache.get('kept') })
+    end
+
+    it 'is not considered expired' do
+      expect(@cache.expired?).to be_falsey
+    end
+
+    it 'restores the global timestamp from the local one' do
+      expect { @cache.initialize_request }
+        .to (change { Rails.cache.read(NastyCache::MEMORY_CACHE_KEY) })
+        .from(nil).to(@cache.local_timestamp)
+    end
+  end
+
   context "two processes" do
     before {
       @cache_1 = NastyCache.new_process
