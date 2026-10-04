@@ -1,0 +1,9 @@
+# An input which belongs to a group. Its maximum is deliberately lower than
+# the other members' so that a drift repair which rescales a value sitting at
+# this maximum breaches its bounds (the repair must then be refused).
+- key = grouped_input_seven
+- share_group = grouped
+- start_value = 0
+- min_value = 0
+- max_value = 50
+- query = 2 * 2

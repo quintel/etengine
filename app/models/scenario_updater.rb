@@ -54,11 +54,17 @@ class ScenarioUpdater
     autobalance      = params[:autobalance] != 'false' && params[:autobalance] != false
     force_balance    = params[:force_balance]
 
-    coupling_state  = yield process_couplings(provided_values, active_couplings, uncouple)
-    user_values     = yield calculate_user_values(provided_values, coupling_state, reset)
-    balanced_values = yield calculate_balanced_values(
+    coupling_state = yield process_couplings(provided_values, active_couplings, uncouple)
+    user_values    = yield calculate_user_values(provided_values, coupling_state, reset)
+
+    # Balancing may repair drift in the user's own values, so it returns the
+    # corrected user_values alongside the balanced values.
+    balance_state   = yield calculate_balanced_values(
       user_values, provided_values, coupling_state, reset, autobalance, force_balance
     )
+    user_values     = balance_state[:user_values]
+    balanced_values = balance_state[:balanced_values]
+
     _balanced = yield validate_balance(user_values, balanced_values, provided_values)
 
     Success([coupling_state, user_values, balanced_values])
