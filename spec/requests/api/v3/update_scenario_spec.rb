@@ -123,7 +123,13 @@ describe 'Updating a scenario with API v3' do
   end
 
   context 'with update webhooks configured' do
-    ActiveJob::Base.queue_adapter = :test
+    around do |example|
+      was = ActiveJob::Base.queue_adapter
+      ActiveJob::Base.queue_adapter = :test
+      example.run
+      ActiveJob::Base.queue_adapter = was
+    end
+
     let(:user) { create(:user) }
 
     context 'when user values were updated' do
@@ -139,10 +145,26 @@ describe 'Updating a scenario with API v3' do
     context 'when user values were not updated' do
       let(:params) { { scenario: { private: true } } }
 
-      it 'collections session invalidation was triggered' do
+      it 'collections session invalidation was not triggered' do
         expect { update_scenario(params:, headers: access_token_header(user, :delete)) }.not_to(
           have_enqueued_job(InvalidateCollectionSessionJob)
         )
+      end
+    end
+
+    context 'when the update was refused' do
+      let(:params) { { scenario: { user_values: { both_input: 150.0 } } } }
+
+      it 'collections session invalidation was not triggered' do
+        expect { update_scenario(params:, headers: access_token_header(user, :delete)) }.not_to(
+          have_enqueued_job(InvalidateCollectionSessionJob)
+        )
+      end
+
+      it 'was refused successfully' do
+        update_scenario(params:, headers: access_token_header(user, :delete))
+
+        expect(response.status).to eq(422)
       end
     end
   end
