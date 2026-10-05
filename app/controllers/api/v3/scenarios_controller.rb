@@ -3,6 +3,8 @@
 module Api
   module V3
     class ScenariosController < BaseController
+      MAX_BOUND_IDS = 100
+
       load_resource except: %i[show create destroy dump]
       load_and_authorize_resource class: Scenario, only: %i[index show destroy dump]
 
@@ -136,7 +138,8 @@ module Api
         end
         params[:scenario][:user_values] = inputs if inputs
 
-        attrs = Scenario.default_attributes.merge(scenario_params || {})
+        # A new scenario is never bound: binding happens when MyETM saves it.
+        attrs = Scenario.default_attributes.merge((scenario_params || {}).except(:bound))
         parent = nil
 
         if attrs.key?(:scenario_id) || attrs.key?(:preset_scenario_id)
@@ -309,7 +312,8 @@ module Api
         if final_params[:scenario].blank?
           authorize!(:read, @scenario)
         elsif final_params[:scenario][:set_preset_roles].present? ||
-              final_params[:scenario][:saved_scenario_users].present?
+              final_params[:scenario][:saved_scenario_users].present? ||
+              final_params[:scenario].key?(:bound)
           authorize!(:destroy, @scenario)
         else
           authorize!(:update, @scenario)
@@ -344,6 +348,51 @@ module Api
       def destroy
         current_user.scenarios.find(params[:id]).destroy
         head :ok
+      end
+
+      # PUT /api/v3/scenarios/bound
+      #
+      # Sets or clears the bound flag on several scenarios at once. Only the owner may change it.
+      # Each scenario is reported on its own, in request order, and the response is always a 207.
+      #
+      # Parameters:
+      #
+      # - ids:   array of scenario IDs (at most MAX_BOUND_IDS)
+      # - bound: true or false
+      #
+      def bound
+        ids = Array(params.require(:ids))
+
+        if ids.size > MAX_BOUND_IDS
+          render json: { errors: ["ids must contain at most #{MAX_BOUND_IDS} IDs"] },
+            status: :bad_request
+          return
+        end
+
+        unless [true, false, 'true', 'false'].include?(params[:bound])
+          render json: { errors: ['bound must be true or false'] }, status: :bad_request
+          return
+        end
+
+        bound     = ActiveModel::Type::Boolean.new.cast(params[:bound])
+        # Access is decided on the ID and visibility alone, so the value columns are not loaded.
+        scenarios = Scenario.where(id: ids).select(:id, :private)
+          .index_by { |scenario| scenario.id.to_s }
+
+        items = ids.each_with_index.map do |id, index|
+          bound_item(scenarios[id.to_s], bound, "/ids/#{index}")
+        end
+
+        # One UPDATE for every permitted ID; nothing in the scenario besides the flag changes.
+        permitted_ids = items.filter_map { |item| item.dig(:data, :id) }
+        Scenario.where(id: permitted_ids).update_all(bound:) if permitted_ids.any?
+
+        succeeded = items.count { |item| item[:status] == 'ok' }
+
+        render status: :multi_status, json: {
+          data: items,
+          meta: { batch: { succeeded:, failed: items.size - succeeded, total: items.size } }
+        }
       end
 
       # GET /api/v3/scenarios/merge
@@ -451,6 +500,22 @@ module Api
 
       private
 
+      # Internal: One item of the bound batch response. A scenario the caller cannot read is
+      # reported as not found, so the response does not reveal that a private scenario exists.
+      def bound_item(scenario, bound, pointer)
+        if scenario && can?(:destroy, scenario)
+          { status: 'ok', data: { id: scenario.id, bound: } }
+        elsif scenario && can?(:read, scenario)
+          bound_error('forbidden', 'Only the owner may bind or unbind this scenario', pointer)
+        else
+          bound_error('not_found', 'No such scenario', pointer)
+        end
+      end
+
+      def bound_error(code, detail, pointer)
+        { status: 'error', code:, detail:, source: { pointer: } }
+      end
+
       # Internal: All the request parameters, filtered.
       #
       # Returns a ActionController::Parameters
@@ -466,6 +531,7 @@ module Api
       def scenario_params
         attrs = params.permit(scenario: [
           :area_code,
+          :bound,
           :descale,
           :end_year,
           :keep_compatible,

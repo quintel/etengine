@@ -94,6 +94,101 @@ describe 'Updating a scenario with API v3' do
     end
   end
 
+  context 'when the owner binds a scenario' do
+    let(:params) { { scenario: { bound: true } } }
+    let(:user) { create(:user) }
+    let(:headers) { access_token_header(user, :delete) }
+
+    before { scenario.update!(user:) }
+
+    it 'sets bound to true' do
+      expect { update_scenario(params:, headers:) }
+        .to change(scenario, :bound?).from(false).to(true)
+    end
+  end
+
+  context 'when the owner unbinds a scenario' do
+    let(:params) { { scenario: { bound: false } } }
+    let(:user) { create(:user) }
+    let(:headers) { access_token_header(user, :delete) }
+
+    before { scenario.update!(user:, bound: true) }
+
+    it 'sets bound to false' do
+      expect { update_scenario(params:, headers:) }
+        .to change(scenario, :bound?).from(true).to(false)
+    end
+  end
+
+  context 'when the owner binds an already bound scenario' do
+    let(:params) { { scenario: { bound: true } } }
+    let(:user) { create(:user) }
+    let(:headers) { access_token_header(user, :delete) }
+
+    before { scenario.update!(user:, bound: true) }
+
+    it 'does not change the scenario binding' do
+      expect { update_scenario(params:, headers:) }
+        .not_to change(scenario, :bound?).from(true)
+    end
+
+    it 'is successful' do
+      update_scenario(params:, headers:)
+
+      expect(response.status).to eql(200)
+    end
+  end
+
+  context 'when the owner binds with only the write scope' do
+    let(:params) { { scenario: { bound: true } } }
+    let(:user) { create(:user) }
+    let(:headers) { access_token_header(user, :write) }
+
+    before { scenario.update!(user:) }
+
+    it 'does not change the scenario binding' do
+      expect { update_scenario(params:, headers:) }
+        .not_to change(scenario, :bound?).from(false)
+    end
+  end
+
+  context 'when a collaborator binds a scenario' do
+    let(:params) { { scenario: { bound: true } } }
+    let(:collaborator) { create(:user) }
+    let(:headers) { access_token_header(collaborator, :delete) }
+
+    before do
+      scenario.update!(user: create(:user))
+
+      create(
+        :scenario_user,
+        scenario:,
+        user: collaborator,
+        role_id: User::ROLES.key(:scenario_collaborator)
+      )
+    end
+
+    it 'does not change the scenario binding' do
+      expect { update_scenario(params:, headers:) }
+        .not_to change(scenario, :bound?).from(false)
+    end
+  end
+
+  context 'when binding an unowned scenario as a guest' do
+    let(:params) { { scenario: { bound: true } } }
+
+    it 'does not change the scenario binding' do
+      expect { update_scenario(params:) }
+        .not_to change(scenario, :bound?).from(false)
+    end
+
+    it 'returns a 403' do
+      update_scenario(params:)
+
+      expect(response.status).to eq(403)
+    end
+  end
+
   context 'when a scenario has a version tag set by another user' do
     let(:params) { { scenario: { private: true } } }
     let(:user) { create(:user) }
