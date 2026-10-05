@@ -56,10 +56,11 @@ class NastyCache
     if global.nil?
       # Rails.cache expires entries by age, and rewriting the timestamp does not make its entry
       # any younger, so it eventually disappears. Its absence does not mean another process has
-      # expired the cache, so restore it rather than expiring every process at once. Every
-      # process holds the same timestamp, so concurrent writes agree on the value.
-      log("NastyCache(#{Process.pid})#restore: global timestamp was missing")
-      Rails.cache.write(MEMORY_CACHE_KEY, local_timestamp)
+      # expired the cache, so restore it rather than expiring every process at once. The write
+      # only lands while the key is still missing: a process which expired the cache in the
+      # meantime keeps its timestamp, or the expiry would go unnoticed everywhere.
+      Rails.logger.warn("NastyCache(#{Process.pid})#restore: global timestamp was missing")
+      Rails.cache.write(MEMORY_CACHE_KEY, local_timestamp, unless_exist: true)
     elsif local_timestamp != global
       expire_local!
 
@@ -165,8 +166,10 @@ class NastyCache
     !global.nil? && local_timestamp != global
   end
 
+  # Reads without writing: claiming a missing key with a new timestamp would look like an expiry
+  # to every process already running.
   def init_timestamp
-    Rails.cache.fetch(MEMORY_CACHE_KEY) { DateTime.now }
+    Rails.cache.read(MEMORY_CACHE_KEY) || DateTime.now
   end
 
   def global_timestamp

@@ -107,6 +107,29 @@ describe NastyCache do
         .to (change { Rails.cache.read(NastyCache::MEMORY_CACHE_KEY) })
         .from(nil).to(@cache.local_timestamp)
     end
+
+    it 'does not overwrite a timestamp written between the read and the restore' do
+      # Another process expires the cache after this one has seen the timestamp missing.
+      allow(@cache).to receive(:global_timestamp).and_return(nil)
+      Rails.cache.write(NastyCache::MEMORY_CACHE_KEY, 'from another process')
+
+      @cache.initialize_request
+
+      expect(Rails.cache.read(NastyCache::MEMORY_CACHE_KEY)).to eq('from another process')
+    end
+  end
+
+  context 'when a process starts while the global timestamp is missing' do
+    before { Rails.cache.delete(NastyCache::MEMORY_CACHE_KEY) }
+
+    it 'does not claim the key with a timestamp of its own' do
+      expect { NastyCache.new_process }
+        .not_to (change { Rails.cache.read(NastyCache::MEMORY_CACHE_KEY) })
+    end
+
+    it 'still has a local timestamp' do
+      expect(NastyCache.new_process.local_timestamp).not_to be_nil
+    end
   end
 
   context "two processes" do
