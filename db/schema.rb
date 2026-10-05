@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_29_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_05_130000) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", precision: nil, null: false
@@ -116,6 +116,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_120000) do
     t.string "area_code"
     t.binary "balanced_values", size: :medium
     t.datetime "created_at", precision: nil
+    t.integer "creator_id", comment: "Temporary until session handles are implemented"
     t.integer "end_year", default: 2040
     t.boolean "keep_compatible", default: false, null: false
     t.binary "metadata", size: :medium
@@ -125,6 +126,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_120000) do
     t.datetime "updated_at", precision: nil
     t.binary "user_values", size: :long
     t.index ["created_at"], name: "index_scenarios_on_created_at"
+    t.index ["creator_id"], name: "index_scenarios_on_creator_id"
   end
 
   create_table "sessions", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|

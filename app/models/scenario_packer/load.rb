@@ -86,6 +86,7 @@ module ScenarioPacker
         return Success(scenario)
       end
 
+      scenario.creator_id = user.id
       scenario.scenario_users.build(
         user:,
         role_id: User::ROLES.key(:scenario_owner)
