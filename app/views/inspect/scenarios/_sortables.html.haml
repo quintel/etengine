@@ -1,0 +1,16 @@
+.row
+  .span10
+    %details.inspect-section
+      %summary
+        %h3 Sortables
+        - if @customised_sortables.any?
+          %span.tag.orange= pluralize(@customised_sortables.length, 'sortable')
+        - else
+          %span.tag.gray No updates
+      - @customised_sortables.each do |label, sortable|
+        .user-sortable
+          %strong= label
+          %span.muted== #{sortable.useable_order.length} items
+          %ol.user-sortable-order
+            - sortable.useable_order.each do |item|
+              %li= item

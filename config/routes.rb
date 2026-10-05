@@ -88,7 +88,7 @@ Rails.application.routes.draw do
 
         resources :custom_curves, only: %i[index]
 
-        get    'custom_curves/*id', to: 'custom_curves#show'
+        get    'custom_curves/*id', to: 'custom_curves#show', as: :custom_curve
         put    'custom_curves/*id', to: 'custom_curves#update'
         delete 'custom_curves/*id', to: 'custom_curves#destroy'
 

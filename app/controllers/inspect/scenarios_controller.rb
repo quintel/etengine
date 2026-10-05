@@ -36,6 +36,12 @@ module Inspect
 
     # Shows a single scenario
     def show
+      # Orders left at their default say nothing about the scenario, so only the customised ones
+      # are shown, labelled rather than keyed.
+      @customised_sortables = build_sortables_hash(@scenario)
+        .reject { |_, sortable| sortable.default? }
+        .transform_keys { |key| SORTABLE_LABELS.fetch(key) }
+
       respond_to(&:html)
     end
 
@@ -293,7 +299,6 @@ module Inspect
       heat_network_order_lt: 'Heat network (LT) dispatchables order',
       households_space_heating_producer_order: 'Households space heating producer order'
     }.freeze
-    private_constant :SORTABLE_LABELS
 
     def format_sortable_errors(errors)
       errors.flat_map do |key, messages|
