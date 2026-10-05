@@ -109,26 +109,4 @@
 
 = render Inspect::Scenarios::CurvesComponent.new(scenario: @scenario)
 
-= render Inspect::Scenarios::SortablesComponent.new(scenario: @scenario)
-
-:css
-  /* Bootstrap's grid classes float whatever carries them, so they cannot be used to size table
-     cells. Size the numeric columns directly and let the key column take what is left. */
-  .scenario-inputs {
-    table-layout: fixed;
-  }
-
-  .scenario-inputs .tar {
-    width: 11%;
-  }
-
-  .scenario-input td {
-    font-family: var(--inspect-mono);
-    word-break: break-all;
-  }
-
-  /* auto_number writes a magnitude suffix after a space ("732 K"), which the narrow numeric
-     columns would otherwise break onto a second line. */
-  .scenario-input td.tar {
-    white-space: nowrap;
-  }
+= render 'sortables'
