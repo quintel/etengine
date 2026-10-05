@@ -4,13 +4,8 @@
 # Caveats: Using NastyCache local store with the Qernel Graph
 #          makes the app NO LONGER THREADSAFE
 #
-# @example Add this to your application_controller.rb
-#
-#   before_action :initialize_memory_cache
-#
-#   def initialize_memory_cache
-#     NastyCache.instance.initialize_request
-#   end
+# config/initializers/nasty_cache.rb calls #initialize_request on each unit of work, discarding the
+# local store when another process has expired the cache.
 #
 # @example setting and getting
 #
@@ -49,22 +44,29 @@ class NastyCache
 
   attr_accessor :local_timestamp
 
-  def initialize(verbose = false)
+  def initialize
     @local_timestamp = init_timestamp
     @cache_store = {}
-    @verbose = verbose
   end
 
   def initialize_request
-    if expired?
+    global = global_timestamp
+
+    if global.nil?
+      # Rails.cache expires entries by age, and rewriting the timestamp does not make its entry
+      # any younger, so it eventually disappears. Its absence does not mean another process has
+      # expired the cache, so restore it rather than expiring every process at once. The write
+      # only lands while the key is still missing: a process which expired the cache in the
+      # meantime keeps its timestamp, or the expiry would go unnoticed everywhere.
+      log("NastyCache(#{Process.pid})#restore: global timestamp was missing")
+      Rails.cache.write(MEMORY_CACHE_KEY, local_timestamp, unless_exist: true)
+    elsif local_timestamp != global
       expire_local!
 
       # We need to get rid of the local Atlas cache, but DO NOT do anything with
       # the *.pack dataset files; the process which triggered the expiry will
       # recreate them.
       expire_atlas!(keep_atlas_dataset: true)
-    else
-      log("NastyCache(#{Process.pid})#cached: #{ @cache_store.length } keys")
     end
   end
 
@@ -157,11 +159,14 @@ class NastyCache
   end
 
   def expired?
-    local_timestamp != global_timestamp
+    global = global_timestamp
+    !global.nil? && local_timestamp != global
   end
 
+  # Reads without writing: claiming a missing key with a new timestamp would look like an expiry
+  # to every process already running.
   def init_timestamp
-    Rails.cache.fetch(MEMORY_CACHE_KEY) { DateTime.now }
+    Rails.cache.read(MEMORY_CACHE_KEY) || DateTime.now
   end
 
   def global_timestamp
@@ -172,9 +177,9 @@ class NastyCache
     ["NastyCache", local_timestamp, key].join('/')
   end
 
-  # Internal: Sends a message to the Rails logger if NastyCache verbose mode
-  # is enabled, otherwise the message is discarded.
+  # Internal: Records a change in the cache's state, as a warning so that it stands out among the
+  # request logs.
   def log(message)
-    Rails.logger.info(message) if @verbose
+    Rails.logger.warn(message)
   end
 end
