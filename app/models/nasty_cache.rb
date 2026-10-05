@@ -44,10 +44,9 @@ class NastyCache
 
   attr_accessor :local_timestamp
 
-  def initialize(verbose = false)
+  def initialize
     @local_timestamp = init_timestamp
     @cache_store = {}
-    @verbose = verbose
   end
 
   def initialize_request
@@ -59,7 +58,7 @@ class NastyCache
       # expired the cache, so restore it rather than expiring every process at once. The write
       # only lands while the key is still missing: a process which expired the cache in the
       # meantime keeps its timestamp, or the expiry would go unnoticed everywhere.
-      Rails.logger.warn("NastyCache(#{Process.pid})#restore: global timestamp was missing")
+      log("NastyCache(#{Process.pid})#restore: global timestamp was missing")
       Rails.cache.write(MEMORY_CACHE_KEY, local_timestamp, unless_exist: true)
     elsif local_timestamp != global
       expire_local!
@@ -68,8 +67,6 @@ class NastyCache
       # the *.pack dataset files; the process which triggered the expiry will
       # recreate them.
       expire_atlas!(keep_atlas_dataset: true)
-    else
-      log("NastyCache(#{Process.pid})#cached: #{ @cache_store.length } keys")
     end
   end
 
@@ -180,9 +177,9 @@ class NastyCache
     ["NastyCache", local_timestamp, key].join('/')
   end
 
-  # Internal: Sends a message to the Rails logger if NastyCache verbose mode
-  # is enabled, otherwise the message is discarded.
+  # Internal: Records a change in the cache's state, as a warning so that it stands out among the
+  # request logs.
   def log(message)
-    Rails.logger.info(message) if @verbose
+    Rails.logger.warn(message)
   end
 end
