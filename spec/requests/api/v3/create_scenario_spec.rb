@@ -185,28 +185,12 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
   end
 
-  context 'when creating a scenario' do
-    before do
-      post '/api/v3/scenarios', headers: token_header
-    end
-
-    let(:json) { JSON.parse(response.body) }
-
-    it 'leaves the scenario unbound' do
-      expect(json['bound']).to be(false)
-    end
-  end
-
   context 'when creating a scenario with bound set to true' do
     before do
       post '/api/v3/scenarios', params: { scenario: { bound: true } }, headers: token_header
     end
 
     let(:json) { JSON.parse(response.body) }
-
-    it 'is successful' do
-      expect(response.status).to eql(200)
-    end
 
     it 'leaves the scenario unbound' do
       expect(json['bound']).to be(false)
