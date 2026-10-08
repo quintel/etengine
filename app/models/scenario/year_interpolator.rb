@@ -87,6 +87,7 @@ class Scenario::YearInterpolator
     clone.user = @user if @user
     clone.reload unless clone.new_record?
 
+    clone.creator_id = @user&.id
     clone.private = @scenario.clone_should_be_private?(@user)
     clone.user_values = interpolate_input_collection(:user_values)
     clone.balanced_values = interpolate_input_collection(:balanced_values)
