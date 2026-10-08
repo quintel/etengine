@@ -346,11 +346,11 @@ module Api
         head :ok
       end
 
-      # PUT /api/v3/scenarios/bound
+      # PUT /api/v3/scenarios/bind
       #
       # Sets or clears the bound flag on several scenarios at once. Only MyETM may call it.
       # Responds with the IDs that match no scenario.
-      def bound
+      def bind
         authorize!(:bind, Scenario)
 
         bound = params.fetch(:bound)

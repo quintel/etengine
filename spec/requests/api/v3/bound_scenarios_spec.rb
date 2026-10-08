@@ -10,7 +10,7 @@ describe 'APIv3 binding scenarios', :etsource_fixture do
   let(:history) { create(:scenario) }
 
   def bind(ids, bound, headers: myetm_headers)
-    put('/api/v3/scenarios/bound', params: { ids:, bound: }, headers:, as: :json)
+    put('/api/v3/scenarios/bind', params: { ids:, bound: }, headers:, as: :json)
   end
 
   context 'with the bind scope' do
@@ -46,7 +46,7 @@ describe 'APIv3 binding scenarios', :etsource_fixture do
     end
 
     it 'refuses a request without ids' do
-      put('/api/v3/scenarios/bound', params: { bound: true }, headers: myetm_headers, as: :json)
+      put('/api/v3/scenarios/bind', params: { bound: true }, headers: myetm_headers, as: :json)
 
       expect(response).to have_http_status(:bad_request)
     end

@@ -41,7 +41,7 @@ Rails.application.routes.draw do
 
         collection do
           post :merge
-          put  :bound
+          put  :bind
           post :load_dump
           post :export
           post :interpolate, to: 'scenarios#interpolate_collection'
