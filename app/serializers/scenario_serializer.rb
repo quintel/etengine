@@ -19,7 +19,7 @@ class ScenarioSerializer
   def as_json(*)
     json = @resource.as_json(
       only: %i[
-        id area_code end_year source private keep_compatible
+        id area_code end_year source private keep_compatible bound
         created_at updated_at user_values balanced_values metadata
         active_couplings
       ],

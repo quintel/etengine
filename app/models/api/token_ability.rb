@@ -6,14 +6,16 @@ module Api
   # Users can read public scenarios and scenarios where they are viewers.
   # Users with write scope can create, update, and clone scenarios where they are collaborators.
   # Users with delete scope can delete scenarios where they are owners.
+  # Only MyETM's own tokens carry the bind scope, which sets the bound flag.
   class TokenAbility
     include CanCan::Ability
 
     def initialize(token, user)
-      @scopes = token[:scopes]
+      @scopes = Array(token[:scopes]).join(' ').split
       @user   = user
 
       allow_public_read
+      can :bind, Scenario if @scopes.include?('scenarios:bind')
       return unless read_scope?
       allow_read
       return unless write_scope?
