@@ -11,7 +11,7 @@ module Api
     include CanCan::Ability
 
     def initialize(token, user)
-      @scopes = Array(token[:scopes]).join(' ').split
+      @scopes = token[:scopes]
       @user   = user
 
       allow_public_read
