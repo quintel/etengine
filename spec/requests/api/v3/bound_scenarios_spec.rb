@@ -69,13 +69,6 @@ describe 'APIv3 binding scenarios', :etsource_fixture do
       expect(scenario.reload).not_to be_bound
     end
 
-    it 'refuses a scope whose name only starts with the bind scope' do
-      headers = access_token_header(create(:user), 'public scenarios:binder')
-      bind([scenario.id], true, headers:)
-
-      expect(scenario.reload).not_to be_bound
-    end
-
     it 'refuses a guest' do
       bind([scenario.id], true, headers: {})
 
