@@ -7,7 +7,7 @@ module Api
 
     attr_reader :readable, :writable
 
-    def initialize(claim = nil)
+    def initialize(claim = {})
       claim = {} unless claim.is_a?(Hash)
 
       @writable = ids_in(claim['write'])
