@@ -463,3 +463,32 @@ table.scenario-list .actions span.muted {
 .compat-warning .btn + .btn {
   margin-left: 0.5rem;
 }
+
+/* A section of the scenario inspect page which can be collapsed out of the way. The summary
+   carries a tag saying what the section holds, so it stays informative while closed. */
+.inspect-section {
+  border-top: 1px solid #eee;
+  padding: 4px 0 8px;
+}
+
+.inspect-section > summary {
+  cursor: pointer;
+}
+
+.inspect-section > summary h4 {
+  display: inline-block;
+  margin: 0 8px 0 4px;
+}
+
+/* Keys, orders and input values all read as code, so they share one monospace stack. */
+.curves td,
+.scenario-input td,
+.user-sortable-order {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Width 1% with nowrap shrinks the value, min and max columns to their content. */
+.scenario-inputs .tar {
+  width: 1%;
+  white-space: nowrap;
+}
