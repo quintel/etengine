@@ -2,7 +2,7 @@
   .span10
     %details.inspect-section
       %summary
-        %h3 Curves
+        %h4 Curves
         - if curves.any?
           %span.tag.orange= pluralize(curves.length, 'curve')
         - else
@@ -18,14 +18,14 @@
             - curves.each do |curve|
               %tr
                 %td
-                  %code= curve.key
+                  = curve.key
                 %td
                   - if curve.source_scenario?
                     = link_to "Scenario #{curve.source_scenario_id}",
                         source_scenario_path(curve),
                         title: source_scenario_description(curve)
                   - elsif curve.name.present?
-                    %code= curve.name
+                    = curve.name
                   - else
                     %span.muted Unknown
                 %td.tar

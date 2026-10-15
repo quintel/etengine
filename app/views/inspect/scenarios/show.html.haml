@@ -75,7 +75,7 @@
     - {future: @scenario.inputs.future, present: @scenario.inputs.present}.each do |name, inputs|
       %details.inspect-section
         %summary
-          %h3== Inputs #{name}
+          %h4== Inputs #{name}
           - if inputs.empty?
             %span.tag.gray No updates
           - else
