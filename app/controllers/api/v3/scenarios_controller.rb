@@ -346,6 +346,25 @@ module Api
         head :ok
       end
 
+      # PUT /api/v3/scenarios/bind
+      #
+      # Sets or clears the bound flag on several scenarios at once. Only MyETM may call it.
+      # Responds with the IDs that match no scenario.
+      def bind
+        authorize!(:bind, Scenario)
+
+        bound = params.fetch(:bound)
+        unless bound.in?([true, false])
+          raise ActionController::BadRequest, 'bound must be true or false'
+        end
+
+        ids = Array(params.require(:ids)).map(&:to_i)
+        scenarios = Scenario.where(id: ids)
+        scenarios.update_all(bound:)
+
+        render json: { missing: ids - scenarios.pluck(:id) }
+      end
+
       # GET /api/v3/scenarios/merge
       #
       # Merges two or more scenarios.
