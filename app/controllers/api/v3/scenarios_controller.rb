@@ -183,6 +183,7 @@ module Api
         @scenario.attributes = attrs.except(:user_values, :set_preset_roles)
 
         if current_user.present?
+          @scenario.creator_id = current_user.id
           @scenario.scenario_users.build(
             user: current_user,
             role_id: User::ROLES.key(:scenario_owner)
@@ -361,6 +362,7 @@ module Api
 
         if (merger = ScenarioMerger.from_params(merge_params)).valid?
           scenario = merger.merged_scenario
+          scenario.creator_id = current_user&.id
           scenario.save
 
           # redirect_to api_v3_scenario_url(scenario)
