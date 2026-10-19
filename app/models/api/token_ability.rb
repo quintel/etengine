@@ -5,6 +5,7 @@ module Api
   # Admins can read, write, and delete all scenarios, provided they have the correct scope in the token.
   # Users can read public scenarios and scenarios where they are viewers.
   # Users with write scope can create, update, and clone scenarios where they are collaborators.
+  # With Settings.scenario_access_grants on, a grant in the token adds read or write access too.
   # Users with delete scope can delete scenarios where they are owners.
   # Only MyETM's own tokens carry the bind scope, which sets the bound flag.
   class TokenAbility
@@ -13,6 +14,7 @@ module Api
     def initialize(token, user)
       @scopes = token[:scopes]
       @user   = user
+      @access = granted_access(token)
 
       allow_public_read
       can :bind, Scenario if @scopes.include?('scenarios:bind')
@@ -26,6 +28,10 @@ module Api
 
     private
 
+    def granted_access(token)
+      ScenarioAccess.new(Settings.scenario_access_grants ? token[ScenarioAccess::CLAIM] : nil)
+    end
+
     # Methods to allow access to scenarios based on the role.
     # Everyone can read public scenarios.
     def allow_public_read
@@ -36,7 +42,7 @@ module Api
       if admin?
         can :read, Scenario
       else
-        can :read, Scenario, id: viewer_scenario_ids
+        can :read, Scenario, id: readable_ids
       end
     end
 
@@ -53,11 +59,11 @@ module Api
         can :update, Scenario, private: false
         cannot :update, Scenario, private: false, id: ScenarioUser.pluck(:scenario_id)
         # Allow updating scenarios where the user is a collaborator.
-        can :update, Scenario, id: collaborator_scenario_ids
+        can :update, Scenario, id: writable_ids
 
         # Allow cloning both unowned public scenarios and self-owned scenarios.
         can :clone, Scenario, private: false
-        can :clone, Scenario, id: collaborator_scenario_ids
+        can :clone, Scenario, id: writable_ids
       end
     end
 
@@ -67,6 +73,15 @@ module Api
       else
         can :destroy, Scenario, id: owner_scenario_ids
       end
+    end
+
+    # The Sessions a grant or a scenario_users role lets the user read or write
+    def readable_ids
+      viewer_scenario_ids | @access.readable
+    end
+
+    def writable_ids
+      @writable_ids ||= collaborator_scenario_ids | @access.writable
     end
 
     # Methods to get the scenario ids for the user based on the role.
