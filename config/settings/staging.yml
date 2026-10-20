@@ -10,5 +10,5 @@ identity:
 
 hooks:
   collections:
-    base_url: 'https://beta-collections.energytransitionmodel.com'
+    base_url: <%= ENV.fetch('COLLECTIONS_INTERNAL_URL', 'https://beta-collections.energytransitionmodel.com') %>
     session: '/api/invalidate/sessions'
