@@ -271,6 +271,27 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
       end
     end
 
+    context 'with a user id not yet coupled to the pending email' do
+      before do
+        create(:scenario_user,
+          scenario:, user: nil, user_email: 'pending@test.com',
+          role_id: User::ROLES.key(:scenario_viewer))
+
+        put "/api/v3/scenarios/#{scenario.id}/users", as: :json,
+          headers: access_token_header(user, :delete),
+          params: {
+            scenario_users: [
+              { user_id: 999, user_email: 'pending@test.com', role: 'scenario_collaborator' }
+            ]
+          }
+      end
+
+      it 'updates the pending record by email' do
+        expect(scenario.scenario_users.find_by(user_email: 'pending@test.com').role_id)
+          .to eq(User::ROLES.key(:scenario_collaborator))
+      end
+    end
+
     context 'with a missing role' do
       let(:user_2) { create(:user) }
 
