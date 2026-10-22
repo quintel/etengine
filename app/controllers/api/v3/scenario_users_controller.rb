@@ -110,7 +110,10 @@ module Api
           scenario_user = @scenario.scenario_users.find(user_params[:id])
         elsif user_params[:user_id]&.present?
           scenario_user = @scenario.scenario_users.find_by(user_id: user_params[:user_id])
-        elsif user_params[:user_email]&.present?
+        end
+
+        # MyETM may couple a user before they first sign in here, so this record may be pending
+        if scenario_user.blank? && user_params[:user_email]&.present?
           scenario_user = @scenario.scenario_users.find_by(user_email: user_params[:user_email])
 
           # It may have happened the ScenarioUser is already coupled to a User.
