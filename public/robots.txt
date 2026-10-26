@@ -1,9 +1,5 @@
-# See http://www.robotstxt.org/wc/norobots.html for documentation on how to use the robots.txt file
-#
-# To ban all spiders from the entire site uncomment the next two lines:
-# User-Agent: *
-# Disallow: /
-
-# Block crawlers from internal inspect/admin pages
+# ETEngine has no publicly indexable content. Almost every route is either
+# an admin-only UI, a machine-facing JSON API, or similar; with very few
+# exceptions that are anyway not relevant for a search index.
 User-agent: *
-Disallow: /inspect/
+Disallow: /
