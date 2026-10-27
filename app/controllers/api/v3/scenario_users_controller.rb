@@ -7,6 +7,8 @@ module Api
     class ScenarioUsersController < BaseController
       include UsesScenario
 
+      prepend_before_action :render_gone, if: -> { Settings.scenario_access_grants_only }
+
       # Only scenario owners, having the delete authority, may manage scenario users
       before_action { authorize!(:destroy, @scenario) }
 
@@ -72,6 +74,15 @@ module Api
       end
 
       private
+
+      def render_gone
+        render status: :gone, json: {
+          errors: [
+            'Access to this scenario is managed on the scenario in MyETM: ' \
+            "#{Settings.identity.issuer}"
+          ]
+        }
+      end
 
       def scenario_user_params
         permitted_params[:scenario_users]

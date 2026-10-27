@@ -184,7 +184,7 @@ class Scenario < ApplicationRecord
 
   # Creates a scenario from a yml_file. Used by mech turk.
   def self.create_from_file(yml_file)
-    settings = YAML.load(File.read(yml_file))['settings']
+    settings = YAML.load_file(yml_file)['settings']
     Scenario.default(settings)
   end
 
@@ -321,9 +321,11 @@ class Scenario < ApplicationRecord
   # Returns whether a scenario based on this one should be private.
   #
   # @param actor [User] The user who is creating the clone.
+  # @param ability [CanCan::Ability] The actor's ability, used when access comes from grants
   # @return [Boolean]
-  def clone_should_be_private?(actor)
+  def clone_should_be_private?(actor, ability = nil)
     return false unless actor
+    return granted_clone_private?(actor, ability) if Settings.scenario_access_grants_only
     return false if scenario_users.count.zero?
     return private if owner?(actor)
 
@@ -386,6 +388,10 @@ class Scenario < ApplicationRecord
 
   private
 
+  def granted_clone_private?(actor, ability)
+    ability&.can?(:update, self) ? private : actor.private_scenarios?
+  end
+
   def copy_roles_from_parent
     parent.scenario_users.each do |preset_user|
       if (existing_user = scenario_users.find_by(user: preset_user.user))
@@ -416,8 +422,12 @@ class Scenario < ApplicationRecord
   end
 
   def validate_visibility
-    if private? && scenario_users.map(&:role_id).none?(User::ROLES.key(:scenario_owner))
-      errors.add(:private, 'can not be true on an unowned scenario')
-    end
+    errors.add(:private, 'can not be true on an unowned scenario') if private? && !owned?
+  end
+
+  def owned?
+    return creator_id.present? || bound? if Settings.scenario_access_grants_only
+
+    scenario_users.map(&:role_id).include?(User::ROLES.key(:scenario_owner))
   end
 end
