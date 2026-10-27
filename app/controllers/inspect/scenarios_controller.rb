@@ -11,7 +11,7 @@ module Inspect
     # Lists recent scenarios with optional search and pagination
     def index
       @list_params = params.permit(:api_scenario_id, :q, :page)
-      base = Scenario.recent_first.includes(:users)
+      base = Scenario.recent_first
       base = base.by_id(@list_params[:q]) if @list_params[:q].present?
       @scenarios = base.page(@list_params[:page]).per(100)
     end

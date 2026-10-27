@@ -15,14 +15,15 @@ class Scenario::BatchYearInterpolator
     end
   end
 
-  def self.call(scenarios:, end_years:, user: nil)
-    new(scenarios:, end_years:, user:).call
+  def self.call(scenarios:, end_years:, user: nil, ability: nil)
+    new(scenarios:, end_years:, user:, ability:).call
   end
 
-  def initialize(scenarios:, end_years:, user: nil)
+  def initialize(scenarios:, end_years:, user: nil, ability: nil)
     @scenarios = scenarios.sort_by(&:end_year)
     @end_years = end_years.sort
     @user = user
+    @ability = ability
   end
 
   def call
@@ -82,7 +83,8 @@ class Scenario::BatchYearInterpolator
         scenario: later_scenario,
         year: target_year,
         start_scenario: earlier_scenario,
-        user: @user
+        user: @user,
+        ability: @ability
       )
 
       if result.failure?
