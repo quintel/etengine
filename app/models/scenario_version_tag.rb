@@ -9,7 +9,7 @@ class ScenarioVersionTag < ApplicationRecord
   belongs_to :scenario
   belongs_to :user
 
-  validate :validate_user_in_scenario_users
+  validate :validate_user_in_scenario_users, unless: -> { Settings.scenario_access_grants_only }
   validates :description, length: { maximum: 60_000 }
 
   def as_json(*)

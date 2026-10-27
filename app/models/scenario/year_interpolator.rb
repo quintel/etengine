@@ -49,15 +49,16 @@ class Scenario::YearInterpolator
     end
   end
 
-  def self.call(scenario:, year:, start_scenario: nil, user: nil)
-    new(scenario:, year:, start_scenario:, user:).call
+  def self.call(scenario:, year:, start_scenario: nil, user: nil, ability: nil)
+    new(scenario:, year:, start_scenario:, user:, ability:).call
   end
 
-  def initialize(scenario:, year:, start_scenario: nil, user: nil)
+  def initialize(scenario:, year:, start_scenario: nil, user: nil, ability: nil)
     @scenario = scenario
     @year = year
     @start_scenario = start_scenario
     @user = user
+    @ability = ability
   end
 
   def call
@@ -88,7 +89,7 @@ class Scenario::YearInterpolator
     clone.reload unless clone.new_record?
 
     clone.creator_id = @user&.id
-    clone.private = @scenario.clone_should_be_private?(@user)
+    clone.private = @scenario.clone_should_be_private?(@user, @ability)
     clone.user_values = interpolate_input_collection(:user_values)
     clone.balanced_values = interpolate_input_collection(:balanced_values)
 
