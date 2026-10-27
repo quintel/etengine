@@ -16,6 +16,11 @@ Rails.application.reloader.to_prepare do
     Etsource::Dataset::Import.loader.expire_all! if Settings.etsource_lazy_load_dataset
   end
 
-  # We store objects in the cache which are no longer valid if the code is reloaded.
-  Rails.cache.clear
+  # We store objects in the cache which are no longer valid if the code is reloaded. A new Solid
+  # Cache database has no table until its schema is loaded, which needs the app to boot first.
+  begin
+    Rails.cache.clear
+  rescue ActiveRecord::StatementInvalid
+    raise if SolidCache::Entry.table_exists?
+  end
 end
