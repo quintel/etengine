@@ -3,6 +3,9 @@
 module Api
   module V3
     class ScenariosController < BaseController
+      # Roles MyETM sends with a save. Ignored with grants only, as nothing reads them.
+      ROLE_PARAMS = %i[set_preset_roles saved_scenario_users].freeze
+
       load_resource except: %i[show create destroy dump]
       load_and_authorize_resource class: Scenario, only: %i[index show destroy dump]
 
@@ -56,7 +59,7 @@ module Api
 
         scenarios = Scenario
           .accessible_by(current_ability)
-          .viewable_by?(current_user)
+          .merge(listed_scenarios)
           .order(created_at: :desc)
           .page((params[:page].presence || 1).to_i)
           .per((params[:limit].presence || 25).to_i.clamp(1, 100))
@@ -155,7 +158,9 @@ module Api
           attrs.delete(:user_values)
 
           # Inherit the visibility if no explicit visibility is set.
-          attrs[:private] = parent.clone_should_be_private?(current_user) if attrs[:private].nil?
+          if attrs[:private].nil?
+            attrs[:private] = parent.clone_should_be_private?(current_user, current_ability)
+          end
         elsif current_user && attrs[:private].nil?
           attrs[:private] = current_user.private_scenarios?
         end
@@ -221,7 +226,8 @@ module Api
           scenario: @scenario,
           year: interpolate_params.require(:end_year).to_i,
           start_scenario: @start_scenario,
-          user: current_user
+          user: current_user,
+          ability: current_ability
         )
 
         result.either(
@@ -252,7 +258,8 @@ module Api
         result = Scenario::BatchYearInterpolator.call(
           scenarios: @scenarios,
           end_years: params.require(:end_years).map(&:to_i),
-          user: current_user
+          user: current_user,
+          ability: current_ability
         )
 
         result.either(
@@ -310,7 +317,7 @@ module Api
         if final_params[:scenario].blank?
           authorize!(:read, @scenario)
         elsif final_params[:scenario][:set_preset_roles].present? ||
-              final_params[:scenario][:saved_scenario_users].present?
+            final_params[:scenario][:saved_scenario_users].present?
           authorize!(:destroy, @scenario)
         else
           authorize!(:update, @scenario)
@@ -343,7 +350,12 @@ module Api
       #
       # Deletes a scenario.
       def destroy
-        current_user.scenarios.find(params[:id]).destroy
+        if Settings.scenario_access_grants_only
+          @scenario.destroy
+        else
+          current_user.scenarios.find(params[:id]).destroy
+        end
+
         head :ok
       end
 
@@ -460,12 +472,12 @@ module Api
             # Stream NDJSON
             self.response_body = Enumerator.new do |yielder|
               ndjson.each do |line|
-                yielder << ("#{line.to_json}\n")
+                yielder << "#{line.to_json}\n"
               end
             end
           },
           lambda { |error|
-            render json: { errors: [error] }, status: :unprocessable_entity
+            render json: { errors: [error] }, status: :unprocessable_content
           }
         )
       end
@@ -510,7 +522,14 @@ module Api
 
         attrs[:descale] = true if attrs[:descale] == 'true'
 
-        attrs
+        Settings.scenario_access_grants_only ? attrs.except(*ROLE_PARAMS) : attrs
+      end
+
+      # The scenarios the user lists as their own: by role, or by creator
+      def listed_scenarios
+        return Scenario.viewable_by?(current_user) unless Settings.scenario_access_grants_only
+
+        Scenario.where(creator_id: current_user.id)
       end
 
       # Internal: All the user values for a scenario, filtered.
