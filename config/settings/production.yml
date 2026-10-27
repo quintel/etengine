@@ -6,7 +6,7 @@ etmodel: https://energytransitionmodel.com
 
 identity:
   issuer: https://my.energytransitionmodel.com
-  client_uri: https://engine.energytransitionmodel.com
+  client_uri: <%= ENV.fetch('IDENTITY_CLIENT_URI', 'https://engine.energytransitionmodel.com') %>
 
 hooks:
   collections:
