@@ -6,6 +6,13 @@ agent:
     os_image: ubuntu2404
 execution_time_limit:
   hours: 10
+
+# Image tag and deploy path are derived from the branch name and must match the instance in the
+# ansible stable group_vars:
+# branch 2027-01 -> image quintel/etengine:2027_01, deployed from /var/www/etengine_2027_01.
+#
+# The release in config/settings.yml is overwritten with "stable-<branch>" before the build: Sentry
+# reads its release from it, and stable shares its Sentry project with latest.
 blocks:
   - name: Docker
     task:
@@ -17,17 +24,19 @@ blocks:
         - name: 'Build, publish, deploy'
           commands:
             - checkout
+            - export TAG="${SEMAPHORE_GIT_BRANCH//-/_}"
+            - 'sed -i "s/^release: .*/release: stable-$SEMAPHORE_GIT_BRANCH/" config/settings.yml'
             - echo $DOCKERHUB_PASSWORD | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
             - cache restore
-            - 'docker build -f Dockerfile.production -t etengine:stable .'
-            - 'docker tag etengine:stable quintel/etengine:stable'
-            - 'docker push quintel/etengine:stable'
+            - 'docker build -f Dockerfile.production -t quintel/etengine:$TAG .'
+            - 'docker push quintel/etengine:$TAG'
             - cache store
             - echo $SSH_FINGERPRINT >> ~/.ssh/known_hosts
-            - 'ssh -i ~/.ssh/id_deploy "${SSH_USER}@${SSH_HOST}" -p $SSH_PORT "cd /var/www/etengine_stable && ./deploy.sh"'
-            - 'ssh -i ~/.ssh/id_deploy "${SSH_USER}@${SSH_HOST}" -p $SSH_PORT "cd /var/www/etengine_stable_2 && ./deploy.sh"'
+            - 'ssh -i ~/.ssh/id_deploy "${SSH_USER}@${SSH_HOST}" -p $SSH_PORT "cd /var/www/etengine_$TAG && ./deploy.sh"'
       secrets:
         - name: Docker Hub credentials
         - name: Stable SSH settings
     run:
-      when: branch = 'master'
+      when: >-
+        branch = '2025-01' or
+        branch = '2027-01'
