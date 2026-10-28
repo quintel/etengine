@@ -8,10 +8,11 @@ module Api
   class GrantAbility
     include CanCan::Ability
 
-    def initialize(token, user)
+    # TEMPORARY(legacy-pat): legacy_access is the grant MyETM looked up for a personal access token
+    def initialize(token, user, legacy_access = nil)
       @scopes = token ? token[:scopes].to_s.split : []
       @user   = user
-      @access = ScenarioAccess.new(token && token[ScenarioAccess::CLAIM])
+      @access = legacy_access || ScenarioAccess.new(token && token[ScenarioAccess::CLAIM])
 
       can :read, Scenario, private: false
       can :bind, Scenario if scope?('bind')
