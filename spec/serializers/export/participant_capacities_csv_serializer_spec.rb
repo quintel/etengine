@@ -9,14 +9,14 @@ RSpec.describe Export::ParticipantCapacitiesCSVSerializer do
   let(:graph) { instance_double(Qernel::Graph) }
 
   let(:producer_api) do
-    instance_double(Qernel::NodeApi::Base, input_capacity: 2.0, number_of_units: 10.0)
+    instance_double(Qernel::NodeApi::Base, electricity_output_installed_capacity: 8.0)
   end
   let(:producer_node) do
     instance_double(Qernel::Node, key: 'wind_turbine', node_api: producer_api)
   end
 
   let(:consumer_api) do
-    instance_double(Qernel::NodeApi::Base, input_capacity: 1.0, number_of_units: 5.0)
+    instance_double(Qernel::NodeApi::Base, electricity_input_installed_capacity: 150.0)
   end
   let(:consumer_node) do
     instance_double(Qernel::Node, key: 'electrolyser', node_api: consumer_api)
@@ -29,8 +29,6 @@ RSpec.describe Export::ParticipantCapacitiesCSVSerializer do
 
   before do
     allow(Qernel::Plugins::Causality).to receive(:enabled?).with(graph).and_return(true)
-    allow(producer_api).to receive(:public_send).with('electricity_output_conversion').and_return(0.4)
-    allow(consumer_api).to receive(:public_send).with('electricity_input_conversion').and_return(0.9)
     allow(serializer).to receive(:producers).and_return([producer_node])
     allow(serializer).to receive(:consumers).and_return([consumer_node])
     allow(serializer.instance_variable_get(:@adapter))
@@ -49,17 +47,15 @@ RSpec.describe Export::ParticipantCapacitiesCSVSerializer do
     subject(:rows) { serializer.to_csv_rows }
 
     it 'includes the header row' do
-      expect(rows[0]).to eq(%w[key peak_capacity])
+      expect(rows[0]).to eq(%w[key peak_capacity installed_capacity])
     end
 
     it 'includes the producer row' do
-      # 0.4 * 2.0 * 10.0 = 8.0, peak = 200.0
-      expect(rows[1]).to eq(['wind_turbine.output (MW)', 200.0])
+      expect(rows[1]).to eq(['wind_turbine.output (MW)', 200.0, 8.0])
     end
 
     it 'includes the consumer row' do
-      # 0.9 * 1.0 * 5.0 = 4.5, peak = 150.0
-      expect(rows[2]).to eq(['electrolyser.input (MW)', 150.0])
+      expect(rows[2]).to eq(['electrolyser.input (MW)', 150.0, 150.0])
     end
 
     context 'when causality is not enabled' do
@@ -69,18 +65,6 @@ RSpec.describe Export::ParticipantCapacitiesCSVSerializer do
         expect(rows).to eq([['Merit order and time-resolved calculation are not enabled for this scenario']])
       end
     end
-
-    # context 'when a node has zero units' do
-    #   let(:producer_api) do
-    #     instance_double(Qernel::NodeApi::Base, input_capacity: 2.0, number_of_units: 0.0)
-    #   end
-
-    #   before { allow(producer_api).to receive(:public_send).with('electricity_output_conversion').and_return(0.4) }
-
-    #   it 'reports 0.0 installed_capacity' do
-    #     expect(rows[1][1]).to eq(0.0)
-    #   end
-    # end
 
     context 'when the curve is nil' do
       before do
