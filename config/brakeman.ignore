@@ -1,0 +1,216 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Mass Assignment",
+      "warning_code": 70,
+      "fingerprint": "c5a12fec52b7486b1f03af60a467069403ceee15b891ff01fe883fbb91980479",
+      "check_name": "MassAssignment",
+      "message": "Specify exact keys allowed for mass assignment instead of using `permit!` which allows any keys",
+      "file": "app/components/select_locale/component.html.erb",
+      "line": 64,
+      "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
+      "code": "params.permit!",
+      "render_path": null,
+      "location": {
+        "type": "template",
+        "template": "app/components/select_locale/component"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "cwe_id": [
+        915
+      ],
+      "note": "params only used to rebuild the current URL with a different locale; nothing is assigned to a model."
+    },
+    {
+      "warning_type": "Mass Assignment",
+      "warning_code": 70,
+      "fingerprint": "c5a12fec52b7486b1f03af60a467069403ceee15b891ff01fe883fbb91980479",
+      "check_name": "MassAssignment",
+      "message": "Specify exact keys allowed for mass assignment instead of using `permit!` which allows any keys",
+      "file": "app/components/select_locale/component.html.erb",
+      "line": 69,
+      "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
+      "code": "params.permit!",
+      "render_path": null,
+      "location": {
+        "type": "template",
+        "template": "app/components/select_locale/component"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "cwe_id": [
+        915
+      ],
+      "note": "params only used to rebuild the current URL with a different locale; nothing is assigned to a model."
+    },
+    {
+      "warning_type": "Denial of Service",
+      "warning_code": 76,
+      "fingerprint": "eb91a9fbe883e43176cad7426c2032bc93eec464bd925b6eab6736c844073c80",
+      "check_name": "RegexDoS",
+      "message": "Model attribute used in regular expression",
+      "file": "app/helpers/application_helper.rb",
+      "line": 46,
+      "link": "https://brakemanscanner.org/docs/warning_types/denial_of_service/",
+      "code": "/(\\(\\s*)(#{Gquery.cached_keys.join(\"|\")})(\\s*\\))/",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "ApplicationHelper",
+        "method": "color_syntaxed_gquery"
+      },
+      "user_input": "Gquery.cached_keys.join(\"|\")",
+      "confidence": "Medium",
+      "cwe_id": [
+        20,
+        185
+      ],
+      "note": "Gquery keys are loaded from ETSource, not user input."
+    },
+    {
+      "warning_type": "Remote Code Execution",
+      "warning_code": 25,
+      "fingerprint": "b4dff10007e31dba23189da1521553c213397ffd461f9ae0be10ff83745642b5",
+      "check_name": "Deserialize",
+      "message": "Use of `Marshal.load` may be dangerous",
+      "file": "app/models/cloneable.rb",
+      "line": 12,
+      "link": "https://brakemanscanner.org/docs/warning_types/unsafe_deserialization",
+      "code": "Marshal.load(Marshal.dump(obj))",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Cloneable",
+        "method": "deep_clone"
+      },
+      "user_input": null,
+      "confidence": "Weak",
+      "cwe_id": [
+        502
+      ],
+      "note": "Marshal round-trip of our own in-memory objects for deep cloning; never loads external data."
+    },
+    {
+      "warning_type": "Dangerous Eval",
+      "warning_code": 13,
+      "fingerprint": "5789ad39414cfe0b6d02a75fe007477d9b5a12073f26239e2346525115453941",
+      "check_name": "Evaluation",
+      "message": "Dynamic string evaluated as code",
+      "file": "app/models/qernel/dataset_attributes.rb",
+      "line": 81,
+      "link": "https://brakemanscanner.org/docs/warning_types/dangerous_eval/",
+      "code": "class_eval(\"          def #{attr_name}\\n            dataset_get(:#{attr_name})\\n          end\\n\", \"app/models/qernel/dataset_attributes.rb\", 82)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Qernel::DatasetAttributes::ClassMethods",
+        "method": "dataset_reader"
+      },
+      "user_input": null,
+      "confidence": "Weak",
+      "cwe_id": [
+        913,
+        95
+      ],
+      "note": "Attribute names come from class-level macro calls in our own code, not user input."
+    },
+    {
+      "warning_type": "Dangerous Eval",
+      "warning_code": 13,
+      "fingerprint": "a6c168872ef2b524ae6a0cead672d72726783b16117c68bf24dabc94c982418f",
+      "check_name": "Evaluation",
+      "message": "Dynamic string evaluated as code",
+      "file": "app/models/qernel/dataset_attributes.rb",
+      "line": 95,
+      "link": "https://brakemanscanner.org/docs/warning_types/dangerous_eval/",
+      "code": "class_eval(\"          def #{attr_name}=(value)\\n            dataset_set(:#{attr_name}, value)\\n          end\\n\", \"app/models/qernel/dataset_attributes.rb\", 96)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Qernel::DatasetAttributes::ClassMethods",
+        "method": "dataset_writer"
+      },
+      "user_input": null,
+      "confidence": "Weak",
+      "cwe_id": [
+        913,
+        95
+      ],
+      "note": "Attribute names come from class-level macro calls in our own code, not user input."
+    },
+    {
+      "warning_type": "Dangerous Eval",
+      "warning_code": 13,
+      "fingerprint": "068c484a0ab0a50349d67306324ff087fc51641ab83c225fe17416b00dc3c8ba",
+      "check_name": "Evaluation",
+      "message": "Dynamic string evaluated as code",
+      "file": "app/models/qernel/dataset_curve_attributes.rb",
+      "line": 4,
+      "link": "https://brakemanscanner.org/docs/warning_types/dangerous_eval/",
+      "code": "class_eval(\"        def #{name}                                   # def availability_curve\\n          dataset_get(#{name.to_sym.inspect}) || []   #   dataset_get(:availability_curve) || []\\n        end                                           # end\\n\", \"app/models/qernel/dataset_curve_attributes.rb\", 5)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Qernel::DatasetCurveAttributes",
+        "method": "dataset_curve_reader"
+      },
+      "user_input": null,
+      "confidence": "Weak",
+      "cwe_id": [
+        913,
+        95
+      ],
+      "note": "Curve attribute names come from class-level macro calls in our own code, not user input."
+    },
+    {
+      "warning_type": "Dangerous Eval",
+      "warning_code": 13,
+      "fingerprint": "cf90802c1fb46d7b82072e849143ade35aadfd4a1673b8b8d1124e6b921e818f",
+      "check_name": "Evaluation",
+      "message": "Dynamic string evaluated as code",
+      "file": "app/models/qernel/dataset_curve_attributes.rb",
+      "line": 12,
+      "link": "https://brakemanscanner.org/docs/warning_types/dangerous_eval/",
+      "code": "class_eval(\"        def #{name}=(value)                           # def availability_curve=(value)\\n          dataset_set(#{name.to_sym.inspect}, value)  #   dataset_set(:availability_curve, value)\\n        end                                           # end\\n\", \"app/models/qernel/dataset_curve_attributes.rb\", 13)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Qernel::DatasetCurveAttributes",
+        "method": "dataset_curve_writer"
+      },
+      "user_input": null,
+      "confidence": "Weak",
+      "cwe_id": [
+        913,
+        95
+      ],
+      "note": "Curve attribute names come from class-level macro calls in our own code, not user input."
+    },
+    {
+      "warning_type": "Dangerous Eval",
+      "warning_code": 13,
+      "fingerprint": "9e5099d71a3e46fa7eac514afbffe091da885e9e97e63e8ae430c7e216fce8e2",
+      "check_name": "Evaluation",
+      "message": "Dynamic string evaluated as code",
+      "file": "app/models/qernel/node_api/carrier_methods.rb",
+      "line": 47,
+      "link": "https://brakemanscanner.org/docs/warning_types/dangerous_eval/",
+      "code": "class_eval(\"              def #{carrier}_#{:BRAKEMAN_SAFE_LITERAL}_conversion\\n                carrier_direction_conversion(#{carrier.inspect}, #{:BRAKEMAN_SAFE_LITERAL.inspect})\\n              end\\n\", \"app/models/qernel/node_api/carrier_methods.rb\", 48)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Qernel::NodeApi::CarrierMethods",
+        "method": "Qernel::NodeApi::CarrierMethods.create_methods_for_each_carrier"
+      },
+      "user_input": null,
+      "confidence": "Weak",
+      "cwe_id": [
+        913,
+        95
+      ],
+      "note": "Carrier names come from ETSource carrier definitions; direction is a fixed literal."
+    }
+  ],
+  "brakeman_version": "8.1.0"
+}
