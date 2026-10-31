@@ -2,11 +2,14 @@
 
 # Provides to_csv_rows and filename for capacity exports. When included in a
 # CausalityCurvesCSVSerializer subclass, produces a CSV with one row per
-# participant (producer or consumer): key, installed_capacity, peak_capacity.
+# participant (producer or consumer): key, peak_capacity and installed_capacity
+# (see Qernel::NodeApi::Capacity).
 #
 # The key matches the column header used in the corresponding hourly curve
 # export (e.g. "agriculture_chp_engine_biogas.output (MW)").
 module Export::ParticipantCapacitiesCSVSerializer
+  HEADER = %w[key peak_capacity installed_capacity].freeze
+
   def filename
     :"#{@adapter.attribute}_capacities"
   end
@@ -16,8 +19,7 @@ module Export::ParticipantCapacitiesCSVSerializer
       return [['Merit order and time-resolved calculation are not enabled for this scenario']]
     end
 
-    header = %w[key peak_capacity]
-    [header, *producer_rows, *consumer_rows]
+    [HEADER, *producer_rows, *consumer_rows]
   end
 
   private
@@ -33,7 +35,8 @@ module Export::ParticipantCapacitiesCSVSerializer
   def row_for(node, direction)
     [
       "#{@prefix}#{node.key}.#{direction} (MW)",
-      (@adapter.node_curve(node, direction)&.max || 0.0).round(6)
+      (@adapter.node_curve(node, direction)&.max || 0.0).round(6),
+      node.node_api.public_send(:"#{@adapter.carrier}_#{direction}_installed_capacity").round(6)
     ]
   end
 end
