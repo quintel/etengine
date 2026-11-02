@@ -28,6 +28,22 @@ describe 'APIv3 binding scenarios', :etsource_fixture do
       expect([scenario.reload, history.reload]).to all(satisfy { |s| !s.bound? })
     end
 
+    it 'stops keeping every unbound scenario compatible' do
+      scenario.update!(bound: true, keep_compatible: true)
+      history.update!(bound: true, keep_compatible: true)
+      bind([scenario.id, history.id], false)
+
+      expect([scenario.reload, history.reload]).to all(satisfy { |s| !s.keep_compatible? })
+    end
+
+    it 'leaves keep_compatible alone when binding' do
+      scenario.update!(keep_compatible: true)
+      history.update!(keep_compatible: false)
+      bind([scenario.id, history.id], true)
+
+      expect([scenario.reload, history.reload].map(&:keep_compatible?)).to eq([true, false])
+    end
+
     it 'leaves an already bound scenario bound' do
       scenario.update!(bound: true)
       bind([scenario.id], true)
