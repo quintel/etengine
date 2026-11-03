@@ -355,7 +355,7 @@ module Api
       def bind
         authorize!(:bind, Scenario)
 
-        bound = params.fetch(:bound)
+        bound = params.expect(:bound)
         unless bound.in?([true, false])
           raise ActionController::BadRequest, 'bound must be true or false'
         end

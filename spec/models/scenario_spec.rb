@@ -236,6 +236,42 @@ describe Scenario do
         expect(subject).not_to include(scenario)
       end
     end
+
+    context 'with a bound scenario that is not kept compatible' do
+      before { scenario.update(bound: true, keep_compatible: false) }
+
+      it 'includes recent scenarios' do
+        expect(subject).to include(scenario)
+      end
+
+      it 'includes scenarios updated prior to the "since" date' do
+        scenario.update_attribute(:updated_at, since - 1.hour)
+        expect(subject).to include(scenario)
+      end
+
+      it 'omits scenarios with NULL user_values' do
+        scenario.update_attribute(:user_values, nil)
+        expect(subject).not_to include(scenario)
+      end
+    end
+  end
+
+  describe '#outdated?' do
+    let(:scenario) { build(:scenario, created_at: 2.months.ago) }
+
+    it 'is outdated when old and unprotected' do
+      expect(scenario).to be_outdated
+    end
+
+    it 'is not outdated when kept compatible' do
+      scenario.keep_compatible = true
+      expect(scenario).not_to be_outdated
+    end
+
+    it 'is not outdated when bound' do
+      scenario.bound = true
+      expect(scenario).not_to be_outdated
+    end
   end
 
   describe 'user supplied parameters' do

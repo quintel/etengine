@@ -18,17 +18,18 @@ class Scenario < ApplicationRecord
     # Public: Scenarios which should receive new user values when the ETSource
     # data requires changes to existing scenarios.
     #
-    # All `keep_updated` scenarios are included, and any other scenarios updated
+    # All `keep_compatible` and `bound` scenarios are included, and any other scenarios updated
     # on or after the `since` date or time. Test scenarios and Mechanical Turk
     # scenarios are excluded.
     #
     # Returns an ActiveRecord::Relation
     def migratable_since(since)
       Scenario.where(
-        '(keep_compatible = :keep_compatible OR updated_at >= :updated_at) AND ' \
+        '(keep_compatible = :keep_compatible OR bound = :bound OR updated_at >= :updated_at) AND ' \
         'COALESCE(source, "") != :mechanical_turk_source AND ' \
         'user_values IS NOT NULL AND user_values != :empty_user_values',
         keep_compatible: true,
+        bound: true,
         updated_at: since,
         mechanical_turk_source: 'Mechanical Turk',
         empty_user_values: {}.to_msgpack
