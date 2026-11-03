@@ -265,7 +265,7 @@ class Scenario < ApplicationRecord
   end
 
   def outdated?
-    !keep_compatible? && created_at < Scenario.default_migratable_date
+    !keep_compatible? && !bound? && created_at < Scenario.default_migratable_date
   end
 
   # Public: Given an input, returns the value of that input as it will be used

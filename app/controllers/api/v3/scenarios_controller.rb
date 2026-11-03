@@ -310,7 +310,7 @@ module Api
         if final_params[:scenario].blank?
           authorize!(:read, @scenario)
         elsif final_params[:scenario][:set_preset_roles].present? ||
-              final_params[:scenario][:saved_scenario_users].present?
+            final_params[:scenario][:saved_scenario_users].present?
           authorize!(:destroy, @scenario)
         else
           authorize!(:update, @scenario)
@@ -350,18 +350,19 @@ module Api
       # PUT /api/v3/scenarios/bind
       #
       # Sets or clears the bound flag on several scenarios at once. Only MyETM may call it.
+      # Clearing it also clears keep_compatible, so cleanup can delete the released scenarios
       # Responds with the IDs that match no scenario.
       def bind
         authorize!(:bind, Scenario)
 
-        bound = params.fetch(:bound)
+        bound = params.expect(:bound)
         unless bound.in?([true, false])
           raise ActionController::BadRequest, 'bound must be true or false'
         end
 
         ids = Array(params.require(:ids)).map(&:to_i)
         scenarios = Scenario.where(id: ids)
-        scenarios.update_all(bound:)
+        scenarios.update_all(bound ? { bound: } : { bound:, keep_compatible: false })
 
         render json: { missing: ids - scenarios.pluck(:id) }
       end
@@ -460,12 +461,12 @@ module Api
             # Stream NDJSON
             self.response_body = Enumerator.new do |yielder|
               ndjson.each do |line|
-                yielder << ("#{line.to_json}\n")
+                yielder << "#{line.to_json}\n"
               end
             end
           },
           lambda { |error|
-            render json: { errors: [error] }, status: :unprocessable_entity
+            render json: { errors: [error] }, status: :unprocessable_content
           }
         )
       end
