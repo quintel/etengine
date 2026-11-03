@@ -130,8 +130,3 @@ group :test do
 
   gem 'simplecov', '~> 0.7.1', require: false
 end
-
-group :production, :staging do
-  # gem 'gctools', require: false
-  gem 'newrelic_rpm'
-end
