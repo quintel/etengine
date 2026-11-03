@@ -424,8 +424,6 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     netrc (0.11.0)
-    newrelic_rpm (10.2.0)
-      logger
     nio4r (2.7.5)
     nokogiri (1.19.4)
       mini_portile2 (~> 2.8.2)
@@ -752,7 +750,6 @@ DEPENDENCIES
   local_time
   mini_racer
   mysql2
-  newrelic_rpm
   opentelemetry-exporter-otlp (~> 0.34.1)
   opentelemetry-instrumentation-action_pack (~> 0.18.0)
   opentelemetry-instrumentation-rack (~> 0.31.1)
