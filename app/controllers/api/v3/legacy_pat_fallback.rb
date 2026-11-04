@@ -12,9 +12,13 @@ module Api
 
       private
 
-      # The grant MyETM holds for the PAT's user on the requested Session, or nil
+      # The grant MyETM holds for the PAT's user on the requested Session, or nil.
+      # The answer is read under this engine's own tag
       def legacy_pat_access
-        ScenarioAccess.new(cached_legacy_grant) if legacy_pat_session_id
+        return unless legacy_pat_session_id
+
+        tag = Settings.version_tag
+        Identity::ScenarioAccess.new({ tag => cached_legacy_grant }, tag:)
       end
 
       def legacy_pat_session_id
