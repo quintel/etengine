@@ -13,7 +13,8 @@ gem 'puma'
 gem 'rails',        '~> 8.1.0'
 gem 'jquery-rails', '~> 4.0'
 gem 'haml'
-gem 'json'
+# json 3 removes JSON.parse's create_additions option, used by sprockets 4.2 and execjs.
+gem 'json', '~> 2.21'
 
 gem 'rake'
 gem 'activeresource', '~> 6.0'
