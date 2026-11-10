@@ -278,6 +278,10 @@ module Api
       # - scenario: scenario attributes
       # - reset: boolean (default: false)
       #
+      # A request with neither scenario attributes nor reset only runs the
+      # gqueries: it needs read access and leaves the scenario untouched. Any
+      # other request needs update access.
+      #
       # Example request parameters:
       #
       # {
@@ -306,8 +310,9 @@ module Api
       #
       def update
         final_params = filtered_params.to_h
+        query_only = final_params[:scenario].blank? && !final_params.key?(:reset)
 
-        if final_params[:scenario].blank?
+        if query_only
           authorize!(:read, @scenario)
         elsif final_params[:scenario][:set_preset_roles].present? ||
               final_params[:scenario][:saved_scenario_users].present?
@@ -320,7 +325,12 @@ module Api
         serializer = nil
 
         Scenario.transaction do
-          result = ::ScenarioUpdater.new(@scenario, final_params, current_user).call
+          result =
+            if query_only
+              query_only_result
+            else
+              ::ScenarioUpdater.new(@scenario, final_params, current_user).call
+            end
 
           if result.failure?
             serializer = ScenarioUpdateSerializer.new(self, result, @scenario, final_params)
@@ -479,6 +489,20 @@ module Api
         params.permit(
           :autobalance, :force, :reset, gqueries: []
         ).merge(scenario: scenario_params)
+      end
+
+      # Internal: The result a query-only update runs its gqueries against. An
+      # invalid scenario fails with the same errors as an update does.
+      #
+      # Returns a Dry::Monads::Result.
+      def query_only_result
+        if @scenario.valid?
+          Dry::Monads::Result::Success.new(@scenario)
+        else
+          Dry::Monads::Result::Failure.new(
+            @scenario.errors.full_messages.map { |msg| "Scenario: #{msg}" }
+          )
+        end
       end
 
       # Internal: Cleaned up attributes for creating and updating scenarios.
