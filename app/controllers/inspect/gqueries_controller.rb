@@ -16,7 +16,7 @@ class Inspect::GqueriesController < Inspect::BaseController
   def test
     if params[:commit] == "Debug"
       redirect_to inspect_debug_gql_path(gquery: params[:query])
-    elsif params[:query].present?
+    elsif request.post? && params[:query].present?
       begin
         @result = @gql.query(params[:query], nil, true)
       rescue Gql::CommandError => ex

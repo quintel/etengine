@@ -19,7 +19,7 @@ class Inspect::GqlController < Inspect::BaseController
 
   def log
     file = Rails.root.join('log/gql.log')
-    File.truncate(file, 0) if params[:reset]
+    File.truncate(file, 0) if request.post? && params[:reset]
     lines = IO.readlines(file)
     lines = lines.grep(Regexp.new(params[:filter])) if params[:filter]
     @log_contents = lines.join
@@ -27,7 +27,7 @@ class Inspect::GqlController < Inspect::BaseController
 
   def warnings
     file = Rails.root.join('log/warnings.log')
-    File.truncate(file, 0) if params[:reset]
+    File.truncate(file, 0) if request.post? && params[:reset]
     lines = IO.readlines(file)
     lines = lines.grep(Regexp.new(params[:filter])) if params[:filter]
     @log_contents = lines.join

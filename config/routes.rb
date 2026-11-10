@@ -224,12 +224,15 @@ Rails.application.routes.draw do
       get '/debug/merit_order'   => 'debug#merit_order'
       get '/debug/calculation'   => 'debug#calculation'
       get '/debug/gquery'        => 'debug#gquery', as: :debug_gql
+      post '/debug/gquery'       => 'debug#gquery'
 
       # GQL
       get '/gql'          => 'gql#index'
       get '/gql/search'   => 'gql#search',   as: :gql_search
       get '/gql/log'      => 'gql#log',      as: :gql_log
+      post '/gql/log'     => 'gql#log'
       get '/gql/warnings' => 'gql#warnings', as: :gql_warnings
+      post '/gql/warnings' => 'gql#warnings'
 
       get '/merit' => 'merit#index'
       get '/merit/download',        to: redirect('api/v3/scenarios/%{api_scenario_id}/merit/loads.csv')
