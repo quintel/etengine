@@ -146,4 +146,99 @@ describe 'Updating a scenario with API v3' do
       end
     end
   end
+
+  context 'with a scenario owned by another user' do
+    let(:owner) { create(:user) }
+    let(:viewer) { create(:user) }
+    let(:private_scenario) { false }
+
+    let(:scenario) do
+      create(
+        :scenario,
+        user: owner,
+        private: private_scenario,
+        user_values: { 'foo_demand' => 10.0 },
+        balanced_values: { 'grouped_input_two' => 60.0 }
+      )
+    end
+
+    let(:read_params) { { gqueries: %w[bar_demand], autobalance: true, force: true } }
+
+    before do
+      create(:scenario_user, scenario:, user: viewer, role_id: User::ROLES.key(:scenario_viewer))
+      create(:scenario_version_tag, scenario:, user: owner)
+      scenario.update!(updated_at: 1.day.ago)
+    end
+
+    # Everything a request may change on the scenario.
+    def stored_state
+      scenario.reload
+
+      [
+        scenario.user_values,
+        scenario.balanced_values,
+        scenario.updated_at,
+        scenario.scenario_version_tag.user_id
+      ]
+    end
+
+    context 'when the scenario is public' do
+      it 'refuses a reset from a guest' do
+        expect { update_scenario(params: { reset: true }) }.not_to(change { stored_state })
+        expect(response).to have_http_status(:forbidden)
+      end
+
+      it 'refuses a reset from a viewer' do
+        expect do
+          update_scenario(params: { reset: true }, headers: access_token_header(viewer, :write))
+        end.not_to(change { stored_state })
+
+        expect(response).to have_http_status(:forbidden)
+      end
+
+      it 'answers queries from a guest and changes nothing' do
+        expect { update_scenario(params: read_params) }.not_to(change { stored_state })
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body.dig('gqueries', 'bar_demand')).to include('present', 'future')
+      end
+
+      it 'answers queries from a viewer and changes nothing' do
+        expect do
+          update_scenario(params: read_params, headers: access_token_header(viewer, :write))
+        end.not_to(change { stored_state })
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body.dig('gqueries', 'bar_demand')).to include('present', 'future')
+      end
+
+      it 'resets for the owner' do
+        update_scenario(params: { reset: true }, headers: access_token_header(owner, :write))
+
+        expect(response).to have_http_status(:ok)
+        expect(scenario.user_values).to eq({})
+      end
+    end
+
+    context 'when the scenario is private' do
+      let(:private_scenario) { true }
+
+      it 'refuses a reset from a viewer' do
+        expect do
+          update_scenario(params: { reset: true }, headers: access_token_header(viewer, :write))
+        end.not_to(change { stored_state })
+
+        expect(response).to have_http_status(:not_found)
+      end
+
+      it 'answers queries from a viewer and changes nothing' do
+        expect do
+          update_scenario(params: read_params, headers: access_token_header(viewer, :write))
+        end.not_to(change { stored_state })
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body.dig('gqueries', 'bar_demand')).to include('present', 'future')
+      end
+    end
+  end
 end
