@@ -4,6 +4,3 @@ hooks:
   collections:
     base_url: 'http://collections.local.energytransitionmodel.com:3005'
     session: '/api/invalidate/sessions'
-
-# Authorize Sessions from the scenario_access grant, alongside scenario_users
-scenario_access_grants: true
