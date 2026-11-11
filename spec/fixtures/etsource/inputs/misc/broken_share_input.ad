@@ -1,0 +1,9 @@
+# A share-group input whose start value GQL yields a non-numeric result
+# (an area code string), so its cache is disabled with a cache error. A group
+# containing it cannot be resolved and updates to the group must be refused.
+- key = broken_share_input
+- share_group = broken_group
+- start_value_gql = present:AREA(area_code)
+- min_value = 0
+- max_value = 100
+- query = 2 * 2
