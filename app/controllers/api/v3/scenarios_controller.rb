@@ -1,6 +1,9 @@
 module Api
   module V3
     class ScenariosController < BaseController
+      # Roles MyETM sends with a save. Ignored with grants only, as nothing reads them.
+      ROLE_PARAMS = %i[set_preset_roles saved_scenario_users].freeze
+
       rescue_from Scenario::YearInterpolator::InterpolationError do |ex|
         render json: { errors: [ex.message] }, status: :bad_request
       end
@@ -42,7 +45,7 @@ module Api
 
         scenarios = Scenario
           .accessible_by(current_ability)
-          .viewable_by?(current_user)
+          .merge(listed_scenarios)
           .order(created_at: :desc)
           .page((params[:page].presence || 1).to_i)
           .per((params[:limit].presence || 25).to_i.clamp(1, 100))
@@ -139,7 +142,9 @@ module Api
           attrs.delete(:user_values)
 
           # Inherit the visibility if no explicity visibility is set.
-          attrs[:private] = parent.clone_should_be_private?(current_user) if attrs[:private].nil?
+          if attrs[:private].nil?
+            attrs[:private] = parent.clone_should_be_private?(current_user, current_ability)
+          end
         elsif current_user && attrs[:private].nil?
           attrs[:private] = current_user.private_scenarios?
         end
@@ -192,7 +197,7 @@ module Api
       # POST /api/v3/scenarios/interpolate
       def interpolate
         @interpolated = Scenario::YearInterpolator.call(
-          @scenario, params.require(:end_year).to_i, current_user
+          @scenario, params.require(:end_year).to_i, current_user, current_ability
         )
 
         Scenario.transaction do
@@ -276,7 +281,12 @@ module Api
       #
       # Deletes a scenario.
       def destroy
-        current_user.scenarios.find(params[:id]).destroy
+        if Settings.scenario_access_grants_only
+          @scenario.destroy
+        else
+          current_user.scenarios.find(params[:id]).destroy
+        end
+
         head :ok
       end
 
@@ -412,7 +422,14 @@ module Api
 
         attrs[:descale] = true if attrs[:descale] == 'true'
 
-        attrs
+        Settings.scenario_access_grants_only ? attrs.except(*ROLE_PARAMS) : attrs
+      end
+
+      # The scenarios the user lists as their own: by role, or by creator
+      def listed_scenarios
+        return Scenario.viewable_by?(current_user) unless Settings.scenario_access_grants_only
+
+        Scenario.where(creator_id: current_user.id)
       end
 
       # Internal: All the user values for a scenario, filtered.
