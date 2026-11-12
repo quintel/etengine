@@ -35,6 +35,7 @@ Rails.application.routes.draw do
 
         collection do
           post :merge
+          put  :bind
           get  :templates
           get  'versions', to: 'scenario_version_tags#index'
         end
