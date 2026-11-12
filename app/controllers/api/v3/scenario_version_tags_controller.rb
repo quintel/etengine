@@ -7,6 +7,11 @@ module Api
 
       before_action :validate_scenario_version_tag, only: :update
 
+      # Without a scenario_users check in the model, tagging needs write
+      before_action(only: :create, if: -> { Settings.scenario_access_grants_only }) do
+        authorize!(:update, scenario)
+      end
+
       # GET api/v3/scenarios/:id/version
       def show
         render json: ScenarioVersionSerializer.new(scenario)
