@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_03_21_121642) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_05_130000) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 191, null: false
     t.string "record_type", limit: 191, null: false
@@ -124,7 +124,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_21_121642) do
     t.text "balanced_values", size: :medium
     t.text "metadata"
     t.text "active_couplings", size: :medium
+    t.boolean "bound", default: false, null: false
+    t.integer "creator_id", comment: "Temporary until session handles are implemented"
     t.index ["created_at"], name: "index_scenarios_on_created_at"
+    t.index ["creator_id"], name: "index_scenarios_on_creator_id"
   end
 
   create_table "sessions", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|

@@ -62,8 +62,10 @@ class Scenario < ApplicationRecord
   scope :in_start_menu, ->    { where(:in_start_menu => true) }
   scope :by_id,         ->(q) { where(id: q) }
 
+  scope :unprotected,   -> { where(bound: false, keep_compatible: false) }
+
   # Expired ApiScenario will be deleted by rake task :clean_expired_api_scenarios
-  scope :expired,       -> { where(['updated_at < ?', Date.today - 14]) }
+  scope :expired,       -> { unprotected.where(['updated_at < ?', Date.today - 14]) }
   scope :recent,        -> { order('created_at DESC').limit(30) }
   scope :recent_first,  -> { order('created_at DESC') }
 
@@ -72,16 +74,9 @@ class Scenario < ApplicationRecord
   # let's define the conditions that make a scenario deletable. The table has
   # thousands of stale records.
   scope(:deletable, lambda do
-    where(%q[
-        in_start_menu IS NULL
-        AND keep_compatible = ?
-        AND scenario_users IS NULL
-        AND (
-          user_values IS NULL
-          OR user_values = "--- !map:ActiveSupport::HashWithIndifferentAccess {}\n\n"
-        )
-        AND updated_at < ?
-      ], false, false, Time.zone.today - 5)
+    unprotected
+      .where(user_values: nil)
+      .where(['updated_at < ?', Time.zone.today - 5])
   end)
 
   attr_accessor :input_errors, :ordering, :display_group, :descale

@@ -1,7 +1,6 @@
 module Api
   module V3
     class ScenariosController < BaseController
-
       rescue_from Scenario::YearInterpolator::InterpolationError do |ex|
         render json: { errors: [ex.message] }, status: :bad_request
       end
@@ -173,6 +172,7 @@ module Api
         @scenario.attributes = attrs
 
         if current_user.present?
+          @scenario.creator_id = current_user.id
           @scenario.scenario_users << ScenarioUser.new(
             scenario: @scenario,
             user: current_user,
@@ -280,6 +280,25 @@ module Api
         head :ok
       end
 
+      # PUT /api/v3/scenarios/bind
+      #
+      # Sets or clears the bound flag on several scenarios at once. Only MyETM may call it.
+      # Responds with the IDs that match no scenario.
+      def bind
+        authorize!(:bind, Scenario)
+
+        bound = params.fetch(:bound)
+        unless bound.in?([true, false])
+          raise ActionController::BadRequest, 'bound must be true or false'
+        end
+
+        ids = Array(params.require(:ids)).map(&:to_i)
+        scenarios = Scenario.where(id: ids)
+        scenarios.update_all(bound:)
+
+        render json: { missing: ids - scenarios.pluck(:id) }
+      end
+
       # GET /api/v3/scenarios/merge
       #
       # Merges two or more scenarios.
@@ -295,6 +314,7 @@ module Api
 
         if (merger = ScenarioMerger.from_params(merge_params)).valid?
           scenario = merger.merged_scenario
+          scenario.creator_id = current_user&.id
           scenario.save
 
           # redirect_to api_v3_scenario_url(scenario)
