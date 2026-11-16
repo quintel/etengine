@@ -50,5 +50,5 @@ identity:
   client_secret: <%= ENV['IDENTITY_CLIENT_SECRET'] %>
   client_uri: <%= ENV.fetch('IDENTITY_CLIENT_URI', 'http://localhost:3000') %>
 
-# Authorize a Session from the scenario_access claim in addition to scenario_users
-scenario_access_grants: <%= ENV.fetch('SCENARIO_ACCESS_GRANTS', 'false') == 'true' %>
+# Authorize Sessions from the scenario_access grant, the bound flag and creator_id, not scenario_users
+scenario_access_grants_only: <%= ENV.fetch('SCENARIO_ACCESS_GRANTS_ONLY', 'false') == 'true' %>

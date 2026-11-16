@@ -53,7 +53,9 @@ module Api
 
       def current_ability
         @current_ability ||=
-          if current_user
+          if Settings.scenario_access_grants_only
+            GrantAbility.new(decoded_token, current_user)
+          elsif current_user
             TokenAbility.new(decoded_token, current_user)
           else
             GuestAbility.new
