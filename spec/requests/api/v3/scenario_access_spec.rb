@@ -323,7 +323,13 @@ describe 'Scenario access granted by MyETM with API v3', :etsource_fixture do
       it 'points to MyETM' do
         get(path, headers:)
 
-        expect(response.parsed_body['errors'].first).to include('managed on the scenario in MyETM')
+        expect(response.parsed_body['errors'].first).to include('Manage scenario access in MyETM')
+      end
+
+      it 'announces the sunset on the 410' do
+        get(path, headers:)
+
+        expect(response.headers['Sunset']).to eq('Mon, 01 Mar 2027 00:00:00 GMT')
       end
     end
 

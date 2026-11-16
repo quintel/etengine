@@ -32,6 +32,10 @@ RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
         expect(response).to have_http_status(:ok)
       end
 
+      it 'announces the sunset' do
+        expect(response.headers['Sunset']).to eq('Mon, 01 Mar 2027 00:00:00 GMT')
+      end
+
       it 'returns a list of all users' do
         expect(JSON.parse(response.body)).to include(
           a_hash_including('user_id' => user.id, 'user_email' => nil, 'role' => 'scenario_owner')

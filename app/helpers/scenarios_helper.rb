@@ -5,8 +5,8 @@ module ScenariosHelper
     end
   end
 
-  def user_path(*)
-    "#{Settings.identity.issuer}/admin/users"
+  def myetm_admin_user_url(user_id)
+    "#{Settings.identity.issuer}/admin/user/#{user_id}"
   end
 
   def grouped_region_options

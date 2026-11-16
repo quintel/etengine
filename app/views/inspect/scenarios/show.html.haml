@@ -42,6 +42,16 @@
           - else
             %span.tag.gray Public
       %tr
+        %th Creator ID
+        %td
+          - if @scenario.creator_id
+            = link_to @scenario.creator_id, myetm_admin_user_url(@scenario.creator_id)
+          - else
+            %span.muted None
+      %tr
+        %th Bound
+        %td= @scenario.bound? ? 'Yes' : 'No'
+      %tr
         %th Compatibility
         %td= formatted_scenario_compatibility(@scenario)
       - if @scenario.coupled?
