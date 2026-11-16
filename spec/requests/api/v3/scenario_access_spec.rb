@@ -52,9 +52,9 @@ describe 'Scenario access granted by MyETM with API v3', :etsource_fixture do
     Scenario.find(response.parsed_body['id'])
   end
 
-  def read(scenario) = { 'read' => [scenario.id] }
+  def read(scenario, tag: Settings.version_tag) = { tag => { 'read' => [scenario.id] } }
 
-  def write(scenario) = { 'write' => [scenario.id] }
+  def write(scenario, tag: Settings.version_tag) = { tag => { 'write' => [scenario.id] } }
 
   context 'with grants only off' do
     let(:scenario) { create(:scenario, user: creator, private: true) }
@@ -101,6 +101,12 @@ describe 'Scenario access granted by MyETM with API v3', :etsource_fixture do
         update(scenario, user, write(scenario))
 
         expect(response).to have_http_status(:ok)
+      end
+
+      it "refuses a write granted on another Version's Session with the same ID" do
+        update(scenario, user, write(scenario, tag: '2025.01'))
+
+        expect(response).to have_http_status(:forbidden)
       end
     end
 

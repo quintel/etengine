@@ -12,7 +12,7 @@ module Api
     def initialize(token, user, legacy_access = nil)
       @scopes = token ? token[:scopes].to_s.split : []
       @user   = user
-      @access = legacy_access || ScenarioAccess.new(token && token[ScenarioAccess::CLAIM])
+      @access = legacy_access || granted_access(token)
 
       can :read, Scenario, private: false
       can :bind, Scenario if scope?('bind')
@@ -20,6 +20,11 @@ module Api
     end
 
     private
+
+    def granted_access(token)
+      claim = token && token[Identity::ScenarioAccess::CLAIM]
+      Identity::ScenarioAccess.new(claim, tag: Settings.version_tag)
+    end
 
     def allow_user
       return unless scope?('read')
