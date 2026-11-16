@@ -5,6 +5,7 @@ module Api
     class BaseController < ActionController::API
       include ActionController::MimeResponds
       include Identity::ResourceServer
+      include LegacyPatFallback
 
       rescue_from ActionController::ParameterMissing do |e|
         render json: { errors: [e.message] }, status: :bad_request
@@ -54,7 +55,7 @@ module Api
       def current_ability
         @current_ability ||=
           if Settings.scenario_access_grants_only
-            GrantAbility.new(decoded_token, current_user)
+            GrantAbility.new(decoded_token, current_user, legacy_pat_access)
           elsif current_user
             TokenAbility.new(decoded_token, current_user)
           else
