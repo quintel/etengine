@@ -33,7 +33,7 @@ gem 'kaminari'
 
 # Authentication and authorization
 gem 'cancancan', '~> 3.0'
-gem 'identity', ref: 'c7d54bc', github: 'quintel/identity_rails'
+gem 'identity', ref: 'eb5d139', github: 'quintel/identity_rails'
 
 gem 'activerecord-session_store'
 gem 'sidekiq'
