@@ -293,6 +293,7 @@ module Api
       # PUT /api/v3/scenarios/bind
       #
       # Sets or clears the bound flag on several scenarios at once. Only MyETM may call it.
+      # Clearing it also clears keep_compatible, so cleanup can delete the released scenarios
       # Responds with the IDs that match no scenario.
       def bind
         authorize!(:bind, Scenario)
@@ -304,7 +305,7 @@ module Api
 
         ids = Array(params.require(:ids)).map(&:to_i)
         scenarios = Scenario.where(id: ids)
-        scenarios.update_all(bound:)
+        scenarios.update_all(bound ? { bound: } : { bound:, keep_compatible: false })
 
         render json: { missing: ids - scenarios.pluck(:id) }
       end
