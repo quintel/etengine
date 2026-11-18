@@ -3,7 +3,9 @@
 require 'spec_helper'
 
 describe 'APIv3 binding scenarios', :etsource_fixture do
-  let(:myetm_headers) { access_token_header(create(:user), 'public scenarios:bind') }
+  let(:myetm_headers) do
+    access_token_header(create(:user, admin: true), 'public scenarios:read scenarios:write scenarios:bind')
+  end
   let(:json) { response.parsed_body }
 
   let(:scenario) { create(:scenario) }
@@ -13,7 +15,7 @@ describe 'APIv3 binding scenarios', :etsource_fixture do
     put('/api/v3/scenarios/bind', params: { ids:, bound: }, headers:, as: :json)
   end
 
-  context 'with the bind scope' do
+  context 'with the bind scope, as an admin' do
     it 'binds every scenario' do
       bind([scenario.id, history.id], true)
 
@@ -65,6 +67,101 @@ describe 'APIv3 binding scenarios', :etsource_fixture do
       put('/api/v3/scenarios/bind', params: { bound: true }, headers: myetm_headers, as: :json)
 
       expect(response).to have_http_status(:bad_request)
+    end
+  end
+
+  context 'when binding for a user' do
+    let(:user) { create(:user) }
+
+    def bind_as_user(ids, bound, scenario_access: nil)
+      scopes = 'public scenarios:read scenarios:write scenarios:bind'
+      bind(ids, bound, headers: access_token_header(user, scopes, scenario_access:))
+    end
+
+    def someone_elses_session
+      create(:scenario, user: create(:user), private: true)
+    end
+
+    it 'refuses a scenario the user cannot update' do
+      session = someone_elses_session
+      bind_as_user([session.id], true)
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it 'lists the refused scenarios' do
+      session = someone_elses_session
+      bind_as_user([session.id], true)
+
+      expect(json).to eq('refused' => [session.id])
+    end
+
+    it 'leaves a refused scenario unbound' do
+      session = someone_elses_session
+      bind_as_user([session.id], true)
+
+      expect(session.reload).not_to be_bound
+    end
+
+    it 'refuses a scenario that is already bound' do
+      own_session = create(:scenario, user:, bound: true)
+      bind_as_user([own_session.id], true)
+
+      expect(json).to eq('refused' => [own_session.id])
+    end
+
+    it 'refuses an ID that matches no scenario' do
+      bind_as_user([-1], true)
+
+      expect(json).to eq('refused' => [-1])
+    end
+
+    it 'binds a scenario the user created' do
+      own_session = create(:scenario, user:, private: true)
+      bind_as_user([own_session.id], true)
+
+      expect(own_session.reload).to be_bound
+    end
+
+    it 'binds nothing when any scenario is refused' do
+      own_session = create(:scenario, user:)
+      bind_as_user([own_session.id, someone_elses_session.id], true)
+
+      expect(own_session.reload).not_to be_bound
+    end
+
+    it 'unbinds a scenario the user cannot update' do
+      session = someone_elses_session
+      session.update!(bound: true)
+      bind_as_user([session.id], false)
+
+      expect(session.reload).not_to be_bound
+    end
+
+    context 'with access grants only' do
+      before { Settings.scenario_access_grants_only = true }
+      after { Settings.scenario_access_grants_only = false }
+
+      it 'binds an unbound scenario the user created' do
+        own_session = create(:scenario, creator_id: user.id, private: true)
+        bind_as_user([own_session.id], true)
+
+        expect(own_session.reload).to be_bound
+      end
+
+      it 'refuses a scenario created by someone else' do
+        session = create(:scenario, creator_id: create(:user).id, private: true)
+        bind_as_user([session.id], true)
+
+        expect(json).to eq('refused' => [session.id])
+      end
+
+      it 'refuses a bound scenario the token grants write access to' do
+        session = create(:scenario, bound: true, private: true)
+        bind_as_user([session.id], true, scenario_access: { Settings.version_tag => { 'write' => [session.id] } })
+
+        expect(json).to eq('refused' => [session.id])
+      end
     end
   end
 
