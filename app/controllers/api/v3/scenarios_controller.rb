@@ -1,6 +1,8 @@
 module Api
   module V3
     class ScenariosController < BaseController
+      # Roles MyETM sends with a save. Ignored with grants only, as nothing reads them.
+      ROLE_PARAMS = %i[set_preset_roles saved_scenario_users].freeze
 
       rescue_from Scenario::YearInterpolator::InterpolationError do |ex|
         render json: { errors: [ex.message] }, status: :bad_request
@@ -43,7 +45,7 @@ module Api
 
         scenarios = Scenario
           .accessible_by(current_ability)
-          .viewable_by?(current_user)
+          .merge(listed_scenarios)
           .order(created_at: :desc)
           .page((params[:page].presence || 1).to_i)
           .per((params[:limit].presence || 25).to_i.clamp(1, 100))
@@ -140,7 +142,9 @@ module Api
           attrs.delete(:user_values)
 
           # Inherit the visibility if no explicity visibility is set.
-          attrs[:private] = parent.clone_should_be_private?(current_user) if attrs[:private].nil?
+          if attrs[:private].nil?
+            attrs[:private] = parent.clone_should_be_private?(current_user, current_ability)
+          end
         elsif current_user && attrs[:private].nil?
           attrs[:private] = current_user.private_scenarios?
         end
@@ -173,6 +177,7 @@ module Api
         @scenario.attributes = attrs
 
         if current_user.present?
+          @scenario.creator_id = current_user.id
           @scenario.scenario_users << ScenarioUser.new(
             scenario: @scenario,
             user: current_user,
@@ -192,7 +197,7 @@ module Api
       # POST /api/v3/scenarios/interpolate
       def interpolate
         @interpolated = Scenario::YearInterpolator.call(
-          @scenario, params.require(:end_year).to_i, current_user
+          @scenario, params.require(:end_year).to_i, current_user, current_ability
         )
 
         Scenario.transaction do
@@ -276,8 +281,33 @@ module Api
       #
       # Deletes a scenario.
       def destroy
-        current_user.scenarios.find(params[:id]).destroy
+        if Settings.scenario_access_grants_only
+          @scenario.destroy
+        else
+          current_user.scenarios.find(params[:id]).destroy
+        end
+
         head :ok
+      end
+
+      # PUT /api/v3/scenarios/bind
+      #
+      # Sets or clears the bound flag on several scenarios at once. Only MyETM may call it.
+      # Clearing it also clears keep_compatible, so cleanup can delete the released scenarios
+      # Responds with the IDs that match no scenario. A user binds only unbound scenarios they may
+      # update; otherwise nothing is bound and the response lists the refused IDs.
+      def bind
+        authorize!(:bind, Scenario)
+
+        bound = bound_param
+        ids = Array(params.require(:ids)).map(&:to_i)
+        scenarios = Scenario.where(id: ids)
+
+        refused = bound ? refused_binds(ids, scenarios) : []
+        return render(json: { refused: }, status: :unprocessable_entity) if refused.any?
+
+        scenarios.update_all(bound ? { bound: } : { bound:, keep_compatible: false })
+        render json: { missing: ids - scenarios.pluck(:id) }
       end
 
       # GET /api/v3/scenarios/merge
@@ -295,6 +325,7 @@ module Api
 
         if (merger = ScenarioMerger.from_params(merge_params)).valid?
           scenario = merger.merged_scenario
+          scenario.creator_id = current_user&.id
           scenario.save
 
           # redirect_to api_v3_scenario_url(scenario)
@@ -352,6 +383,25 @@ module Api
         @scenario = Scenario.find_for_calculation(params[:id])
       end
 
+      def bound_param
+        bound = params.fetch(:bound)
+        return bound if bound.in?([true, false])
+
+        raise ActionController::BadRequest, 'bound must be true or false'
+      end
+
+      # The IDs of these scenarios the caller may not bind
+      def refused_binds(ids, scenarios)
+        return [] if current_user&.admin?
+
+        unbound = scenarios.where(bound: false).select(:id, :bound, :private, :creator_id)
+        ids - updatable_ids(unbound)
+      end
+
+      def updatable_ids(scenarios)
+        scenarios.select { |scenario| can?(:update, scenario) }.map(&:id)
+      end
+
       # Internal: All the request parameters, filtered.
       #
       # Returns a ActionController::Parameters
@@ -392,7 +442,14 @@ module Api
 
         attrs[:descale] = true if attrs[:descale] == 'true'
 
-        attrs
+        Settings.scenario_access_grants_only ? attrs.except(*ROLE_PARAMS) : attrs
+      end
+
+      # The scenarios the user lists as their own: by role, or by creator
+      def listed_scenarios
+        return Scenario.viewable_by?(current_user) unless Settings.scenario_access_grants_only
+
+        Scenario.where(creator_id: current_user.id)
       end
 
       # Internal: All the user values for a scenario, filtered.

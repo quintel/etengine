@@ -62,8 +62,10 @@ class Scenario < ApplicationRecord
   scope :in_start_menu, ->    { where(:in_start_menu => true) }
   scope :by_id,         ->(q) { where(id: q) }
 
+  scope :unprotected,   -> { where(bound: false, keep_compatible: false) }
+
   # Expired ApiScenario will be deleted by rake task :clean_expired_api_scenarios
-  scope :expired,       -> { where(['updated_at < ?', Date.today - 14]) }
+  scope :expired,       -> { unprotected.where(['updated_at < ?', Date.today - 14]) }
   scope :recent,        -> { order('created_at DESC').limit(30) }
   scope :recent_first,  -> { order('created_at DESC') }
 
@@ -72,16 +74,9 @@ class Scenario < ApplicationRecord
   # let's define the conditions that make a scenario deletable. The table has
   # thousands of stale records.
   scope(:deletable, lambda do
-    where(%q[
-        in_start_menu IS NULL
-        AND keep_compatible = ?
-        AND scenario_users IS NULL
-        AND (
-          user_values IS NULL
-          OR user_values = "--- !map:ActiveSupport::HashWithIndifferentAccess {}\n\n"
-        )
-        AND updated_at < ?
-      ], false, false, Time.zone.today - 5)
+    unprotected
+      .where(user_values: nil)
+      .where(['updated_at < ?', Time.zone.today - 5])
   end)
 
   attr_accessor :input_errors, :ordering, :display_group, :descale
@@ -269,7 +264,7 @@ class Scenario < ApplicationRecord
   end
 
   def outdated?
-    !keep_compatible? && created_at < Scenario.default_migratable_date
+    !keep_compatible? && !bound? && created_at < Scenario.default_migratable_date
   end
 
   # Public: Given an input, returns the value of that input as it will be used
@@ -325,9 +320,11 @@ class Scenario < ApplicationRecord
   # Returns whether a scenario based on this one should be private.
   #
   # @param actor [User] The user who is creating the clone.
+  # @param ability [CanCan::Ability] The actor's ability, used when access comes from grants
   # @return [Boolean]
-  def clone_should_be_private?(actor)
+  def clone_should_be_private?(actor, ability = nil)
     return false unless actor
+    return granted_clone_private?(actor, ability) if Settings.scenario_access_grants_only
     return false if scenario_users.count.zero?
     return private if owner?(actor)
 
@@ -390,6 +387,10 @@ class Scenario < ApplicationRecord
 
   private
 
+  def granted_clone_private?(actor, ability)
+    ability&.can?(:update, self) ? private : actor.private_scenarios?
+  end
+
   def copy_roles_from_parent
     parent.scenario_users.each do |preset_user|
       if (existing_user = scenario_users.find_by(user: preset_user.user))
@@ -420,8 +421,12 @@ class Scenario < ApplicationRecord
   end
 
   def validate_visibility
-    if private? && scenario_users.map(&:role_id).none?(User::ROLES.key(:scenario_owner))
-      errors.add(:private, 'can not be true on an unowned scenario')
-    end
+    errors.add(:private, 'can not be true on an unowned scenario') if private? && !owned?
+  end
+
+  def owned?
+    return creator_id.present? || bound? if Settings.scenario_access_grants_only
+
+    scenario_users.map(&:role_id).include?(User::ROLES.key(:scenario_owner))
   end
 end

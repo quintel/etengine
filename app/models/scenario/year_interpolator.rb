@@ -4,14 +4,15 @@
 # values will be adjusted to linearly interpolate new values based on the year.
 class Scenario::YearInterpolator
 
-  def self.call(scenario, year, current_user = nil)
-    new(scenario, year, current_user).run
+  def self.call(scenario, year, current_user = nil, ability = nil)
+    new(scenario, year, current_user, ability).run
   end
 
-  def initialize(scenario, year, current_user)
+  def initialize(scenario, year, current_user, ability = nil)
     @scenario = scenario
     @year = year
     @current_user = current_user
+    @ability = ability
   end
 
   def run
@@ -26,7 +27,8 @@ class Scenario::YearInterpolator
     clone.user = @current_user if @current_user
     clone.reload unless clone.new_record?
 
-    clone.private = @scenario.clone_should_be_private?(@current_user)
+    clone.creator_id = @current_user&.id
+    clone.private = @scenario.clone_should_be_private?(@current_user, @ability)
 
     if @year != @scenario.end_year
       clone.user_values =

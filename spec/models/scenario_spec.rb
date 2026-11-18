@@ -7,6 +7,36 @@ describe Scenario do
 
   before { @scenario = described_class.new }
 
+  describe 'cleanup scopes' do
+    def stale_scenario(**attributes)
+      create(:scenario, updated_at: 30.days.ago, **attributes).tap do |scenario|
+        described_class.where(id: scenario.id).update_all(user_values: nil)
+      end
+    end
+
+    let!(:unbound) { stale_scenario }
+
+    before do
+      stale_scenario(bound: true)
+      stale_scenario(keep_compatible: true)
+    end
+
+    it 'expires only unbound Sessions not kept for migration' do
+      expect(described_class.expired).to contain_exactly(unbound)
+    end
+
+    it 'deletes only unbound Sessions not kept for migration' do
+      expect(described_class.deletable).to contain_exactly(unbound)
+    end
+
+    it 'deletes a stale Session with empty user values, but not one with user values' do
+      empty = create(:scenario, updated_at: 30.days.ago, user_values: {})
+      create(:scenario, updated_at: 30.days.ago, user_values: { 'households_number_of_inhabitants' => 1 })
+
+      expect(described_class.deletable).to contain_exactly(unbound, empty)
+    end
+  end
+
   describe '.find_for_calculation' do
     context 'when the scenario exists' do
       it 'returns the scenario' do
@@ -205,6 +235,42 @@ describe Scenario do
         scenario.update_attribute(:user_values, {})
         expect(subject).not_to include(scenario)
       end
+    end
+
+    context 'with a bound scenario that is not kept compatible' do
+      before { scenario.update(bound: true, keep_compatible: false) }
+
+      it 'includes recent scenarios' do
+        expect(subject).to include(scenario)
+      end
+
+      it 'includes scenarios updated prior to the "since" date' do
+        scenario.update_attribute(:updated_at, since - 1.hour)
+        expect(subject).to include(scenario)
+      end
+
+      it 'omits scenarios with NULL user_values' do
+        scenario.update_attribute(:user_values, nil)
+        expect(subject).not_to include(scenario)
+      end
+    end
+  end
+
+  describe '#outdated?' do
+    let(:scenario) { build(:scenario, created_at: 2.months.ago) }
+
+    it 'is outdated when old and unprotected' do
+      expect(scenario).to be_outdated
+    end
+
+    it 'is not outdated when kept compatible' do
+      scenario.keep_compatible = true
+      expect(scenario).not_to be_outdated
+    end
+
+    it 'is not outdated when bound' do
+      scenario.bound = true
+      expect(scenario).not_to be_outdated
     end
   end
 

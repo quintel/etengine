@@ -7,6 +7,16 @@ module Api
     class ScenarioUsersController < BaseController
       include UsesScenario
 
+      SUNSET = Date.new(2027, 3, 1).httpdate
+      RETIREMENT_NOTICE =
+        'Scenario users endpoints are deprecated and will be removed ' \
+        'at the end of February 2027. ' \
+        "Manage scenario access in MyETM: #{Settings.identity.issuer}".freeze
+
+      prepend_before_action :render_gone, if: -> { Settings.scenario_access_grants_only }
+      # Prepended after render_gone so it runs first and the 410 carries it as well
+      prepend_before_action :announce_sunset
+
       # Only scenario owners, having the delete authority, may manage scenario users
       before_action { authorize!(:destroy, @scenario) }
 
@@ -72,6 +82,15 @@ module Api
       end
 
       private
+
+      def render_gone
+        render status: :gone, json: { errors: [RETIREMENT_NOTICE] }
+      end
+
+      def announce_sunset
+        response.set_header('Sunset', SUNSET)
+        response.set_header('Deprecation-Notice', RETIREMENT_NOTICE)
+      end
 
       def scenario_user_params
         permitted_params[:scenario_users]
