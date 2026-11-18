@@ -294,19 +294,19 @@ module Api
       #
       # Sets or clears the bound flag on several scenarios at once. Only MyETM may call it.
       # Clearing it also clears keep_compatible, so cleanup can delete the released scenarios
-      # Responds with the IDs that match no scenario.
+      # Responds with the IDs that match no scenario. A user binds only unbound scenarios they may
+      # update; otherwise nothing is bound and the response lists the refused IDs.
       def bind
         authorize!(:bind, Scenario)
 
-        bound = params.fetch(:bound)
-        unless bound.in?([true, false])
-          raise ActionController::BadRequest, 'bound must be true or false'
-        end
-
+        bound = bound_param
         ids = Array(params.require(:ids)).map(&:to_i)
         scenarios = Scenario.where(id: ids)
-        scenarios.update_all(bound ? { bound: } : { bound:, keep_compatible: false })
 
+        refused = bound ? refused_binds(ids, scenarios) : []
+        return render(json: { refused: }, status: :unprocessable_entity) if refused.any?
+
+        scenarios.update_all(bound ? { bound: } : { bound:, keep_compatible: false })
         render json: { missing: ids - scenarios.pluck(:id) }
       end
 
@@ -381,6 +381,25 @@ module Api
 
       def find_scenario
         @scenario = Scenario.find_for_calculation(params[:id])
+      end
+
+      def bound_param
+        bound = params.fetch(:bound)
+        return bound if bound.in?([true, false])
+
+        raise ActionController::BadRequest, 'bound must be true or false'
+      end
+
+      # The IDs of these scenarios the caller may not bind
+      def refused_binds(ids, scenarios)
+        return [] if current_user&.admin?
+
+        unbound = scenarios.where(bound: false).select(:id, :bound, :private, :creator_id)
+        ids - updatable_ids(unbound)
+      end
+
+      def updatable_ids(scenarios)
+        scenarios.select { |scenario| can?(:update, scenario) }.map(&:id)
       end
 
       # Internal: All the request parameters, filtered.
