@@ -10,7 +10,7 @@ end
 gem 'bootsnap', require: false
 gem 'puma'
 
-gem 'rails',        '~> 8.1.0'
+gem 'rails',        '~> 8.1.4'
 gem 'jquery-rails', '~> 4.0'
 gem 'haml'
 # json 3 removes JSON.parse's create_additions option, used by sprockets 4.2 and execjs.
