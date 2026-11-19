@@ -25,6 +25,11 @@ module Qernel
         node_demand * output_slot.conversion
       end
 
+      # Internal: Producers only have an output capacity, on the slot of their demand carrier.
+      def installed_capacity(direction)
+        slot_capacity(output_slot) if direction == :output
+      end
+
       def output_slot
         carrier = @config.demand_carrier || @context.carrier
 

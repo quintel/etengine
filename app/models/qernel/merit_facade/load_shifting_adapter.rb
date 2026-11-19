@@ -41,6 +41,11 @@ module Qernel
         participant.first
       end
 
+      # Internal: The other participants only follow the main one, which holds the capacity.
+      def installed_capacity(direction)
+        flex_capacity(main_participant, direction)
+      end
+
       def producer_attributes
         attrs = super
         attrs[:limiting_curve] = limiting_curve

@@ -24,6 +24,12 @@ module Qernel
         participant.load_curve.max / output_capacity_per_unit
       end
 
+      # Internal: A backup covers any shortage, as its number of units is unlimited; it is sized to
+      # the largest shortage it covered.
+      def installed_capacity(direction)
+        peak_load(:output) if direction == :output
+      end
+
       def producer_attributes
         super.merge!(number_of_units: Float::INFINITY)
       end

@@ -117,6 +117,13 @@ module Qernel
         total_node_output_capacity || source_api.input_capacity
       end
 
+      # Internal: Its participants only replay the curve of the storage optimization and have no
+      # capacity, so the limits of the optimization are used. These include availability, which is
+      # the share of electric vehicles taking part in vehicle-to-grid (see FlexAdapter).
+      def installed_capacity(direction)
+        optimizing_storage_params[:"#{direction}_capacity"]
+      end
+
       def total_node_output_capacity
         source_api.try(@context.carrier_named('%s_output_capacity')) || source_api.output_capacity
       end

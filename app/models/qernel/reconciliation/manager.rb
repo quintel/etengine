@@ -58,6 +58,7 @@ module Qernel
       #
       # Returns nothing.
       def inject_values!
+        each_adapter(&:inject_installed_capacity!)
         each_adapter { |adapter| adapter.inject!(calculator) }
         nil
       end

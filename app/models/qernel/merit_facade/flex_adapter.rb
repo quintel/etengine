@@ -80,6 +80,21 @@ module Qernel
         output ? output.conversion : 1.0
       end
 
+      # Internal: Flexible technologies consume through their input and produce through their output
+      # capacity.
+      def installed_capacity(direction)
+        flex_capacity(participant, direction)
+      end
+
+      def flex_capacity(flex, direction)
+        per_unit = direction == :input ? flex.input_capacity_per_unit : flex.output_capacity_per_unit
+        capacity = per_unit * flex.number_of_units
+
+        # Electric vehicles take their units from all vehicles (the delegate); availability is the
+        # share of them which takes part in vehicle-to-grid.
+        @config.delegate.present? ? capacity * flex.availability : capacity
+      end
+
       def input_capacity
         cap = source_api.input_capacity || total_node_output_capacity
         cap * input_efficiency

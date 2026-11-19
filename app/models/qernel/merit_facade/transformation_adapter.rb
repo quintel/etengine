@@ -72,6 +72,13 @@ module Qernel
           source_api.input_capacity
       end
 
+      # Internal: Only the producing side is a must-run producer with a capacity; the consuming side
+      # follows a demand profile. The producer only exists when it was added to the order.
+      def installed_capacity(direction)
+        producer = @producer_participant
+        producer.output_capacity_per_unit * producer.number_of_units if direction == :output && producer
+      end
+
       def profile
         @context.curves.curve(@config.group, @node)
       end
