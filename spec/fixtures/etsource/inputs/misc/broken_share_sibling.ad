@@ -1,0 +1,8 @@
+# The healthy sibling of broken_share_input: updating it forces the
+# broken_group share group to be balanced and validated.
+- key = broken_share_sibling
+- share_group = broken_group
+- start_value = 100
+- min_value = 0
+- max_value = 100
+- query = 2 * 2
