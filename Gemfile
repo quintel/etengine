@@ -32,7 +32,7 @@ gem 'rack-cors',                      require: 'rack/cors'
 gem 'kaminari'
 
 # Authentication and authorization
-gem 'cancancan', '~> 3.0'
+gem 'cancancan', '~> 3.7'
 
 gem 'activerecord-session_store'
 gem 'solid_queue'
@@ -86,7 +86,7 @@ gem 'turbine-graph', '>=0.1',        require: 'turbine'
 gem 'mysql2'
 gem 'solid_cache'
 
-gem 'term-ansicolor', '1.0.7', require: false
+gem 'term-ansicolor', '1.11.3', require: false
 gem 'highline',                require: false
 
 # sentry gems
@@ -96,9 +96,9 @@ gem "sentry-rails"
 
 # opentelemetry gems
 gem 'opentelemetry-sdk', '~> 1.13'
-gem 'opentelemetry-exporter-otlp', '~> 0.34.1'
-gem 'opentelemetry-instrumentation-rack', '~> 0.31.1'
-gem 'opentelemetry-instrumentation-action_pack', '~> 0.18.0'
+gem 'opentelemetry-exporter-otlp', '~> 0.37.0'
+gem 'opentelemetry-instrumentation-rack', '~> 0.31.2'
+gem 'opentelemetry-instrumentation-action_pack', '~> 0.18.1'
 
 group :development do
   # gem 'quiet_assets'
@@ -114,7 +114,7 @@ group :test, :development do
   gem 'rspec-rails', '~> 7.0'
   gem 'watchr'
 
-  gem 'rubocop',             '~> 1.27', require: false
+  gem 'rubocop',             '~> 1.92', require: false
   gem 'rubocop-performance',            require: false
   gem 'rubocop-rails',                  require: false
   gem 'rubocop-rspec',                  require: false
