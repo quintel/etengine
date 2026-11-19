@@ -8,6 +8,9 @@ execution_time_limit:
   hours: 6
 blocks:
   - name: RSpec
+    # Skip the suite on the major-updates dashboard branches — never merged, so don't waste CI.
+    run:
+      when: "branch !~ '^dependabot/.+/major-updates-'"
     task:
       env_vars:
         - name: DATABASE_HOST

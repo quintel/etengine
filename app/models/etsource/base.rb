@@ -67,7 +67,7 @@ module Etsource
       archive = Rails.root.join('tmp').join("ets-#{ sha_id }.tar")
 
       commit.gcommit.archive(archive, format: 'tar')
-      system("tar -x -C '#{ @export_dir }' -f '#{ archive }'")
+      system('tar', '-x', '-C', @export_dir.to_s, '-f', archive.to_s)
 
       archive.delete
 

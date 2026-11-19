@@ -61,12 +61,12 @@
   >
     <%= render(SelectLocale::ItemComponent.new(
       selected: I18n.locale == :en,
-      href: url_for(params.permit!.merge(locale: 'en'))
+      href: url_for(params.permit!.merge(locale: 'en', only_path: true))
     ).with_content('English')) %>
 
     <%= render(SelectLocale::ItemComponent.new(
       selected: I18n.locale == :nl,
-      href: url_for(params.permit!.merge(locale: 'nl'))
+      href: url_for(params.permit!.merge(locale: 'nl', only_path: true))
     ).with_content('Nederlands')) %>
   </div>
 </div>
