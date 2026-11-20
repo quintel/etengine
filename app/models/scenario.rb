@@ -19,9 +19,6 @@ class Scenario < ApplicationRecord
   serialize  :active_couplings, type: Array, coder: MessagePack
   serialize  :metadata, type: Hash, coder: MessagePack
 
-  has_many   :scenario_users, dependent: :destroy
-  has_many   :users, through: :scenario_users
-
   belongs_to :parent, class_name: 'Scenario', foreign_key: :preset_scenario_id, optional: true
 
   has_one    :preset_scenario, foreign_key: 'preset_scenario_id', class_name: 'Scenario'
@@ -134,30 +131,6 @@ class Scenario < ApplicationRecord
     end
 
     where(id:).with_attachments.first!
-  end
-
-  def self.owned_by?(user)
-    joins(:scenario_users)
-      .where(
-        'scenario_users.user_id': user.id,
-        'scenario_users.role_id': User::ROLES.key(:scenario_owner)
-      )
-  end
-
-  def self.collaborated_by?(user)
-    joins(:scenario_users)
-      .where(
-        'scenario_users.user_id': user.id,
-        'scenario_users.role_id': User::ROLES.key(:scenario_collaborator)..
-      )
-  end
-
-  def self.viewable_by?(user)
-    joins(:scenario_users)
-      .where(
-        'scenario_users.user_id': user.id,
-        'scenario_users.role_id': User::ROLES.key(:scenario_viewer)..
-      )
   end
 
   def area
@@ -321,92 +294,18 @@ class Scenario < ApplicationRecord
   # Returns whether a scenario based on this one should be private.
   #
   # @param actor [User] The user who is creating the clone.
-  # @param ability [CanCan::Ability] The actor's ability, used when access comes from grants
+  # @param ability [CanCan::Ability] The actor's ability
   # @return [Boolean]
   def clone_should_be_private?(actor, ability = nil)
     return false unless actor
-    return granted_clone_private?(actor, ability) if Settings.scenario_access_grants_only
-    return false if scenario_users.count.zero?
-    return private if owner?(actor)
 
-    actor.private_scenarios?
-  end
-
-  def owner?(user)
-    scenario_users.find_by(user:, role_id: User::ROLES.key(:scenario_owner))
-  end
-
-  def collaborator?(user)
-    scenario_users.find_by(user:, role_id: User::ROLES.key(:scenario_collaborator)..)
-  end
-
-  # Convenience method to quickly set the owner for a scenario, e.g. when creating it as
-  # Scenario.create(user: User). Only works when no users are associated yet.
-  def user=(user)
-    return if user.blank? || scenario_users.count.positive?
-
-    return unless valid?
-
-    ScenarioUser.create(
-      scenario: self,
-      user:,
-      role_id: User::ROLES.key(:scenario_owner)
-    )
-  end
-
-  # Removes all ScenarioUsers without validation. Used only for specs.
-  #
-  # Use delete_all to avoid the before_destroy callback on ScenarioUser
-  def delete_all_users
-    scenario_users.delete_all
-  end
-
-  def copy_preset_roles
-    return unless parent
-
-    copy_roles_from_parent
-  end
-
-  # Upserts ScenarioUser records from an explicit list of user params. Used
-  # when MyETM pushes a SavedScenario's roles onto the underlying session.
-  def sync_users_from_params(user_params)
-    user_params.each do |entry|
-      entry = entry.with_indifferent_access
-
-      if (existing = find_scenario_user_by(entry))
-        existing.role_id = entry[:role_id]
-        existing.save(validate: false)
-      else
-        scenario_users.create!(
-          user_id: entry[:user_id].presence,
-          user_email: entry[:user_email].presence,
-          role_id: entry[:role_id]
-        )
-      end
-    end
+    granted_clone_private?(actor, ability)
   end
 
   private
 
   def granted_clone_private?(actor, ability)
     ability&.can?(:update, self) ? private : actor.private_scenarios?
-  end
-
-  def copy_roles_from_parent
-    parent.scenario_users.each do |preset_user|
-      if (existing_user = scenario_users.find_by(user: preset_user.user))
-        existing_user.role_id = preset_user.role_id
-        existing_user.save(validate: false)
-      else
-        scenario_users.create(user: preset_user.user, role_id: preset_user.role_id)
-      end
-    end
-  end
-
-  def find_scenario_user_by(entry)
-    return scenario_users.find_by(user_id: entry[:user_id]) if entry[:user_id]
-
-    scenario_users.find_by(user_email: entry[:user_email]) if entry[:user_email]
   end
 
   # Validation method for when a user sets their metadata.
@@ -426,8 +325,6 @@ class Scenario < ApplicationRecord
   end
 
   def owned?
-    return creator_id.present? || bound? if Settings.scenario_access_grants_only
-
-    scenario_users.map(&:role_id).include?(User::ROLES.key(:scenario_owner))
+    creator_id.present? || bound?
   end
 end

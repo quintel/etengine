@@ -35,13 +35,10 @@ describe 'Legacy PAT fallback with API v3' do
   end
 
   before do
-    Settings.scenario_access_grants_only = true
     Rails.cache.clear
     allow(Faraday).to receive(:new).and_yield(myetm).and_return(myetm)
     allow(myetm).to receive(:get).and_return(grant('read'))
   end
-
-  after { Settings.scenario_access_grants_only = false }
 
   context 'when MyETM grants write' do
     before { allow(myetm).to receive(:get).and_return(grant('write')) }
@@ -211,13 +208,6 @@ describe 'Legacy PAT fallback with API v3' do
     it 'skips a PAT in the access_token param' do
       access_token = user_pat['Authorization'].delete_prefix('Bearer ')
       get("/api/v3/scenarios/#{scenario.id}", params: { access_token: })
-
-      expect(Faraday).not_to have_received(:new)
-    end
-
-    it 'skips everything with grants only off' do
-      Settings.scenario_access_grants_only = false
-      show
 
       expect(Faraday).not_to have_received(:new)
     end

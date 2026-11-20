@@ -139,9 +139,6 @@ describe 'APIv3 binding scenarios', :etsource_fixture do
     end
 
     context 'with access grants only' do
-      before { Settings.scenario_access_grants_only = true }
-      after { Settings.scenario_access_grants_only = false }
-
       it 'binds an unbound scenario the user created' do
         own_session = create(:scenario, creator_id: user.id, private: true)
         bind_as_user([own_session.id], true)

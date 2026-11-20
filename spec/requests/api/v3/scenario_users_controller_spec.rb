@@ -2,6 +2,8 @@
 
 require 'spec_helper'
 
+
+# TODO: check it returns a gone!
 RSpec.describe 'Api::V3::ScenarioUsers', type: :request, api: true do
   let(:user) { create(:user) }
   let!(:scenario) { create(:scenario, user:) }

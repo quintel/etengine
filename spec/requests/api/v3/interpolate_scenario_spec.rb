@@ -114,10 +114,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       expect(response_data).to include('private' => true)
     end
 
-    it 'sets the scenario owner' do
+    it 'sets the scenario creator' do
       scenario = Scenario.last
-      expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user:).role_id).to eq(3)
+      expect(scenario.creator_id).to eq(user.id)
     end
   end
 
@@ -150,8 +149,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     it 'sets the scenario owner' do
       scenario = Scenario.last
-      expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user:).role_id).to eq(3)
+      expect(scenario.creator_id).to eq(user.id)
     end
   end
 

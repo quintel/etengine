@@ -87,10 +87,6 @@ module ScenarioPacker
       end
 
       scenario.creator_id = user.id
-      scenario.scenario_users.build(
-        user:,
-        role_id: User::ROLES.key(:scenario_owner)
-      )
 
       Success(scenario)
     rescue StandardError => e

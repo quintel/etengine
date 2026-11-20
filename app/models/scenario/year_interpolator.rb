@@ -84,8 +84,6 @@ class Scenario::YearInterpolator
     clone.end_year = @year
     clone.source   = @scenario.source
 
-    clone.scenario_users.destroy_all
-    clone.user = @user if @user
     clone.reload unless clone.new_record?
 
     clone.creator_id = @user&.id

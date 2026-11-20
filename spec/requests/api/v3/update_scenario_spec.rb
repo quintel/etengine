@@ -103,11 +103,9 @@ describe 'Updating a scenario with API v3' do
       scenario.update(user: user)
 
       second_user = create(:user)
-      create(:scenario_user, user: second_user, scenario: scenario, role_id: 2)
 
       scenario.scenario_version_tag = create(
         :scenario_version_tag,
-        scenario: scenario,
         user: second_user
       )
 
@@ -165,7 +163,6 @@ describe 'Updating a scenario with API v3' do
     let(:read_params) { { gqueries: %w[bar_demand], autobalance: true, force: true } }
 
     before do
-      create(:scenario_user, scenario:, user: viewer, role_id: User::ROLES.key(:scenario_viewer))
       create(:scenario_version_tag, scenario:, user: owner)
       scenario.update!(updated_at: 1.day.ago)
     end
@@ -190,7 +187,7 @@ describe 'Updating a scenario with API v3' do
 
       it 'refuses a reset from a viewer' do
         expect do
-          update_scenario(params: { reset: true }, headers: access_token_header(viewer, :write))
+          update_scenario(params: { reset: true }, headers: access_token_header(viewer, :read))
         end.not_to(change { stored_state })
 
         expect(response).to have_http_status(:forbidden)

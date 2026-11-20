@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Api
-  # Describes the abilities of anyone using the API with Settings.scenario_access_grants_only on.
-  # Access comes from the token's grant, the bound flag and creator_id, never scenario_users.
+  # Describes the abilities of anyone using the API.
+  # Access comes from the token's grant, the bound flag and creator_id.
   # Everyone can read public scenarios, and guests (no token) can write to unbound public ones.
   # Only admins delete, and only MyETM binds.
   class GrantAbility

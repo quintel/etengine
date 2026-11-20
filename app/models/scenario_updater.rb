@@ -29,7 +29,7 @@ class ScenarioUpdater
     validated     = yield validate(scenario_data)
     processed     = yield process(scenario_data, validated)
     mutated       = yield apply(scenario_data, processed)
-    finalized     = yield post_save(scenario_data, mutated)
+    finalized     = yield post_save(mutated)
 
     Success(finalized)
   rescue RuntimeError => e
@@ -73,10 +73,8 @@ class ScenarioUpdater
   end
 
   # Post-save
-  def post_save(scenario_data, persisted)
-    set_preset_roles     = truthy?(scenario_data[:set_preset_roles])
-    saved_scenario_users = scenario_data[:saved_scenario_users]
-    _post_saved          = yield post_save_operations(set_preset_roles, saved_scenario_users)
+  def post_save(persisted)
+    _post_saved = yield post_save_operations
     Success(persisted)
   end
 
@@ -149,8 +147,8 @@ class ScenarioUpdater
     service(:PersistScenario).call(scenario, attributes, skip_validation)
   end
 
-  def post_save_operations(set_preset_roles, saved_scenario_users)
-    service(:PostSaveOperations).call(scenario, set_preset_roles, saved_scenario_users, current_user)
+  def post_save_operations
+    service(:PostSaveOperations).call(scenario, current_user)
   end
 
   # Helper to instantiate services

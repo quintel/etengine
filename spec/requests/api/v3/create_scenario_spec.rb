@@ -107,10 +107,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       expect(response.status).to eq(200)
     end
 
-    it 'sets a scenario owner' do
+    it 'sets a scenario creator' do
       scenario = Scenario.last
-      expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
+      expect(scenario.creator_id).to eq(user.id)
     end
   end
 
@@ -247,10 +246,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       expect(json['private']).to be(true)
     end
 
-    it 'sets an owner of the new scenario' do
+    it 'sets an creator of the new scenario' do
       scenario = Scenario.last
-      expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
+      expect(scenario.creator_id).to eq(user.id)
     end
   end
 
@@ -272,10 +270,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       expect(json['private']).to be(true)
     end
 
-    it 'sets an owner of the new scenario' do
+    it 'sets an creator of the new scenario' do
       scenario = Scenario.last
-      expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
+      expect(scenario.creator_id).to eq(user.id)
     end
   end
 
@@ -299,8 +296,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     it 'sets an owner of the new scenario' do
       scenario = Scenario.last
-      expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
+      expect(scenario.creator_id).to eq(user.id)
     end
   end
 
@@ -321,8 +317,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     it 'sets an owner of the new scenario' do
       scenario = Scenario.last
-      expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
+      expect(scenario.creator_id).to eq(user.id)
     end
   end
 
@@ -347,8 +342,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     it 'sets an owner of the new scenario' do
       scenario = Scenario.last
-      expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
+      expect(scenario.creator_id).to eq(user.id)
     end
   end
 
@@ -373,8 +367,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     it 'sets an owner of the new scenario' do
       scenario = Scenario.last
-      expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
+      expect(scenario.creator_id).to eq(user.id)
     end
   end
 
@@ -399,8 +392,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     it 'sets an owner of the new scenario' do
       scenario = Scenario.last
-      expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
+      expect(scenario.creator_id).to eq(user.id)
     end
   end
 
