@@ -64,6 +64,21 @@ module Qernel
       # Returns nothing.
       def inject!(_calculator); end
 
+      # Public: Sets the installed input and output capacity of the participant on the node,
+      # as `<carrier>_<direction>_installed_capacity`.
+      #
+      # Returns nothing.
+      def inject_installed_capacity!
+        @node.dataset_set(
+          :"#{@context.carrier}_input_installed_capacity",
+          installed_input_capacity
+        )
+        @node.dataset_set(
+          :"#{@context.carrier}_output_installed_capacity",
+          installed_output_capacity
+        )
+      end
+
       # Public: Performs actions prior to the recalculation of the graph triggered by Causality.
       #
       # Note that most adapters will not have been configured - let alone calculated - at this
@@ -80,6 +95,27 @@ module Qernel
 
       def calculate_carrier_demand
         raise NotImplementedError
+      end
+
+      # Internal: The installed capacity of the participant in the given direction.
+      #
+      # Storage, import, export and transformation follow the balance of the carrier and have no
+      # capacity of their own; returns nil so that the peak is used instead.
+      def installed_input_capacity
+        nil
+      end
+
+      def installed_output_capacity
+        nil
+      end
+
+      # Internal: Typical input capacity x conversion of the slot x number of units.
+      # Used for installed capacity injection
+      def slot_capacity(slot)
+        input_capacity = @node.node_api.input_capacity
+        return unless input_capacity&.positive?
+
+        slot.conversion * input_capacity * @node.node_api.number_of_units
       end
 
       # Internal: Defines when in the time_resolve calculation to create the

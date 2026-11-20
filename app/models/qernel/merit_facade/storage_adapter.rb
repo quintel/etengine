@@ -58,6 +58,18 @@ module Qernel
         Merit::Flex::Storage
       end
 
+      # Internal: Electric vehicles take their units from the delegate;
+      # availability is the share of them which takes part in vehicle-to-grid.
+      def installed_input_capacity
+        capacity = super
+        @config.delegate.present? ? capacity * participant.availability : capacity
+      end
+
+      def installed_output_capacity
+        capacity = super
+        @config.delegate.present? ? capacity * participant.availability : capacity
+      end
+
       # Internal: Storage with two outputs uses one of the outputs to dump unused energy from the
       # reserve.
       #

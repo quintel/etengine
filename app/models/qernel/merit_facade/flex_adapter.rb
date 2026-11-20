@@ -80,6 +80,16 @@ module Qernel
         output ? output.conversion : 1.0
       end
 
+      # Internal: Flexible technologies consume through their input and produce through their output
+      # capacity.
+      def installed_input_capacity
+        participant.input_capacity_per_unit * participant.number_of_units
+      end
+
+      def installed_output_capacity
+        participant.output_capacity_per_unit * participant.number_of_units
+      end
+
       def input_capacity
         cap = source_api.input_capacity || total_node_output_capacity
         cap * input_efficiency

@@ -36,6 +36,22 @@ module Qernel
         raise NotImplementedError
       end
 
+      # Public: Sets the installed input and output capacity of the participant on the node if
+      # calcuable, as `<carrier>_<direction>_installed_capacity`. Not used in calculation.
+      #
+      # CHECK THIS: "Must be called before #inject!, which may change the attributes the capacity is based on
+      # (such as conversions).""
+      def inject_installed_capacity!
+        target_api.dataset_set(
+          :"#{@context.carrier}_input_installed_capacity",
+          installed_input_capacity
+        )
+        target_api.dataset_set(
+          :"#{@context.carrier}_output_installed_capacity",
+          installed_output_capacity
+        )
+      end
+
       # Internal: Determines whether the participant has any capacity; if not,
       # the participant will not actually be added to the merit order, speeding
       # up calculation times.
@@ -46,6 +62,23 @@ module Qernel
       end
 
       private
+
+      # Internal: The installed input capacity of the participant.
+      def installed_input_capacity
+        nil
+      end
+
+      # Internal: The installed output capacity of the participant.
+      def installed_output_capacity
+        nil
+      end
+
+      # Internal: The peak load of the participant in the given direction.
+      # Merit load curves are negative for consumption and positive for production.
+      def peak_load(direction)
+        curve = participant.load_curve.to_a
+        direction == :input ? -[curve.min, 0.0].min : [curve.max, 0.0].max
+      end
 
       # Internal: Given a Merit order participant +type+ and the associated
       # Node, +node+, from the graph, returns a hash of attributes required

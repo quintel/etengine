@@ -26,6 +26,11 @@ module Qernel
         node_demand * input_slot.conversion
       end
 
+      # Internal: Consumers only have an input capacity, on the slot of their demand carrier.
+      def installed_input_capacity
+        slot_capacity(input_slot)
+      end
+
       def input_slot
         carrier = @config.demand_carrier || @context.carrier
 
