@@ -26,8 +26,8 @@ module Qernel
       end
 
       # Internal: Producers only have an output capacity, on the slot of their demand carrier.
-      def installed_capacity(direction)
-        slot_capacity(output_slot) if direction == :output
+      def installed_output_capacity
+        slot_capacity(output_slot)
       end
 
       def output_slot

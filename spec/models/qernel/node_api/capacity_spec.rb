@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Qernel::NodeApi::Capacity do
+RSpec.describe Qernel::NodeApi::InstalledCapacity do
   let(:builder) do
     TestGraphBuilder.new.tap do |builder|
       builder.add(:plant, demand: 100, typical_input_capacity: 2.0, number_of_units: 10.0)

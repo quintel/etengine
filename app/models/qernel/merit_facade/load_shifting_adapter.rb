@@ -42,8 +42,12 @@ module Qernel
       end
 
       # Internal: The other participants only follow the main one, which holds the capacity.
-      def installed_capacity(direction)
-        flex_capacity(main_participant, direction)
+      def installed_input_capacity
+        main_participant.input_capacity_per_unit * main_participant.number_of_units
+      end
+
+      def installed_output_capacity
+        main_participant.output_capacity_per_unit * main_participant.number_of_units
       end
 
       def producer_attributes

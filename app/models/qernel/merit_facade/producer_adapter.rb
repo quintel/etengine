@@ -106,9 +106,9 @@ module Qernel
         participant.number_of_units
       end
 
-      # Internal: Producers (dispatchable, must-run and volatile) only have an output capacity.
-      def installed_capacity(direction)
-        participant.output_capacity_per_unit * participant.number_of_units if direction == :output
+      # Internal: Producers only have an output capacity.
+      def installed_output_capacity
+        participant.output_capacity_per_unit * participant.number_of_units
       end
 
       def install_demand!

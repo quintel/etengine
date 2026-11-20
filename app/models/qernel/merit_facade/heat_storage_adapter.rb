@@ -40,10 +40,10 @@ module Qernel
         @config.group == :infinite
       end
 
-      # Internal: Infinite storage stores all excess, as its input capacity is unlimited; its
-      # installed input capacity is the largest excess it stored.
-      def installed_capacity(direction)
-        direction == :input && infinite_storage? ? peak_load(:input) : super
+      # Internal: Infinite storage stores all excess, as its input capacity is unlimited.
+      # The installed input capacity equals the largest excess it stored.
+      def installed_input_capacity
+        infinite_storage? ? peak_load(:input) : super
       end
 
       # Internal: Sets demand and related attributes on the target API. Determines demand using the

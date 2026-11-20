@@ -64,17 +64,19 @@ module Qernel
       # Returns nothing.
       def inject!(_calculator); end
 
-      # Public: Sets the installed input and output capacity of the participant on the node, in MW,
-      # as `<carrier>_<direction>_installed_capacity`. Read by NodeApi::Capacity for the data
-      # exports; not used in the calculation.
+      # Public: Sets the installed input and output capacity of the participant on the node,
+      # as `<carrier>_<direction>_installed_capacity`.
       #
       # Returns nothing.
       def inject_installed_capacity!
-        %i[input output].each do |direction|
-          @node.dataset_set(
-            :"#{@context.carrier}_#{direction}_installed_capacity", installed_capacity(direction)
-          )
-        end
+        @node.dataset_set(
+          :"#{@context.carrier}_input_installed_capacity",
+          installed_input_capacity
+        )
+        @node.dataset_set(
+          :"#{@context.carrier}_output_installed_capacity",
+          installed_output_capacity
+        )
       end
 
       # Public: Performs actions prior to the recalculation of the graph triggered by Causality.
@@ -95,15 +97,20 @@ module Qernel
         raise NotImplementedError
       end
 
-      # Internal: The installed capacity of the participant in the given direction, in MW.
+      # Internal: The installed capacity of the participant in the given direction.
       #
       # Storage, import, export and transformation follow the balance of the carrier and have no
       # capacity of their own; returns nil so that the peak is used instead.
-      def installed_capacity(_direction)
+      def installed_input_capacity
         nil
       end
 
-      # Internal: Typical input capacity x conversion of the slot x number of units, in MW.
+      def installed_output_capacity
+        nil
+      end
+
+      # Internal: Typical input capacity x conversion of the slot x number of units.
+      # Used for installed capacity injection
       def slot_capacity(slot)
         input_capacity = @node.node_api.input_capacity
         return unless input_capacity&.positive?

@@ -24,10 +24,10 @@ module Qernel
         participant.load_curve.max / output_capacity_per_unit
       end
 
-      # Internal: A backup covers any shortage, as its number of units is unlimited; it is sized to
-      # the largest shortage it covered.
-      def installed_capacity(direction)
-        peak_load(:output) if direction == :output
+      # Internal: The number of units is for backup unlimited, so installed output
+      # capacity is set to equal peak output.
+      def installed_output_capacity
+        peak_load(:output)
       end
 
       def producer_attributes

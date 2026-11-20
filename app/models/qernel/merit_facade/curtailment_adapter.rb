@@ -28,10 +28,13 @@ module Qernel
 
       private
 
-      # Internal: Curtailment takes any excess, as its input capacity is unlimited; its installed
-      # capacity is the largest excess it took.
-      def installed_capacity(direction)
-        direction == :input ? peak_load(:input) : 0.0
+      # Internal: installed input capacity equals the largest excess it took.
+      def installed_input_capacity
+        peak_load(:input)
+      end
+
+      def installed_output_capacity
+        0.0
       end
 
       def producer_class

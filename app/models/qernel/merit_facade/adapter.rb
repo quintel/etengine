@@ -36,20 +36,20 @@ module Qernel
         raise NotImplementedError
       end
 
-      # Public: Sets the installed input and output capacity of the participant on the node, in MW,
-      # as `<carrier>_<direction>_installed_capacity`. Read by NodeApi::Capacity for the data
-      # exports; not used in the calculation.
+      # Public: Sets the installed input and output capacity of the participant on the node if
+      # calcuable, as `<carrier>_<direction>_installed_capacity`. Not used in calculation.
       #
-      # Must be called before #inject!, which may change the attributes the capacity is based on
-      # (such as conversions).
-      #
-      # Returns nothing.
+      # CHECK THIS: "Must be called before #inject!, which may change the attributes the capacity is based on
+      # (such as conversions).""
       def inject_installed_capacity!
-        %i[input output].each do |direction|
-          target_api.dataset_set(
-            :"#{@context.carrier}_#{direction}_installed_capacity", installed_capacity(direction)
-          )
-        end
+        target_api.dataset_set(
+          :"#{@context.carrier}_input_installed_capacity",
+          installed_input_capacity
+        )
+        target_api.dataset_set(
+          :"#{@context.carrier}_output_installed_capacity",
+          installed_output_capacity
+        )
       end
 
       # Internal: Determines whether the participant has any capacity; if not,
@@ -63,17 +63,17 @@ module Qernel
 
       private
 
-      # Internal: The installed capacity of the participant in the given direction, in MW.
-      #
-      # Consumers follow a demand profile and have no capacity in Merit; returns nil so that the
-      # capacity of the node itself is used instead.
-      def installed_capacity(_direction)
+      # Internal: The installed input capacity of the participant.
+      def installed_input_capacity
         nil
       end
 
-      # Internal: The peak load of the participant in the given direction, in MW. The installed
-      # capacity of participants which have an unlimited capacity in Merit.
-      #
+      # Internal: The installed output capacity of the participant.
+      def installed_output_capacity
+        nil
+      end
+
+      # Internal: The peak load of the participant in the given direction.
       # Merit load curves are negative for consumption and positive for production.
       def peak_load(direction)
         curve = participant.load_curve.to_a

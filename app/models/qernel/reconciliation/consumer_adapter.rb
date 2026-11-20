@@ -27,8 +27,8 @@ module Qernel
       end
 
       # Internal: Consumers only have an input capacity, on the slot of their demand carrier.
-      def installed_capacity(direction)
-        slot_capacity(input_slot) if direction == :input
+      def installed_input_capacity
+        slot_capacity(input_slot)
       end
 
       def input_slot

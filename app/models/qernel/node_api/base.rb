@@ -26,7 +26,7 @@ module Qernel
       # customisations.
       include CarrierMethods
 
-      include Capacity
+      include InstalledCapacity
       include CapacityProduction
       include Conversion
       include Cost
