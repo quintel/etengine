@@ -97,7 +97,7 @@ module Api
         ids = params[:id].split(',')
 
         scenarios = Scenario.accessible_by(current_ability)
-          .where(id: ids).includes(:users, :scaler)
+          .where(id: ids).includes(:scaler)
 
         @serializers = scenarios.map do |scenario|
           ScenarioSerializer.new(self, scenario)
@@ -620,7 +620,7 @@ module Api
       # inaccessible
       def load_batch_scenarios
         scenario_ids = params.require(:scenario_ids)
-        @scenarios = Scenario.accessible_by(current_ability).where(id: scenario_ids)
+        @scenarios = Scenario.accessible_by(current_ability, :clone).where(id: scenario_ids)
 
         return unless @scenarios.length != scenario_ids.length
 

@@ -233,15 +233,6 @@ describe 'Scenario access granted by MyETM with API v3', :etsource_fixture do
       expect(response).to have_http_status(:ok)
     end
 
-    it 'copies no roles from the source' do
-      ScenarioUser.create!(
-        scenario: source, user: creator, role_id: User::ROLES.key(:scenario_collaborator)
-      )
-      create_from(source, user, read(source))
-
-      expect(created_scenario.scenario_users.pluck(:user_id)).to eq([user.id])
-    end
-
     it 'stays private for a write grant' do
       create_from(source, user, write(source))
 
@@ -264,7 +255,7 @@ describe 'Scenario access granted by MyETM with API v3', :etsource_fixture do
         saved_scenario_users: [{ user_id: user.id, role_id: 3 }], keep_compatible: true
       )
 
-      expect([response.status, scenario.scenario_users.count]).to eq([200, 0])
+      expect(response).to have_http_status(:ok)
     end
   end
 

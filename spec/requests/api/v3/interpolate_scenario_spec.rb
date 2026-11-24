@@ -13,10 +13,19 @@ describe 'APIv3 Scenarios', :etsource_fixture do
   end
 
   let(:user) { create(:user) }
-  let(:token_header) { access_token_header(user, :write) }
+
+  # Access is determined solely by the token's scenario_access grant. The source is bound (saved in
+  # MyETM) so that the grant is the only route to access beyond what is public.
+  def grant(write: [], read: [])
+    { Settings.version_tag => { 'write' => write, 'read' => read } }
+  end
+
+  let(:token_header) do
+    access_token_header(user, :write, scenario_access: grant(write: [source.id]))
+  end
 
   let(:source) do
-    create(:scenario, user:, end_year: 2050)
+    create(:scenario, bound: true, end_year: 2050)
   end
 
   context 'with valid parameters' do
@@ -86,91 +95,115 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
   end
 
-  context 'with a self-owned private scenario' do
-    let(:user) { create(:user) }
-
+  describe 'access' do
     let(:send_data) do
       post "/api/v3/scenarios/#{source.id}/interpolate",
         params: { end_year: 2040 },
-        headers: access_token_header(user, :write)
+        headers:
     end
 
-    before do
-      source.delete_all_users
-      source.user = user
-      source.reload.update!(private: true)
+    before { source }
+
+    shared_examples_for 'an accepted interpolation' do |private:|
+      it 'returns 200 OK' do
+        send_data
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'saves the scenario' do
+        expect { send_data }.to change(Scenario, :count).by(1)
+      end
+
+      it "sets the new scenario to #{private ? 'private' : 'public'}" do
+        expect(response_data).to include('private' => private)
+      end
+
+      it 'sets the scenario creator' do
+        send_data
+        expect(Scenario.last.creator_id).to eq(user.id)
+      end
     end
 
-    it 'returns 200 OK' do
-      send_data
-      expect(response.status).to eq(200)
+    shared_examples_for 'a refused interpolation' do
+      it 'returns 404 Not Found' do
+        send_data
+        expect(response).to have_http_status(:not_found)
+      end
+
+      it 'does not save a scenario' do
+        expect { send_data }.not_to change(Scenario, :count)
+      end
     end
 
-    it 'saves the scenario' do
-      expect { send_data }.to change(Scenario, :count).by(1)
+    context 'when the scenario is private' do
+      before { source.update!(private: true) }
+
+      context 'when the token grants write access' do
+        let(:headers) { token_header }
+
+        it_behaves_like 'an accepted interpolation', private: true
+      end
+
+      context 'when the token grants read access (viewer)' do
+        let(:headers) do
+          access_token_header(user, :write, scenario_access: grant(read: [source.id]))
+        end
+
+        it_behaves_like 'a refused interpolation'
+      end
+
+      context 'when the token has no grant for the scenario' do
+        let(:headers) { access_token_header(user, :write) }
+
+        it_behaves_like 'a refused interpolation'
+      end
+
+      context 'when the token grants write access without the scenarios:write scope' do
+        let(:headers) do
+          access_token_header(user, :read, scenario_access: grant(write: [source.id]))
+        end
+
+        it_behaves_like 'a refused interpolation'
+      end
     end
 
-    it 'sets the new scenario to private' do
-      expect(response_data).to include('private' => true)
-    end
+    # Public scenarios may be cloned by anyone with the write scope. The grant only decides whether
+    # the new scenario inherits the source's privacy or follows the user's preference.
+    context 'when the scenario is public' do
+      context 'when the token grants write access' do
+        let(:headers) { token_header }
 
-    it 'sets the scenario creator' do
-      scenario = Scenario.last
-      expect(scenario.creator_id).to eq(user.id)
-    end
-  end
+        it_behaves_like 'an accepted interpolation', private: false
 
-  context 'with an other-owned public scenario' do
-    let(:send_data) do
-      post "/api/v3/scenarios/#{source.id}/interpolate",
-        params: { end_year: 2040 },
-        headers: access_token_header(user, :write)
-    end
+        # TODO: flag in PR. Currently the clone copies the source's privacy (public) when the token
+        # may update the source, ignoring the user's private_scenarios preference.
+        context 'when the user prefers private scenarios',
+          skip: 'Is this correct behaviour? A writer gets a public clone, a viewer a private one' do
+          let(:user) { create(:user, private_scenarios: true) }
 
-    let(:user) { create(:user) }
+          it_behaves_like 'an accepted interpolation', private: true
+        end
+      end
 
-    before do
-      source.delete_all_users
-      source.user = user
-    end
+      context 'when the token grants read access (viewer)' do
+        let(:headers) do
+          access_token_header(user, :write, scenario_access: grant(read: [source.id]))
+        end
 
-    it 'returns 200 OK' do
-      send_data
-      expect(response.status).to eq(200)
-    end
+        it_behaves_like 'an accepted interpolation', private: false
 
-    it 'saves the scenario' do
-      expect { send_data }.to change(Scenario, :count).by(1)
-    end
+        context 'when the user prefers private scenarios' do
+          let(:user) { create(:user, private_scenarios: true) }
 
-    it 'sets the new scenario to public' do
-      expect(response_data).to include('private' => false)
-    end
+          it_behaves_like 'an accepted interpolation', private: true
+        end
+      end
 
-    it 'sets the scenario owner' do
-      scenario = Scenario.last
-      expect(scenario.creator_id).to eq(user.id)
-    end
-  end
+      context 'when the token has no grant for the scenario' do
+        let(:headers) { access_token_header(user, :write) }
 
-  context 'with an other-owned private scenario' do
-    let(:send_data) do
-      post "/api/v3/scenarios/#{source.id}/interpolate",
-        params: { end_year: 2040 },
-        headers: access_token_header(user, :write)
-    end
-
-    let(:user) { create(:user) }
-
-    before do
-      source.delete_all_users
-      source.user = create(:user)
-      source.reload.update(private: true)
-    end
-
-    it 'returns 404 Not Found' do
-      send_data
-      expect(response).to be_not_found
+        it_behaves_like 'an accepted interpolation', private: false
+      end
     end
   end
 
@@ -178,10 +211,10 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     let(:send_data) do
       post "/api/v3/scenarios/#{source.id}/interpolate",
         params: { end_year: 2040, start_scenario_id: start_scenario.id },
-        headers: access_token_header(user, :write)
+        headers: token_header
     end
 
-    let(:start_scenario) { create(:scenario, end_year: 2030, user:) }
+    let(:start_scenario) { create(:scenario, end_year: 2030) }
 
     before do
       source
@@ -229,6 +262,25 @@ describe 'APIv3 Scenarios', :etsource_fixture do
     end
   end
 
+  context 'with a private start scenario readable through the grant' do
+    let(:send_data) do
+      post "/api/v3/scenarios/#{source.id}/interpolate",
+        params: { end_year: 2040, start_scenario_id: start_scenario.id },
+        headers: access_token_header(
+          user, :write, scenario_access: grant(write: [source.id], read: [start_scenario.id])
+        )
+    end
+
+    let(:start_scenario) { create(:scenario, end_year: 2030, bound: true, private: true) }
+
+    before { source }
+
+    it 'returns 200 OK' do
+      send_data
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
   context 'with an inaccessible start scenario' do
     let(:send_data) do
       post "/api/v3/scenarios/#{source.id}/interpolate",
@@ -236,8 +288,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         headers: token_header
     end
 
-    let(:start_scenario) { create(:scenario, end_year: 2030, user: other_user, private: true) }
-    let(:other_user) { create(:user) }
+    let(:start_scenario) { create(:scenario, end_year: 2030, bound: true, private: true) }
 
     before { source }
 
@@ -278,7 +329,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         headers: token_header
     end
 
-    let(:start_scenario) { create(:scenario, end_year: 2055, user:) }
+    let(:start_scenario) { create(:scenario, end_year: 2055) }
 
     before { source }
 
@@ -301,7 +352,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         headers: token_header
     end
 
-    let(:start_scenario) { create(:scenario, end_year: 2045, user:) }
+    let(:start_scenario) { create(:scenario, end_year: 2045) }
 
     before { source }
 
@@ -324,7 +375,7 @@ describe 'APIv3 Scenarios', :etsource_fixture do
         headers: token_header
     end
 
-    let(:start_scenario) { create(:scenario, end_year: 2030, user:, area_code: 'de') }
+    let(:start_scenario) { create(:scenario, end_year: 2030, area_code: 'de') }
 
     before { source }
 

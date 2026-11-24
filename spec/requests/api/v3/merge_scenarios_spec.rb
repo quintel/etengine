@@ -97,7 +97,7 @@ describe 'APIv3 merging scenarios', :etsource_fixture do
       }, headers: token_header)
     end
 
-    before { scenario_one.update!(user: create(:user), private: true) }
+    before { scenario_one.update!(bound: true, private: true) }
 
     it 'returns 404' do
       request

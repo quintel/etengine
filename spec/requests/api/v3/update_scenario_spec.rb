@@ -59,8 +59,7 @@ describe 'Updating a scenario with API v3' do
 
   context 'when setting an owned public scenario to be private' do
     before do
-      scenario.delete_all_users
-      scenario.update!(user: user, private: false)
+      scenario.update!(creator_id: user.id, private: false)
     end
 
     let(:user) { create(:user) }
@@ -77,8 +76,7 @@ describe 'Updating a scenario with API v3' do
 
   context 'when setting an owned private scenario to be public' do
     before do
-      scenario.delete_all_users
-      scenario.update(user: user)
+      scenario.update(creator_id: user.id)
       scenario.reload.update(private: true)
     end
 
@@ -99,8 +97,7 @@ describe 'Updating a scenario with API v3' do
     let(:user) { create(:user) }
 
     before do
-      scenario.delete_all_users
-      scenario.update(user: user)
+      scenario.update(creator_id: user.id)
 
       second_user = create(:user)
 
@@ -153,7 +150,7 @@ describe 'Updating a scenario with API v3' do
     let(:scenario) do
       create(
         :scenario,
-        user: owner,
+        creator_id: owner.id,
         private: private_scenario,
         user_values: { 'foo_demand' => 10.0 },
         balanced_values: { 'grouped_input_two' => 60.0 }
@@ -219,8 +216,9 @@ describe 'Updating a scenario with API v3' do
 
     context 'when the scenario is private' do
       let(:private_scenario) { true }
+      let(:access) { { Settings.version_tag => { 'read' => [scenario.id] } } }
 
-      it 'refuses a reset from a viewer' do
+      it 'refuses a reset from a user without a grant' do
         expect do
           update_scenario(params: { reset: true }, headers: access_token_header(viewer, :write))
         end.not_to(change { stored_state })
@@ -228,9 +226,20 @@ describe 'Updating a scenario with API v3' do
         expect(response).to have_http_status(:not_found)
       end
 
+      it 'refuses a reset from a viewer' do
+        expect do
+          update_scenario(
+            params: { reset: true },
+            headers: access_token_header(viewer, :write, scenario_access: access)
+          )
+        end.not_to(change { stored_state })
+
+        expect(response).to have_http_status(:not_found)
+      end
+
       it 'answers queries from a viewer and changes nothing' do
         expect do
-          update_scenario(params: read_params, headers: access_token_header(viewer, :write))
+          update_scenario(params: read_params, headers: access_token_header(viewer, :write, scenario_access: access))
         end.not_to(change { stored_state })
 
         expect(response).to have_http_status(:ok)
