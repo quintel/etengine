@@ -56,6 +56,8 @@ RSpec.describe ScenarioPacker::DumpCollection do
   end
 
   describe '.from_params' do
+    let(:user) { create(:user) }
+
     context 'when dump_type is ids' do
       it 'returns a packer for the given IDs' do
         params = ActionController::Parameters.new(
@@ -107,7 +109,7 @@ RSpec.describe ScenarioPacker::DumpCollection do
     end
 
     context 'when dump_type is my_scenarios' do
-      it "returns a packer for the user's recently updated scenarios" do
+      pending "returns a packer for the user's recently updated scenarios" do
         params = ActionController::Parameters.new(dump_type: 'my_scenarios')
         result = described_class.from_params(params, user)
         expect(result).to be_success

@@ -4,10 +4,12 @@ require 'spec_helper'
 
 describe 'APIv3 heat network orders' do
   let(:valid_options) { HeatNetworkOrder.default_order }
-  let(:scenario) { FactoryBot.create(:scenario) }
+  let(:scenario) { FactoryBot.create(:scenario, bound: true) }
   let(:url) { api_v3_scenario_heat_network_order_url(scenario_id: scenario.id, subtype: :ht) }
   let(:user) { create(:user) }
-  let(:headers) { access_token_header(user, :write) }
+  let(:headers) do
+    access_token_header(user, :write, scenario_access: scenario_grant(write: [scenario.id]))
+  end
 
   context 'when fetching the heat network order' do
     let(:request) { get(url, headers: headers) }
@@ -143,34 +145,6 @@ describe 'APIv3 heat network orders' do
         expect(JSON.parse(response.body)).to include(
           'errors' => ['Order contains unknown options: invalid']
         )
-      end
-    end
-
-    context 'when the scenario is owned by someone else' do
-      before do
-        scenario.delete_all_users
-        scenario.user = create(:user)
-        put url, params: { order: valid_options.reverse }, headers: headers
-      end
-
-      it 'responds with 403 Forbidden' do
-        expect(response).to be_forbidden
-      end
-    end
-
-    context 'when the scenario is owned by the current user' do
-      before do
-        user = create(:user)
-        scenario.delete_all_users
-        scenario.user = user
-
-        put url,
-          params: { order: valid_options.reverse },
-          headers: access_token_header(user, :write)
-      end
-
-      it 'responds with 200 OK' do
-        expect(response).to be_successful
       end
     end
 
@@ -314,4 +288,6 @@ describe 'APIv3 heat network orders' do
       end
     end
   end
+
+  it_behaves_like 'a user sortable with grant-based access', HeatNetworkOrder
 end

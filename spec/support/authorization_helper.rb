@@ -12,6 +12,11 @@ module AuthorizationHelper
     { 'Authorization' => "Bearer #{jwt}" }
   end
 
+  # Builds a scenario_access claim granting the given scenario IDs on this engine's version.
+  def scenario_grant(write: [], read: [])
+    { Settings.version_tag => { 'write' => write, 'read' => read } }
+  end
+
   def generate_jwt(user, **kwargs)
     allow(Identity::TokenDecoder).to receive(:jwk_set).and_return(
       'keys' => [JWT::JWK.new(AuthorizationHelper.key.public_key, 'test_key').export]

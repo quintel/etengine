@@ -11,10 +11,18 @@ describe 'Custom curves', :etsource_fixture do
     NastyCache.instance.expire!
   end
 
-  let(:scenario) { FactoryBot.create(:scenario) }
+  # Access is determined solely by the token's scenario_access grant. The scenario is bound (saved
+  # in MyETM) so that the grant is the only route to access beyond what is public.
+  let(:scenario) { FactoryBot.create(:scenario, bound: true) }
   let(:url) { "/api/v3/scenarios/#{scenario.id}/custom_curves/#{curve_name}" }
   let(:user) { create(:user) }
-  let(:token_header) {access_token_header(user, :read) }
+  let(:token_header) { access_token_header(user, :read) }
+  let(:write_header) { granted_header(:write) }
+  let(:delete_header) { granted_header(:delete) }
+
+  def granted_header(scopes)
+    access_token_header(user, scopes, scenario_access: scenario_grant(write: [scenario.id]))
+  end
 
 
   context 'when requesting all curves with include_unattached=true' do
@@ -52,7 +60,7 @@ describe 'Custom curves', :etsource_fixture do
       before do
         put "#{url}/interconnector_1_price", params: {
           file: fixture_file_upload('price_curve.csv', 'text/csv')
-        }, headers: access_token_header(user, :write)
+        }, headers: write_header
 
         get(url, headers: token_header)
       end
@@ -100,7 +108,7 @@ describe 'Custom curves', :etsource_fixture do
     before do
       put "#{url.split('?').first}/internal", params: {
         file: fixture_file_upload('random_curve.csv', 'text/csv')
-      }, headers: access_token_header(user, :write)
+      }, headers: write_header
 
       get(url, headers: token_header)
     end
@@ -136,7 +144,7 @@ describe 'Custom curves', :etsource_fixture do
       before do
         put url, params: {
           file: fixture_file_upload('price_curve.csv', 'text/csv')
-        }, headers: access_token_header(user, :write)
+        }, headers: write_header
 
         get(url, headers: token_header)
       end
@@ -158,7 +166,7 @@ describe 'Custom curves', :etsource_fixture do
       let(:request) do
         put url, params: {
           file: fixture_file_upload('price_curve.csv', 'text/csv')
-        }, headers: access_token_header(user, :write)
+        }, headers: write_header
       end
 
       it 'succeeds' do
@@ -188,7 +196,7 @@ describe 'Custom curves', :etsource_fixture do
       before do
         put url, params: {
           file: fixture_file_upload('price_curve.csv', 'text/csv')
-        }, headers: access_token_header(user, :write)
+        }, headers: write_header
 
         get(url, headers: { 'Accept' => 'text/csv' }.merge(token_header))
       end
@@ -214,14 +222,12 @@ describe 'Custom curves', :etsource_fixture do
 
     context 'when removing a user curve' do
       before do
-        scenario.delete_all_users
-
         put url, params: {
           file: fixture_file_upload('price_curve.csv', 'text/csv')
-        }, headers: access_token_header(user, :delete)
+        }, headers: delete_header
       end
 
-      let(:request) { delete url, headers: access_token_header(user, :delete) }
+      let(:request) { delete url, headers: delete_header }
 
       it 'succeeds' do
         request
@@ -246,7 +252,7 @@ describe 'Custom curves', :etsource_fixture do
       let(:request) do
         put url, params: {
           file: fixture_file_upload('invalid_price_curve.csv', 'text/csv')
-        }, headers: access_token_header(user, :write)
+        }, headers: write_header
       end
 
       it 'fails' do
@@ -289,7 +295,7 @@ describe 'Custom curves', :etsource_fixture do
       let(:request) do
         put url, params: {
           file: fixture_file_upload(file.path, 'text/csv')
-        }, headers: access_token_header(user, :write)
+        }, headers: write_header
       end
 
       before { file.write(((['1' * 120] * 8760).join("\n") + "\n")) }
@@ -326,31 +332,6 @@ describe 'Custom curves', :etsource_fixture do
       end
     end
 
-    context "when uploading a curve to someone else's public scenario" do
-      before do
-        scenario.user = create(:user)
-      end
-
-      let(:request) do
-        put url,
-          params: { file: fixture_file_upload('price_curve.csv', 'text/csv') },
-          headers: access_token_header(create(:user), :write)
-      end
-
-      it 'responds with 403 Forbidden' do
-        request
-        expect(response).to be_forbidden
-      end
-
-      it 'does not create a user curve' do
-        expect { request }
-          .not_to change {
-            scenario.reload.user_curves.exists?(key: 'generic_curve')
-          }
-          .from(false)
-      end
-    end
-
     context 'when uploading a valid curve file with a byte order mark' do
       let(:file) do
         file = Tempfile.new('bom_curve')
@@ -362,7 +343,7 @@ describe 'Custom curves', :etsource_fixture do
       let(:request) do
         put url, params: {
           file: fixture_file_upload(file.path, 'text/csv')
-        }, headers: access_token_header(user, :write)
+        }, headers: write_header
       end
 
       it 'succeeds' do
@@ -376,100 +357,11 @@ describe 'Custom curves', :etsource_fixture do
             scenario.reload.user_curves.exists?(key: 'generic_curve')
           }
           .from(false).to(true)
-      end
-    end
-
-    context 'when uploading a curve to an owned private scenario' do
-      before do
-        scenario.delete_all_users
-        scenario.user = user
-      end
-
-      let(:user) { create(:user) }
-
-      let(:request) do
-        put url,
-          params: { file: fixture_file_upload('price_curve.csv', 'text/csv') },
-          headers: access_token_header(user, :write)
-      end
-
-      it 'succeeds' do
-        request
-        expect(response).to be_successful
-      end
-
-      it 'creates the user curve record' do
-        expect { request }
-          .to change {
-            scenario.reload.user_curves.exists?(key: 'generic_curve')
-          }
-          .from(false).to(true)
-      end
-    end
-
-    context 'when removing an attached curve from an owned scenario' do
-      before do
-        put url, params: { file: fixture_file_upload('price_curve.csv', 'text/csv') }, headers: access_token_header(user, :write)
-
-        scenario.delete_all_users
-        scenario.user = user
-      end
-
-      let(:user) { create(:user) }
-      let(:request) { delete url, headers: access_token_header(user, :delete) }
-
-      it 'succeeds' do
-        request
-        expect(response).to be_successful
-      end
-
-      it 'sends no data' do
-        request
-        expect(response.body).to be_empty
-      end
-
-      it 'removes the user curve' do
-        expect { request }
-          .to change {
-            scenario.reload.user_curves.exists?(key: 'generic_curve')
-          }
-          .from(true).to(false)
-      end
-    end
-
-    context 'when removing an attached curve from a public scenario owned by someone else' do
-      before do
-        # Attach a curve.
-        put url, params: {
-          file: fixture_file_upload('price_curve.csv', 'text/csv')
-        }, headers: access_token_header(user, :delete)
-
-        scenario.user = create(:user)
-      end
-
-      let(:request) { delete url, headers: access_token_header(user, :delete) }
-
-      it 'returns 403 Forbidden' do
-        request
-        expect(response).to be_forbidden
-      end
-
-      it 'sends an error' do
-        request
-        expect(JSON.parse(response.body)).to eq('errors' => ['Scenario does not belong to you'])
-      end
-
-      it 'does not remove the user curve' do
-        expect { request }
-          .not_to change {
-            scenario.reload.user_curves.exists?(key: 'generic_curve')
-          }
-          .from(true)
       end
     end
 
     describe 'when removing and the scenario has no curve attached' do
-      let(:request) { delete url, headers: access_token_header(user, :delete) }
+      let(:request) { delete url, headers: delete_header }
 
       it 'is 404 Not Found' do
         request
@@ -484,6 +376,131 @@ describe 'Custom curves', :etsource_fixture do
           .from(false)
       end
     end
+
+    describe 'access' do
+      let(:attached) { scenario.reload.user_curves.exists?(key: 'generic_curve') }
+
+      def attach_curve
+        put url, params: { file: fixture_file_upload('price_curve.csv', 'text/csv') },
+          headers: write_header
+        expect(response).to be_successful
+      end
+
+      def upload
+        put url, params: { file: fixture_file_upload('price_curve.csv', 'text/csv') }, headers:
+      end
+
+      shared_examples_for 'a readable curve' do
+        it 'allows showing the curve' do
+          attach_curve
+          get(url, headers:)
+          expect(response).to have_http_status(:ok)
+        end
+      end
+
+      shared_examples_for 'an unreadable curve' do
+        it 'refuses showing the curve' do
+          attach_curve
+          get(url, headers:)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      shared_examples_for 'a writable curve' do
+        it 'allows uploading the curve' do
+          upload
+          expect(response).to have_http_status(:ok)
+          expect(attached).to be(true)
+        end
+
+        it 'allows removing the curve' do
+          attach_curve
+          delete(url, headers:)
+          expect(response).to have_http_status(:no_content)
+          expect(attached).to be(false)
+        end
+      end
+
+      shared_examples_for 'a non-writable curve' do |status|
+        it "refuses uploading the curve with #{status}" do
+          upload
+          expect(response).to have_http_status(status)
+          expect(attached).to be(false)
+        end
+
+        it "refuses removing the curve with #{status}" do
+          attach_curve
+          delete(url, headers:)
+          expect(response).to have_http_status(status)
+          expect(attached).to be(true)
+        end
+      end
+
+      context 'when the scenario is public' do
+        context 'when the token has no grant for the scenario' do
+          let(:headers) { access_token_header(user, :delete) }
+
+          it_behaves_like 'a readable curve'
+          it_behaves_like 'a non-writable curve', :forbidden
+
+          it 'explains the refusal' do
+            attach_curve
+            delete(url, headers:)
+            expect(response.parsed_body).to eq('errors' => ['Scenario does not belong to you'])
+          end
+        end
+
+        context 'when the token grants read access (viewer)' do
+          let(:headers) do
+            access_token_header(user, :delete, scenario_access: scenario_grant(read: [scenario.id]))
+          end
+
+          it_behaves_like 'a readable curve'
+          it_behaves_like 'a non-writable curve', :forbidden
+        end
+
+        context 'when the token grants write access' do
+          let(:headers) { delete_header }
+
+          it_behaves_like 'a readable curve'
+          it_behaves_like 'a writable curve'
+        end
+
+        context 'when the token grants write access without the scenarios:write scope' do
+          let(:headers) { granted_header(:read) }
+
+          it_behaves_like 'a readable curve'
+          it_behaves_like 'a non-writable curve', :forbidden
+        end
+      end
+
+      context 'when the scenario is private' do
+        before { scenario.update!(private: true) }
+
+        context 'when the token has no grant for the scenario' do
+          let(:headers) { access_token_header(user, :delete) }
+
+          it_behaves_like 'an unreadable curve'
+          it_behaves_like 'a non-writable curve', :not_found
+        end
+
+        context 'when the token grants read access (viewer)' do
+          let(:headers) do
+            access_token_header(user, :delete, scenario_access: scenario_grant(read: [scenario.id]))
+          end
+
+          it_behaves_like 'a readable curve'
+          it_behaves_like 'a non-writable curve', :not_found
+        end
+
+        context 'when the token grants write access' do
+          let(:headers) { delete_header }
+
+          it_behaves_like 'a readable curve'
+          it_behaves_like 'a writable curve'
+        end
+      end
+    end
   end
 
   context 'with a valid price curve name' do
@@ -493,7 +510,7 @@ describe 'Custom curves', :etsource_fixture do
       before do
         put url, params: {
           file: fixture_file_upload('price_curve.csv', 'text/csv')
-        }, headers: access_token_header(user, :write)
+        }, headers: write_header
 
         get(url, headers: token_header)
       end
@@ -522,7 +539,7 @@ describe 'Custom curves', :etsource_fixture do
       let(:request) do
         put url, params: {
           file: fixture_file_upload('price_curve.csv', 'text/csv')
-        }, headers: access_token_header(user, :write)
+        }, headers: write_header
       end
 
       it 'succeeds' do

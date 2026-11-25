@@ -79,7 +79,7 @@ describe 'APIv3 binding scenarios', :etsource_fixture do
     end
 
     def someone_elses_session
-      create(:scenario, user: create(:user), private: true)
+      create(:scenario, creator_id: create(:user).id, private: true)
     end
 
     it 'refuses a scenario the user cannot update' do
@@ -104,7 +104,7 @@ describe 'APIv3 binding scenarios', :etsource_fixture do
     end
 
     it 'refuses a scenario that is already bound' do
-      own_session = create(:scenario, user:, bound: true)
+      own_session = create(:scenario, creator_id: user.id, bound: true)
       bind_as_user([own_session.id], true)
 
       expect(json).to eq('refused' => [own_session.id])
@@ -117,14 +117,14 @@ describe 'APIv3 binding scenarios', :etsource_fixture do
     end
 
     it 'binds a scenario the user created' do
-      own_session = create(:scenario, user:, private: true)
+      own_session = create(:scenario, creator_id: user.id, private: true)
       bind_as_user([own_session.id], true)
 
       expect(own_session.reload).to be_bound
     end
 
     it 'binds nothing when any scenario is refused' do
-      own_session = create(:scenario, user:)
+      own_session = create(:scenario, creator_id: user.id)
       bind_as_user([own_session.id, someone_elses_session.id], true)
 
       expect(own_session.reload).not_to be_bound
@@ -138,32 +138,30 @@ describe 'APIv3 binding scenarios', :etsource_fixture do
       expect(session.reload).not_to be_bound
     end
 
-    context 'with access grants only' do
-      it 'binds an unbound scenario the user created' do
-        own_session = create(:scenario, creator_id: user.id, private: true)
-        bind_as_user([own_session.id], true)
+    it 'binds a scenario created by someone else the token grants write access to' do
+      session = someone_elses_session
+      bind_as_user([session.id], true, scenario_access: scenario_grant(write: [session.id]))
 
-        expect(own_session.reload).to be_bound
-      end
+      expect(session.reload).to be_bound
+    end
 
-      it 'refuses a scenario created by someone else' do
-        session = create(:scenario, creator_id: create(:user).id, private: true)
-        bind_as_user([session.id], true)
+    it 'refuses a scenario created by someone else the token grants read access to' do
+      session = someone_elses_session
+      bind_as_user([session.id], true, scenario_access: scenario_grant(read: [session.id]))
 
-        expect(json).to eq('refused' => [session.id])
-      end
+      expect(json).to eq('refused' => [session.id])
+    end
 
-      it 'refuses a bound scenario the token grants write access to' do
-        session = create(:scenario, bound: true, private: true)
-        bind_as_user([session.id], true, scenario_access: { Settings.version_tag => { 'write' => [session.id] } })
+    it 'refuses a bound scenario the token grants write access to' do
+      session = create(:scenario, bound: true, private: true)
+      bind_as_user([session.id], true, scenario_access: scenario_grant(write: [session.id]))
 
-        expect(json).to eq('refused' => [session.id])
-      end
+      expect(json).to eq('refused' => [session.id])
     end
   end
 
   context 'without the bind scope' do
-    before { scenario.update!(user: owner) }
+    before { scenario.update!(creator_id: owner.id) }
 
     let(:owner) { create(:user) }
 

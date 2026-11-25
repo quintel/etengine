@@ -4,10 +4,12 @@ require 'spec_helper'
 
 describe 'APIv3 forecast storage network orders' do
   let(:valid_options) { ForecastStorageOrder.default_order }
-  let(:scenario) { create(:scenario) }
+  let(:scenario) { create(:scenario, bound: true) }
   let(:url) { api_v3_scenario_forecast_storage_order_url(scenario_id: scenario.id) }
   let(:user) { create(:user) }
-  let(:headers) { access_token_header(user, :write) }
+  let(:headers) do
+    access_token_header(user, :write, scenario_access: scenario_grant(write: [scenario.id]))
+  end
 
 
   context 'when fetching the forecast storage order' do
@@ -105,7 +107,7 @@ describe 'APIv3 forecast storage network orders' do
   end
 
   context 'when updating the forecast storage order' do
-    let(:request) { get(url, headers: access_token_header(user, :write)) }
+    let(:request) { get(url, headers:) }
 
     shared_examples_for 'a successful forecast storage order update' do
       it 'is a successful request' do
@@ -144,34 +146,6 @@ describe 'APIv3 forecast storage network orders' do
         expect(JSON.parse(response.body)).to include(
           'errors' => ['Order contains unknown options: invalid']
         )
-      end
-    end
-
-    context 'when the scenario is owned by someone else' do
-      before do
-        scenario.delete_all_users
-        scenario.user = create(:user)
-        put url, params: { order: valid_options.reverse }, headers: headers
-      end
-
-      it 'responds with 403 Forbidden' do
-        expect(response).to be_forbidden
-      end
-    end
-
-    context 'when the scenario is owned by the current user' do
-      before do
-        user = create(:user)
-        scenario.delete_all_users
-        scenario.user = user
-
-        put url,
-          params: { order: valid_options.reverse },
-          headers: access_token_header(user, :write)
-      end
-
-      it 'responds with 200 OK' do
-        expect(response).to be_successful
       end
     end
 
@@ -276,4 +250,6 @@ describe 'APIv3 forecast storage network orders' do
       end
     end
   end
+
+  it_behaves_like 'a user sortable with grant-based access', ForecastStorageOrder
 end

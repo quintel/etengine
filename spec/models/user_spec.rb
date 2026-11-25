@@ -3,8 +3,6 @@
 RSpec.describe User do
   it { is_expected.to validate_presence_of(:name) }
 
-  it { is_expected.to have_many(:scenarios) }
-
   context 'when the user is not an admin' do
     let(:roles) { create(:user).roles }
 
