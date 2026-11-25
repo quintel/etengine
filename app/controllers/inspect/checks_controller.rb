@@ -31,6 +31,7 @@ class Inspect::ChecksController < Inspect::BaseController
 
     # @return [true, false]
     #   Returns if the group sums up to -- or very close to -- 100.
+    #
     def ok?
       sum >= 99.9999 && sum <= 100.0001
     end
