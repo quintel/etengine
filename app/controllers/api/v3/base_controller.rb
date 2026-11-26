@@ -53,14 +53,7 @@ module Api
       end
 
       def current_ability
-        @current_ability ||=
-          if Settings.scenario_access_grants_only
-            GrantAbility.new(decoded_token, current_user, legacy_pat_access)
-          elsif current_user
-            TokenAbility.new(decoded_token, current_user)
-          else
-            GuestAbility.new
-          end
+        @current_ability ||= GrantAbility.new(decoded_token, current_user, legacy_pat_access)
       end
 
       def render_not_found(body = { errors: ['Not found'] })

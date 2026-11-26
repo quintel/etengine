@@ -6,16 +6,6 @@ FactoryBot.define do
 
     area_code { "nl" }
     end_year { 2040 }
-
-    after(:build) do |scenario, evaluator|
-      if evaluator.user.present?
-        scenario.scenario_users << build(
-          :scenario_user,
-          user: evaluator.user,
-          scenario: scenario
-        )
-      end
-    end
   end
 
   factory :scenario_with_user_values, parent: :scenario do

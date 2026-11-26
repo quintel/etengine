@@ -73,27 +73,6 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
       expect(data['end_year']).to eql(2031)
     end
-
-    it 'should save custom end years' do
-      pending 'awaiting reintroduction of non-NL regions'
-      running_this = -> {
-        post '/api/v3/scenarios', params: { scenario: { area_code: 'uk' } }, headers: token_header
-      }
-
-      expect(&running_this).to change { Scenario.count }.by(1)
-      expect(response.status).to eql(200)
-
-      data = JSON.parse(response.body)
-
-      expect(data['area_code']).to eql('de')
-    end
-
-    it 'sets no user' do
-      post '/api/v3/scenarios',
-        params: { scenario: { user_values: { foo_demand: 10.0 } } }, headers: access_token_header(user, :public)
-
-      expect(JSON.parse(response.body)['users']).to eq(nil)
-    end
   end
 
   context 'when authenticated' do
@@ -107,10 +86,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       expect(response.status).to eq(200)
     end
 
-    it 'sets a scenario owner' do
+    it 'sets a scenario creator' do
       scenario = Scenario.last
-      expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
+      expect(scenario.creator_id).to eq(user.id)
     end
   end
 
@@ -247,10 +225,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       expect(json['private']).to be(true)
     end
 
-    it 'sets an owner of the new scenario' do
+    it 'sets an creator of the new scenario' do
       scenario = Scenario.last
-      expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
+      expect(scenario.creator_id).to eq(user.id)
     end
   end
 
@@ -272,10 +249,9 @@ describe 'APIv3 Scenarios', :etsource_fixture do
       expect(json['private']).to be(true)
     end
 
-    it 'sets an owner of the new scenario' do
+    it 'sets an creator of the new scenario' do
       scenario = Scenario.last
-      expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
+      expect(scenario.creator_id).to eq(user.id)
     end
   end
 
@@ -299,128 +275,100 @@ describe 'APIv3 Scenarios', :etsource_fixture do
 
     it 'sets an owner of the new scenario' do
       scenario = Scenario.last
-      expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
+      expect(scenario.creator_id).to eq(user.id)
     end
   end
 
-  context 'when inheriting an owned private scenario' do
+  # Access to the parent is determined solely by the token's scenario_access grant. The parent is
+  # bound (saved in MyETM) so that the grant is the only route to access beyond what is public.
+  describe 'inheriting access' do
+    let(:parent) { create(:scenario, bound: true, private: parent_private) }
+    let(:parent_private) { true }
+    let(:params) { { scenario_id: parent.id } }
+    let(:headers) { access_token_header(user, :write, scenario_access: grant) }
+    let(:json) { response.parsed_body }
+
     before do
-      post '/api/v3/scenarios',
-        params: { scenario: { scenario_id: parent.id } },
-        headers: access_token_header(user, :write)
+      post '/api/v3/scenarios', params: { scenario: params }, headers:
     end
 
-    let(:parent) { create(:scenario, user: user, private: true) }
-    let(:user) { create(:user) }
-    let(:json) { JSON.parse(response.body) }
+    shared_examples_for 'an inherited scenario' do |private:|
+      it 'is successful' do
+        expect(response).to have_http_status(:ok)
+      end
 
-    it 'sets the new scenario to be private' do
-      expect(json['private']).to be(true)
+      it "sets the new scenario to be #{private ? 'private' : 'public'}" do
+        expect(json['private']).to be(private)
+      end
+
+      it 'sets the creator of the new scenario' do
+        expect(Scenario.last.creator_id).to eq(user.id)
+      end
     end
 
-    it 'sets an owner of the new scenario' do
-      scenario = Scenario.last
-      expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
-    end
-  end
+    shared_examples_for 'an inaccessible parent' do
+      it 'returns 422' do
+        expect(response).to have_http_status(:unprocessable_content)
+      end
 
-  context 'when inheriting an owned private scenario and setting private=false' do
-    before do
-      post '/api/v3/scenarios',
-        params: { scenario: { scenario_id: parent.id, private: false } },
-        headers: access_token_header(user, :write)
+      it 'has an error on scenario_id' do
+        expect(json['errors']).to include('scenario_id' => ['does not exist'])
+      end
     end
 
-    let(:parent) { create(:scenario, user: user, private: true) }
-    let(:user) { create(:user) }
-    let(:json) { JSON.parse(response.body) }
+    context 'when the parent is private' do
+      context 'when the token grants write access' do
+        let(:grant) { scenario_grant(write: [parent.id]) }
 
-    it 'is successful' do
-      expect(response.status).to eq(200)
+        it_behaves_like 'an inherited scenario', private: true
+
+        context 'when setting private=false' do
+          let(:params) { { scenario_id: parent.id, private: false } }
+
+          it_behaves_like 'an inherited scenario', private: false
+        end
+      end
+
+      # A viewer cannot update the parent, so the new scenario follows the user's preference.
+      context 'when the token grants read access (viewer)' do
+        let(:grant) { scenario_grant(read: [parent.id]) }
+
+        it_behaves_like 'an inherited scenario', private: false
+
+        context 'when the user prefers private scenarios' do
+          let(:user) { create(:user, private_scenarios: true) }
+
+          it_behaves_like 'an inherited scenario', private: true
+        end
+      end
+
+      context 'when the token has no grant for the parent' do
+        let(:grant) { nil }
+
+        it_behaves_like 'an inaccessible parent'
+      end
     end
 
-    it 'sets the new scenario to be public' do
-      expect(json['private']).to be(false)
-    end
+    context 'when the parent is public' do
+      let(:parent_private) { false }
 
-    it 'sets an owner of the new scenario' do
-      scenario = Scenario.last
-      expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
-    end
-  end
+      context 'when the token has no grant for the parent' do
+        let(:grant) { nil }
 
-  context 'when inheriting a public scenario owned by someone else' do
-    before do
-      post '/api/v3/scenarios',
-        params: { scenario: { scenario_id: parent.id, private: false } },
-        headers: access_token_header(user, :write)
-    end
+        it_behaves_like 'an inherited scenario', private: false
 
-    let(:parent) { create(:scenario, user: create(:user), private: false) }
-    let(:user) { create(:user) }
-    let(:json) { JSON.parse(response.body) }
+        context 'when setting private=true' do
+          let(:params) { { scenario_id: parent.id, private: true } }
 
-    it 'is successful' do
-      expect(response.status).to eq(200)
-    end
+          it_behaves_like 'an inherited scenario', private: true
+        end
+      end
 
-    it 'sets the new scenario to be public' do
-      expect(json['private']).to be(false)
-    end
+      context 'when the token grants write access' do
+        let(:grant) { scenario_grant(write: [parent.id]) }
 
-    it 'sets an owner of the new scenario' do
-      scenario = Scenario.last
-      expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
-    end
-  end
-
-  context 'when inheriting a public scenario and setting private=true' do
-    before do
-      post '/api/v3/scenarios',
-        params: { scenario: { scenario_id: parent.id, private: true } },
-        headers: access_token_header(user, :write)
-    end
-
-    let(:parent) { create(:scenario, user: user, private: false) }
-    let(:user) { create(:user) }
-    let(:json) { JSON.parse(response.body) }
-
-    it 'is successful' do
-      expect(response.status).to eq(200)
-    end
-
-    it 'sets the new scenario to be private' do
-      expect(json['private']).to be(true)
-    end
-
-    it 'sets an owner of the new scenario' do
-      scenario = Scenario.last
-      expect(scenario.users).to include(user)
-      expect(scenario.scenario_users.find_by(user: user).role_id).to eq(3)
-    end
-  end
-
-  context 'when inheriting a private scenario owned by someone else' do
-    before do
-      post '/api/v3/scenarios',
-        params: { scenario: { scenario_id: parent.id, private: false } },
-        headers: access_token_header(user, :write)
-    end
-
-    let(:parent) { create(:scenario, user: create(:user), private: true) }
-    let(:user) { create(:user) }
-    let(:json) { JSON.parse(response.body) }
-
-    it 'returns a 422' do
-      expect(response.status).to eq(422)
-    end
-
-    it 'has an error on scenario_id' do
-      expect(json['errors']).to include('scenario_id' => ['does not exist'])
+        it_behaves_like 'an inherited scenario', private: false
+      end
     end
   end
 

@@ -3,9 +3,6 @@
 module Api
   module V3
     class ScenariosController < BaseController
-      # Roles MyETM sends with a save. Ignored with grants only, as nothing reads them.
-      ROLE_PARAMS = %i[set_preset_roles saved_scenario_users].freeze
-
       load_resource except: %i[show create destroy dump]
       load_and_authorize_resource class: Scenario, only: %i[index show destroy dump]
 
@@ -100,7 +97,7 @@ module Api
         ids = params[:id].split(',')
 
         scenarios = Scenario.accessible_by(current_ability)
-          .where(id: ids).includes(:users, :scaler)
+          .where(id: ids).includes(:scaler)
 
         @serializers = scenarios.map do |scenario|
           ScenarioSerializer.new(self, scenario)
@@ -185,21 +182,15 @@ module Api
         # The scaler needs to be in place before assigning attributes when the
         # scenario inherits from a preset.
         @scenario.descale    = attrs[:descale]
-        @scenario.attributes = attrs.except(:user_values, :set_preset_roles)
+        @scenario.attributes = attrs.except(:user_values)
 
-        if current_user.present?
-          @scenario.creator_id = current_user.id
-          @scenario.scenario_users.build(
-            user: current_user,
-            role_id: User::ROLES.key(:scenario_owner)
-          )
-        end
+        @scenario.creator_id = current_user.id if current_user.present?
 
         # 2: Save and apply user values with full validation -----------------------------------------------------------
         Scenario.transaction do
           @scenario.save!
 
-          updater_scenario_params = attrs.slice(:user_values, :set_preset_roles).compact_blank
+          updater_scenario_params = attrs.slice(:user_values).compact_blank
 
           if updater_scenario_params.any?
             result = ::ScenarioUpdater.new(
@@ -321,9 +312,6 @@ module Api
 
         if query_only
           authorize!(:read, @scenario)
-        elsif final_params[:scenario][:set_preset_roles].present? ||
-            final_params[:scenario][:saved_scenario_users].present?
-          authorize!(:destroy, @scenario)
         else
           authorize!(:update, @scenario)
         end
@@ -360,11 +348,7 @@ module Api
       #
       # Deletes a scenario.
       def destroy
-        if Settings.scenario_access_grants_only
-          @scenario.destroy
-        else
-          current_user.scenarios.find(params[:id]).destroy
-        end
+        @scenario.destroy
 
         head :ok
       end
@@ -549,11 +533,9 @@ module Api
           :preset_scenario_id,
           :private,
           :scenario_id,
-          :set_preset_roles,
           :source,
           { user_values: {} },
           { metadata: {} },
-          { saved_scenario_users: %i[user_id user_email role_id] }
         ])
 
         attrs = attrs[:scenario] || {}
@@ -566,13 +548,11 @@ module Api
 
         attrs[:descale] = true if attrs[:descale] == 'true'
 
-        Settings.scenario_access_grants_only ? attrs.except(*ROLE_PARAMS) : attrs
+        attrs
       end
 
       # The scenarios the user lists as their own: by role, or by creator
       def listed_scenarios
-        return Scenario.viewable_by?(current_user) unless Settings.scenario_access_grants_only
-
         Scenario.where(creator_id: current_user.id)
       end
 
@@ -640,7 +620,7 @@ module Api
       # inaccessible
       def load_batch_scenarios
         scenario_ids = params.require(:scenario_ids)
-        @scenarios = Scenario.accessible_by(current_ability).where(id: scenario_ids)
+        @scenarios = Scenario.accessible_by(current_ability, :clone).where(id: scenario_ids)
 
         return unless @scenarios.length != scenario_ids.length
 

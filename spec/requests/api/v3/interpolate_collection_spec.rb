@@ -13,18 +13,30 @@ describe 'APIv3 Scenarios interpolate_collection', :etsource_fixture do
   end
 
   let(:user) { create(:user) }
-  let(:token_header) { access_token_header(user, :write) }
 
-  let(:scenario_2030) do
-    create(:scenario, user:, end_year: 2030, user_values: { 'grouped_input_one' => 50.0 })
+  # Access is determined solely by the token's scenario_access grant. The scenarios are bound
+  # (saved in MyETM) so that the grant is the only route to access beyond what is public.
+  def grant(write: [], read: [])
+    { Settings.version_tag => { 'write' => write, 'read' => read } }
   end
 
-  let(:scenario_2040) do
-    create(:scenario, user:, end_year: 2040, user_values: { 'grouped_input_one' => 75.0 })
+  let(:token_header) do
+    access_token_header(
+      user, :write,
+      scenario_access: grant(write: [scenario_2030.id, scenario_2040.id, scenario_2050.id])
+    )
   end
 
-  let(:scenario_2050) do
-    create(:scenario, user:, end_year: 2050, user_values: { 'grouped_input_one' => 100.0 })
+  let!(:scenario_2030) do
+    create(:scenario, bound: true, end_year: 2030, user_values: { 'grouped_input_one' => 50.0 })
+  end
+
+  let!(:scenario_2040) do
+    create(:scenario, bound: true, end_year: 2040, user_values: { 'grouped_input_one' => 75.0 })
+  end
+
+  let!(:scenario_2050) do
+    create(:scenario, bound: true, end_year: 2050, user_values: { 'grouped_input_one' => 100.0 })
   end
 
   context 'with valid parameters' do
@@ -152,10 +164,8 @@ describe 'APIv3 Scenarios interpolate_collection', :etsource_fixture do
   end
 
   context 'with an inaccessible private scenario' do
-    let(:other_user) { create(:user) }
-
     let(:private_scenario) do
-      create(:scenario, user: other_user, end_year: 2050, private: true)
+      create(:scenario, bound: true, end_year: 2050, private: true)
     end
 
     let(:send_data) do
@@ -177,7 +187,7 @@ describe 'APIv3 Scenarios interpolate_collection', :etsource_fixture do
 
   context 'with scenarios having different area codes' do
     let(:scenario_de) do
-      create(:scenario, user:, end_year: 2050, area_code: 'de')
+      create(:scenario, end_year: 2050, area_code: 'de')
     end
 
     let(:send_data) do
@@ -245,30 +255,118 @@ describe 'APIv3 Scenarios interpolate_collection', :etsource_fixture do
     end
   end
 
-  context 'with self-owned private scenarios' do
+  describe 'access' do
+    let(:ids) { [scenario_2030.id, scenario_2050.id] }
+
     let(:send_data) do
       post '/api/v3/scenarios/interpolate',
-        params: { scenario_ids: [scenario_2030.id, scenario_2050.id], end_years: [2040] },
-        headers: token_header
+        params: { scenario_ids: ids, end_years: [2040] },
+        headers:
     end
 
     before do
-      scenario_2030.update!(private: true)
-      scenario_2050.update!(private: true)
+      scenario_2030
+      scenario_2050
     end
 
-    it 'returns 200 OK' do
-      send_data
-      expect(response.status).to eq(200)
+    shared_examples_for 'an accepted interpolation' do |private:|
+      it 'returns 200 OK' do
+        send_data
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'saves the interpolated scenario' do
+        expect { send_data }.to change(Scenario, :count).by(1)
+      end
+
+      it "sets the new scenario to #{private ? 'private' : 'public'}" do
+        expect(response_data[0]).to include('private' => private)
+      end
+
+      it 'sets the scenario creator' do
+        send_data
+        expect(Scenario.last.creator_id).to eq(user.id)
+      end
     end
 
-    it 'saves the interpolated scenario' do
-      expect { send_data }.to change(Scenario, :count).by(1)
+    shared_examples_for 'a refused interpolation' do
+      it 'returns 404 Not Found' do
+        send_data
+        expect(response).to have_http_status(:not_found)
+      end
+
+      it 'does not save a scenario' do
+        expect { send_data }.not_to change(Scenario, :count)
+      end
     end
 
-    it 'sets the new scenario to private' do
-      expect(response_data[0]).to include('private' => true)
+    context 'when the scenarios are private' do
+      before do
+        scenario_2030.update!(private: true)
+        scenario_2050.update!(private: true)
+      end
+
+      context 'when the token grants write access' do
+        let(:headers) { token_header }
+
+        it_behaves_like 'an accepted interpolation', private: true
+      end
+
+      context 'when the token grants read access (viewer)' do
+        let(:headers) do
+          access_token_header(user, :write, scenario_access: grant(read: ids))
+        end
+
+        it_behaves_like 'a refused interpolation'
+      end
+
+      context 'when the token has no grant for the scenarios' do
+        let(:headers) { access_token_header(user, :write) }
+
+        it_behaves_like 'a refused interpolation'
+      end
+
+      context 'when the token grants access to only one of the scenarios' do
+        let(:headers) do
+          access_token_header(user, :write, scenario_access: grant(write: [scenario_2050.id]))
+        end
+
+        it_behaves_like 'a refused interpolation'
+      end
+
+      context 'when the token grants write access without the scenarios:write scope' do
+        let(:headers) do
+          access_token_header(user, :read, scenario_access: grant(write: ids))
+        end
+
+        it_behaves_like 'a refused interpolation'
+      end
+    end
+
+    context 'when the scenarios are public' do
+      context 'when the token grants write access' do
+        let(:headers) { token_header }
+
+        it_behaves_like 'an accepted interpolation', private: false
+
+        context 'when the user prefers private scenarios' do
+          let(:user) { create(:user, private_scenarios: true) }
+
+          it_behaves_like 'an accepted interpolation', private: false
+        end
+      end
+
+      context 'when the token has no grant for the scenarios' do
+        let(:headers) { access_token_header(user, :write) }
+
+        it_behaves_like 'an accepted interpolation', private: false
+
+        context 'when the user prefers private scenarios' do
+          let(:user) { create(:user, private_scenarios: true) }
+
+          it_behaves_like 'an accepted interpolation', private: true
+        end
+      end
     end
   end
-
 end

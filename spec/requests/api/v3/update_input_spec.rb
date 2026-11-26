@@ -9,11 +9,20 @@ describe 'Updating inputs with API v3' do
   end
 
   let(:user) { create(:user) }
-  let(:token_header) { access_token_header(user, :write) }
+
+  # Access is determined solely by the token's scenario_access grant. The scenario is bound (saved
+  # in MyETM) so that the grant is the only route to write access.
+  def grant(write: [], read: [])
+    { Settings.version_tag => { 'write' => write, 'read' => read } }
+  end
+
+  let(:token_header) do
+    access_token_header(user, :write, scenario_access: grant(write: [scenario.id]))
+  end
 
   let(:scenario) do
     FactoryBot.create(:scenario,
-      user:,
+      bound: true,
       user_values: { 'unrelated_one' => 25.0 },
       balanced_values: { 'unrelated_two' => 75.0 })
   end
@@ -85,11 +94,11 @@ describe 'Updating inputs with API v3' do
   end
 
   def nonbalanced_scenario(values: {}, params: {}, headers: token_header)
-    put_scenario(values:, params: params.merge(autobalance: false), headers: token_header)
+    put_scenario(values:, params: params.merge(autobalance: false), headers:)
   end
 
-  def autobalance_scenario(values: {}, params: {}, headers: {})
-    put_scenario(values:, params: params.merge(autobalance: true), headers: token_header)
+  def autobalance_scenario(values: {}, params: {}, headers: token_header)
+    put_scenario(values:, params: params.merge(autobalance: true), headers:)
   end
 
   # --------------------------------------------------------------------------
@@ -113,7 +122,6 @@ describe 'Updating inputs with API v3' do
       end
 
       it 'responds 200 OK' do
-        Identity::TokenDecoder.decode(token_header['Authorization'].split.last)
         expect(response.status).to be(200)
       end
 
@@ -580,69 +588,110 @@ describe 'Updating inputs with API v3' do
 
   # --------------------------------------------------------------------------
 
-  context 'when updating a public scenario owned by someone else' do
-    before do
-      scenario.delete_all_users
-      scenario.update!(user: create(:user))
+  describe 'access' do
+    let(:values) { { 'unrelated_one' => 50.0 } }
+
+    shared_examples_for 'a refused update' do |status|
+      it "responds #{status}" do
+        autobalance_scenario(values:, headers:)
+        expect(response).to have_http_status(status)
+      end
+
+      it 'does not update the user values' do
+        expect { autobalance_scenario(values:, headers:) }
+          .not_to(change { scenario.reload.user_values })
+      end
     end
 
-    it 'returns 403' do
-      autobalance_scenario(values: { 'unrelated_one' => 25.0 })
-      expect(response.status).to be(403)
+    shared_examples_for 'an accepted update' do
+      it 'responds 200 OK' do
+        autobalance_scenario(values:, headers:)
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'updates the user values' do
+        autobalance_scenario(values:, headers:)
+        expect(scenario.user_values).to include('unrelated_one' => 50.0)
+      end
     end
 
-    it 'does not update the user values' do
-      expect { autobalance_scenario(values: { 'unrelated_one' => 25.0 }) }
-        .not_to(change { scenario.reload.user_values })
+    context 'when the scenario is public' do
+      context 'when the token has no grant for the scenario' do
+        let(:headers) do
+          access_token_header(user, :write, scenario_access: grant(write: [scenario.id + 1]))
+        end
+
+        it_behaves_like 'a refused update', :forbidden
+      end
+
+      context 'when the token has no scenario_access claim' do
+        let(:headers) { access_token_header(user, :write) }
+
+        it_behaves_like 'a refused update', :forbidden
+      end
+
+      context 'when the token grants read access (viewer)' do
+        let(:headers) do
+          access_token_header(user, :write, scenario_access: grant(read: [scenario.id]))
+        end
+
+        it_behaves_like 'a refused update', :forbidden
+      end
+
+      context 'when the token grants write access' do
+        let(:headers) { token_header }
+
+        it_behaves_like 'an accepted update'
+      end
+
+      context 'when the token grants write access without the scenarios:write scope' do
+        let(:headers) do
+          access_token_header(user, :read, scenario_access: grant(write: [scenario.id]))
+        end
+
+        it_behaves_like 'a refused update', :forbidden
+      end
+
+      context 'when the grant is for another version' do
+        let(:headers) do
+          access_token_header(
+            user, :write, scenario_access: { 'other_version' => { 'write' => [scenario.id] } }
+          )
+        end
+
+        it_behaves_like 'a refused update', :forbidden
+      end
+
+      context 'when there is no token' do
+        let(:headers) { {} }
+
+        it_behaves_like 'a refused update', :forbidden
+      end
     end
-  end
 
-  context 'when updating their own public scenario' do
-    before do
-      scenario.delete_all_users
-      scenario.update!(user:)
+    context 'when the scenario is private' do
+      before { scenario.update!(private: true) }
 
-      autobalance_scenario(
-        values: { 'unrelated_one' => 25.0 },
-        headers: token_header
-      )
-    end
+      context 'when the token has no grant for the scenario' do
+        let(:headers) { access_token_header(user, :write) }
 
-    let(:user) { create(:user) }
+        it_behaves_like 'a refused update', :not_found
+      end
 
-    it 'returns 200' do
-      expect(response.status).to be(200)
-    end
-  end
+      context 'when the token grants read access (viewer)' do
+        let(:headers) do
+          access_token_header(user, :write, scenario_access: grant(read: [scenario.id]))
+        end
 
-  context 'when updating their own public scenario without the scenarios:write scope' do
-    before do
-      user = create(:user)
+        # Refusals on private scenarios are always reported as 404
+        it_behaves_like 'a refused update', :not_found
+      end
 
-      scenario.delete_all_users
-      scenario.update!(user:)
+      context 'when the token grants write access' do
+        let(:headers) { token_header }
 
-      autobalance_scenario(
-        values: { 'unrelated_one' => 25.0 },
-        headers: access_token_header(user, :read)
-      )
-    end
-
-    it 'returns 403' do
-      expect(response.status).to be(403)
-    end
-  end
-
-  context 'when updating their own private scenario' do
-    before do
-      autobalance_scenario(
-        values: { 'unrelated_one' => 25.0 },
-        headers: token_header
-      )
-    end
-
-    it 'returns 200' do
-      expect(response.status).to be(200)
+        it_behaves_like 'an accepted update'
+      end
     end
   end
 

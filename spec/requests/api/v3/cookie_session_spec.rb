@@ -11,7 +11,7 @@ describe 'API authentication via the shared session cookie' do
   end
 
   let(:user) { create(:user) }
-  let!(:owned) { create(:scenario, user: user, private: true, created_at: 1.minute.ago) }
+  let!(:owned) { create(:scenario, creator_id: user.id, private: true, created_at: 1.minute.ago) }
   let(:jwt) { generate_jwt(user, scopes: match_scopes(:read)) }
 
   it 'authenticates a request carrying the JWT in the etm_session cookie' do

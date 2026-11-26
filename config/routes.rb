@@ -124,25 +124,6 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :saved_scenarios, except: %i[new edit] do
-        member do
-          put :discard
-        end
-
-        resources :users, only: %i[index create update destroy], controller: 'saved_scenario_users' do
-          collection do
-            post :create
-            put :update
-            delete :destroy
-          end
-        end
-      end
-
-      resources :collections, except: %i[new edit]
-
-      # Redirecting old transition paths routes to collections
-      resources :transition_paths, controller: :collections
-
       resources :inputs, only: %i[index show] do
         get :list, on: :collection
       end

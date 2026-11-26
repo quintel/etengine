@@ -1,44 +1,22 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
-  ROLES = {
-    1 => :scenario_viewer,
-    2 => :scenario_collaborator,
-    3 => :scenario_owner
-  }.freeze
-
   attr_accessor :identity_user
 
   delegate :roles, to: :identity_user, allow_nil: true
 
-  has_many :scenario_users, dependent: :destroy
-  has_many :scenarios, through: :scenario_users
   has_many :scenario_version_tags
 
   validates :name, presence: true
 
   scope :ordered, -> { order('name') }
 
-  after_create :couple_scenario_users
-
   # If users are initialized from JWT, then their email is not available
   # from identity_user. In that case, a db field user_email is used. The email is
   # needed on create to enter the couple_scenario_users hook.
+  # TODO: this hook is no longer present, can user_email go, can users go?
   def email
     identity_user&.email || user_email
-  end
-
-  # Links existing scenario users to the new User.
-  #
-  # It needs to be linked through the scenario user to ensure the scenario
-  # user stops being marked as dirty.
-  def couple_scenario_users
-    return unless email
-
-    ScenarioUser.where(user_email: email).find_each do |su|
-      su.couple_to(self)
-      su.save
-    end
   end
 
   # Override admin? to fall back to the attribute when identity_user is nil.

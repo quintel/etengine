@@ -7,8 +7,7 @@ module Api
 
       before_action :validate_scenario_version_tag, only: :update
 
-      # Without a scenario_users check in the model, tagging needs write
-      before_action(only: :create, if: -> { Settings.scenario_access_grants_only }) do
+      before_action(only: %i[create update]) do
         authorize!(:update, scenario)
       end
 
@@ -21,7 +20,7 @@ module Api
         ids = version_params[:scenarios].map(&:to_i)
 
         scenarios = Scenario.accessible_by(current_ability)
-          .where(id: ids).includes(:users, :scenario_version_tag)
+          .where(id: ids).includes(:scenario_version_tag)
 
         @serializers = scenarios.each_with_object({}) do |scenario, hash|
           hash[scenario.id] = ScenarioVersionSerializer.new(scenario)

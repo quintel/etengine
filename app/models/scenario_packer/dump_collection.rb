@@ -87,7 +87,9 @@ module ScenarioPacker
     end
 
     # Build packer for current user's recent scenarios
+    # TODO: Add support again
     def self.build_my_scenarios(user)
+      return Failure('My scenarios is not supported at the moment')
       return Failure('User is required') unless user
 
       scope = user.scenarios.where('scenarios.updated_at >= ?', 1.month.ago)

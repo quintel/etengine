@@ -4,7 +4,7 @@ require 'spec_helper'
 
 describe ScenarioUpdater, :etsource_fixture do
   let(:current_user) { FactoryBot.create(:user) }
-  let(:scenario) { FactoryBot.create(:scenario, area_code: 'nl', end_year: 2050, user: current_user) }
+  let(:scenario) { FactoryBot.create(:scenario, area_code: 'nl', end_year: 2050, creator_id: current_user&.id) }
   let(:params) { {} }
   let(:updater) { described_class.new(scenario, params, current_user) }
   let(:result) { updater.call }
@@ -253,81 +253,6 @@ describe ScenarioUpdater, :etsource_fixture do
       end
     end
 
-    context 'with set_preset_roles: true' do
-      let(:params) do
-        {
-          scenario: {
-            set_preset_roles: true
-          }
-        }
-      end
-
-      it 'calls copy_preset_roles on the scenario' do
-        expect(scenario).to receive(:copy_preset_roles).and_call_original
-        result
-      end
-    end
-
-    context 'with set_preset_roles: "true"' do
-      let(:params) do
-        {
-          scenario: {
-            set_preset_roles: 'true'
-          }
-        }
-      end
-
-      it 'calls copy_preset_roles on the scenario' do
-        expect(scenario).to receive(:copy_preset_roles).and_call_original
-        result
-      end
-    end
-
-    context 'with set_preset_roles: "1"' do
-      let(:params) do
-        {
-          scenario: {
-            set_preset_roles: '1'
-          }
-        }
-      end
-
-      it 'calls copy_preset_roles on the scenario' do
-        expect(scenario).to receive(:copy_preset_roles).and_call_original
-        result
-      end
-    end
-
-    context 'with set_preset_roles: false' do
-      let(:params) do
-        {
-          scenario: {
-            set_preset_roles: false
-          }
-        }
-      end
-
-      it 'does not call copy_preset_roles' do
-        expect(scenario).not_to receive(:copy_preset_roles)
-        result
-      end
-    end
-
-    context 'without set_preset_roles param' do
-      let(:params) do
-        {
-          scenario: {
-            private: true
-          }
-        }
-      end
-
-      it 'does not call copy_preset_roles' do
-        expect(scenario).not_to receive(:copy_preset_roles)
-        result
-      end
-    end
-
     context 'with a scenario_version_tag present' do
       let(:current_user) { FactoryBot.create(:user, id: 123, email: "test@example.com") }
       let(:scenario) { FactoryBot.create(:scenario, area_code: 'nl', end_year: 2050) }
@@ -463,7 +388,7 @@ describe ScenarioUpdater, :etsource_fixture do
           :scenario,
           area_code: 'nl',
           end_year: 2050,
-          user: current_user,
+          creator_id: current_user&.id,
           private: false,
           user_values: { 'foo_demand' => 30.0 },
           metadata: { 'existing_key' => 'existing_value' }
@@ -566,7 +491,7 @@ describe ScenarioUpdater, :etsource_fixture do
     end
 
     context 'when scenario is not yet persisted' do
-      let(:scenario) { FactoryBot.build(:scenario, area_code: 'nl', end_year: 2050, user: current_user) }
+      let(:scenario) { FactoryBot.build(:scenario, area_code: 'nl', end_year: 2050, creator_id: current_user&.id) }
       let(:params) do
         {
           scenario: {

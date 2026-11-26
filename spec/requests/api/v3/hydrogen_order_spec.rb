@@ -4,10 +4,12 @@ require 'spec_helper'
 
 describe 'APIv3 hydrogen orders' do
   let(:valid_options) { HydrogenSupplyOrder.default_order }
-  let(:scenario) { create(:scenario) }
+  let(:scenario) { create(:scenario, bound: true) }
   let(:url) { api_v3_scenario_hydrogen_supply_order_url(scenario_id: scenario.id) }
   let(:user) { create(:user) }
-  let(:headers) { access_token_header(user, :write) }
+  let(:headers) do
+    access_token_header(user, :write, scenario_access: scenario_grant(write: [scenario.id]))
+  end
 
   context 'when fetching the hydrogen order' do
     let(:request) { get(url, headers: headers) }
@@ -144,32 +146,6 @@ describe 'APIv3 hydrogen orders' do
       end
     end
 
-    context 'when the scenario is owned by someone else' do
-      before do
-        scenario.update!(user: create(:user))
-        put url, params: { order: valid_options.reverse }, headers: headers
-      end
-
-      it 'responds with 403 Forbidden' do
-        expect(response).to be_forbidden
-      end
-    end
-
-    context 'when the scenario is owned by the current user' do
-      before do
-        user = create(:user)
-        scenario.update!(user: user)
-
-        put url,
-          params: { order: valid_options.reverse },
-          headers: access_token_header(user, :write)
-      end
-
-      it 'responds with 200 OK' do
-        expect(response).to be_successful
-      end
-    end
-
     context 'when the hydrogen order does not exist, given valid data' do
       let(:request) do
         put url, params: { order: valid_options.reverse }, headers: headers
@@ -271,4 +247,6 @@ describe 'APIv3 hydrogen orders' do
       end
     end
   end
+
+  it_behaves_like 'a user sortable with grant-based access', HydrogenSupplyOrder
 end
