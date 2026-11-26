@@ -106,6 +106,11 @@ module Qernel
         participant.number_of_units
       end
 
+      # Internal: Producers only have an output capacity.
+      def installed_output_capacity
+        participant.output_capacity_per_unit * participant.number_of_units
+      end
+
       def install_demand!
         # Do not set demand or FLH when based on a "self" curve as these will
         # be set by the other Causality component adapter. i.e. when a CHP

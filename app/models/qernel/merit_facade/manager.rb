@@ -27,6 +27,7 @@ module Qernel
       #
       # Returns nothing.
       def inject_values!
+        each_adapter(&:inject_installed_capacity!)
         each_adapter(&:inject!)
         set_dispatchable_positions!
         inject_graph_values!

@@ -24,6 +24,12 @@ module Qernel
         participant.load_curve.max / output_capacity_per_unit
       end
 
+      # Internal: The number of units is for backup unlimited, so installed output
+      # capacity is set to equal peak output.
+      def installed_output_capacity
+        peak_load(:output)
+      end
+
       def producer_attributes
         super.merge!(number_of_units: Float::INFINITY)
       end

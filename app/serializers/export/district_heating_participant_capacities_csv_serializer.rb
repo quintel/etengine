@@ -16,14 +16,13 @@ module Export
         return [['Merit order and time-resolved calculation are not enabled for this scenario']]
       end
 
-      header = %w[key peak_capacity]
       data_rows = %i[lt mt ht].flat_map do |network|
         MeritCapacitiesCSVSerializer.new(
           @graph, :steam_hot_water, :"heat_network_#{network}", prefix: network
         ).to_csv_rows[1..]
       end
 
-      [header, *data_rows]
+      [ParticipantCapacitiesCSVSerializer::HEADER, *data_rows]
     end
   end
 end

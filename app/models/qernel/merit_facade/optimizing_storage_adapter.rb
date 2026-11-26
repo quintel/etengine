@@ -117,6 +117,16 @@ module Qernel
         total_node_output_capacity || source_api.input_capacity
       end
 
+      # Internal: The participants use the curve of the storage optimization and have no
+      # capacity, so the limits of the optimization are used, this includes availability.
+      def installed_input_capacity
+        optimizing_storage_params[:input_capacity]
+      end
+
+      def installed_output_capacity
+        optimizing_storage_params[:output_capacity]
+      end
+
       def total_node_output_capacity
         source_api.try(@context.carrier_named('%s_output_capacity')) || source_api.output_capacity
       end
