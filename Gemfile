@@ -14,7 +14,7 @@ gem 'rails',        '~> 8.1.0'
 gem 'jquery-rails', '~> 4.0'
 gem 'haml'
 # json 3 removes JSON.parse's create_additions option, used by sprockets 4.2 and execjs.
-gem 'json', '~> 2.21'
+gem 'json', '~> 3.1'
 
 gem 'rake'
 gem 'activeresource', '~> 6.0'
@@ -51,7 +51,7 @@ gem 'inline_svg'
 gem 'letter_opener'
 gem 'local_time'
 gem 'stimulus-rails'
-gem 'tailwindcss-rails', '~> 3.3.1'
+gem 'tailwindcss-rails', '~> 4.7.0'
 gem 'turbo-rails'
 gem 'view_component'
 
@@ -67,7 +67,7 @@ gem 'config'
 gem 'rest-client'
 
 # for etsource
-gem 'git', '~> 1.19'
+gem 'git', '~> 6.0'
 gem 'fnv'
 gem 'parallel'
 gem 'ruby-progressbar'
@@ -111,7 +111,7 @@ group :test, :development do
   gem 'factory_bot_rails', '~> 6.0'
   gem 'pry-byebug', '~> 3.12.0'
   gem 'pry-rails'
-  gem 'rspec-rails', '~> 7.0'
+  gem 'rspec-rails', '~> 8.1'
   gem 'watchr'
 
   gem 'rubocop',             '~> 1.92', require: false
@@ -129,5 +129,5 @@ group :test do
   gem 'selenium-webdriver'
   gem 'webdrivers'
 
-  gem 'simplecov', '~> 0.7.1', require: false
+  gem 'simplecov', '~> 1.3.2', require: false
 end
